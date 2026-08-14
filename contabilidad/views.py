@@ -4,6 +4,11 @@ from django.contrib import messages
 from usuarios.decorador import verificar
 from .models import Movimiento
 
+from contabilidad.serializador import MovimientoSerializer
+
+from .serializador import *
+from rest_framework import viewsets
+
 # Esta es la parte principal, acá mostraremos todos los gastos, ganancias ETC
 @verificar
 def inicio(request):
@@ -97,3 +102,7 @@ def editar_gasto(request, id):
         "gasto": g
     }
     return render(request, "contabilidad/editar_gasto.html", contexto)
+
+class MovimientoViewSet(viewsets.ModelViewSet):
+    queryset = Movimiento.objects.all()
+    serializer_class = MovimientoSerializer

@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from usuarios.models import Usuario
+from usuarios.serializador import UsuarioSerializer
+from .serializador import *
+from rest_framework import viewsets
 
 def inicio_sesion(request):
     if request.method == "POST":
@@ -104,3 +107,6 @@ def cambiar_estado_usuario(request, usuario_id):
     return redirect('listado_general')
 
 
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer

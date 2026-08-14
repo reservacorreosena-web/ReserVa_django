@@ -3,6 +3,9 @@ from .models import Reserva
 from django.http import HttpResponse
 from usuarios.decorador import verificar
 from django.contrib import messages
+from .serializador import *
+from rest_framework import viewsets
+
 @verificar
 def crear_reserva(request):
     if request.method == "POST":
@@ -87,3 +90,6 @@ def confirmacion(request):
     return render(request, "reservas/exito.html")
 
 
+class ReservaViewSet(viewsets.ModelViewSet):
+    queryset = Reserva.objects.all()
+    serializer_class = ReservaSerializer
