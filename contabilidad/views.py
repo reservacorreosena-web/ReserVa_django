@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+
+from usuarios.decorador import verificar
 from .models import Movimiento
 
-#Esta es la parte principal, aca mostraremos todos los gastos, ganancias ETC
+# Esta es la parte principal, acá mostraremos todos los gastos, ganancias ETC
+@verificar
 def inicio(request):
-
     gastos = Movimiento.objects.all()
-
 
     gasto_total = 0
     gasto_efectivo = 0
@@ -15,15 +16,12 @@ def inicio(request):
     for g in gastos:
         gasto_total += g.valor
 
-
-        metodo = g.metodo_pago.strip().lower()
+        metodo = g.metodo_pago.strip().lower() if g.metodo_pago else ""
 
         if metodo == "efectivo":
             gasto_efectivo += g.valor
-
-        elif "tarjeta" in metodo or "transferencia" in metodo or "débito" in metodo or "crédito" in metodo:
+        elif any(x in metodo for x in ["tarjeta", "transferencia", "débito", "debito", "crédito", "credito"]):
             gasto_banco += g.valor
-
 
     q = {
         'gastos': gastos,
@@ -34,15 +32,29 @@ def inicio(request):
 
     return render(request, "contabilidad/prueba.html", q)
 
+
+@verificar
 def control_gastos(request):
     return render(request, "contabilidad/control_gastos.html")
 
+
+@verificar
 def guardar_gasto(request):
     if request.method == "POST":
-        concepto = request.POST.get("concepto")
-        categoria = request.POST.get("categoria")
-        valor = request.POST.get("valor")
-        metodo_pago = request.POST.get("metodo_pago")
+        concepto = request.POST.get("concepto", "").strip().title()
+        categoria = request.POST.get("categoria", "").strip().title()
+        valor_raw = request.POST.get("valor", 0)
+        metodo_pago = request.POST.get("metodo_pago", "").strip()
+
+        if not concepto or not valor_raw:
+            messages.error(request, "Por favor llena los campos obligatorios.")
+            return redirect('control_gastos')
+
+        try:
+            valor = float(valor_raw)
+        except ValueError:
+            messages.error(request, "El valor ingresado debe ser un número válido.")
+            return redirect('control_gastos')
 
         Movimiento.objects.create(
             concepto=concepto,
@@ -50,34 +62,38 @@ def guardar_gasto(request):
             valor=valor,
             metodo_pago=metodo_pago
         )
-        messages.success(request, "¡Gasto Registrado con Éxito!!")
-        return redirect('control_gastos')
-
+        messages.success(request, "¡Gasto Registrado con Éxito!")
+        return redirect('inicio_contabilidad')
 
     return redirect('inicio_contabilidad')
 
-def eliminar_gasto(request,id):
-    g = Movimiento.objects.get(pk=id)
+
+@verificar
+def eliminar_gasto(request, id):
+    g = get_object_or_404(Movimiento, pk=id)
     g.delete()
+    messages.success(request, "Gasto eliminado correctamente.")
     return redirect('inicio_contabilidad')
 
+
+@verificar
 def editar_gasto(request, id):
-    g = Movimiento.objects.get(id=id)
-    if request.method=="POST":
-        g.concepto = request.POST.get('concepto')
-        g.categoria = request.POST.get('categoria')
-        g.valor = request.POST.get('valor')
-        g.fecha = request.POST.get('fecha')
-        g.metodo_pago = request.POST.get('metodo_pago')
+    g = get_object_or_404(Movimiento, pk=id)
+    
+    if request.method == "POST":
+        g.concepto = request.POST.get('concepto', '').strip().title()
+        g.categoria = request.POST.get('categoria', '').strip().title()
+        g.valor = request.POST.get('valor', 0)
+        g.metodo_pago = request.POST.get('metodo_pago', '').strip()
+        
+        if request.POST.get('fecha'):
+            g.fecha = request.POST.get('fecha')
 
-        return redirect('contabilidad/guardar_gasto')
+        g.save()  # <--- Persistir cambios en BD
+        messages.success(request, "Gasto actualizado con éxito.")
+        return redirect('inicio_contabilidad')
 
-    else:
-        g = Movimiento.objects.get(pk=id)
-        contexto = {
-            "gasto": g
-        }
-        return render(request, "contabilidad/editar_gasto.html", contexto)
-
-
-
+    contexto = {
+        "gasto": g
+    }
+    return render(request, "contabilidad/editar_gasto.html", contexto)

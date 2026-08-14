@@ -1,466 +1,254 @@
-/* ========================================================
-<<<<<<< HEAD
-   1. VARIABLES Y FUENTES GLOBALES
-   ======================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@400;500;600&display=swap');
-=======
-   1. FUENTES Y VARIABLES GLOBALES
-   ======================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
+/* =========================================================================
+   ReserVa — Estilos base globales
+   Migración: "Dark Luxury" (dorado #d9ac58 / negro plano)
+              → editorial cobrizo (espresso #121110, cobre #c47d4e, marfil #f4eee0)
+   Este archivo define el sistema de variables canónico. landing.css usa
+   los mismos nombres --rv-* con los mismos valores, así que ambos quedan
+   sincronizados automáticamente.
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    --bg-dark: #0a0a0a;
-    --bg-card: #141414;
-    --color-vino: #4a0404;
-    --color-vino-light: #722F37;
-    --color-arena: #D4AF37;
-    --color-arena-light: #E6C27A;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --font-serif: 'Cormorant Garamond', serif;
-    --font-sans: 'Montserrat', sans-serif;
+    /* ---- Sistema editorial (nuevo) ---- */
+    --rv-bg: #121110;
+    --rv-bg-deep: #0b0a09;
+    --rv-bg-raised: #1a1815;
+
+    --rv-copper: #c47d4e;
+    --rv-copper-light: #e3a877;
+    --rv-copper-dark: #8a5530;
+
+    --rv-cream: #f4eee0;
+    --rv-cream-dim: #cdc3b0;
+    --rv-cream-faint: #948a78;
+
+    --rv-line: rgba(244, 238, 224, 0.16);
+    --rv-line-copper: rgba(196, 125, 78, 0.45);
+
+    --rv-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --rv-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* ---- Alias de compatibilidad ----
+       Cualquier plantilla/CSS antiguo que use estos nombres hereda la
+       paleta nueva automáticamente, sin tener que tocarla. */
+    --bg-dark: var(--rv-bg);
+    --card-bg: var(--rv-bg-raised);
+    --input-bg: var(--rv-bg-raised);
+    --gold: var(--rv-copper);
+    --gold-hover: var(--rv-copper-light);
+    --text-white: var(--rv-cream);
+    --text-gray: var(--rv-cream-faint);
+    --border-color: var(--rv-line);
 }
 
-* {
+/* -------------------------------------------------------------------------
+   Reset base — toda la página en tonos espresso
+   ------------------------------------------------------------------------- */
+
+html, body {
+    background-color: var(--rv-bg) !important;
+    color: var(--rv-cream) !important;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
+    font-family: var(--rv-sans);
 }
 
-/* ========================================================
-<<<<<<< HEAD
-   2. NAVBAR PREMIUM
-=======
-   2. NAVBAR ELEGANTE E INTEGRADO
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-   ======================================================== */
-.navbar {
+main, .contenedor, .landing-container, .form-container {
+    background-color: var(--rv-bg) !important;
+    min-height: calc(100vh - 150px);
+}
+
+/* Quita fondos claros heredados de componentes antiguos */
+.mi-formulario, .form-card, .carta-container {
+    background-color: transparent;
+}
+
+.landing-container {
+    color: var(--rv-cream);
+    font-family: var(--rv-sans);
+    margin: -20px -20px 0 -20px;
+}
+
+.gold-text {
+    color: var(--gold);
+}
+
+/* =========================================================================
+   NAVBAR — glassmorphism sobre espresso, acentos cobrizos
+   ========================================================================= */
+
+.navbar-luxury {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    background-color: rgba(11, 10, 9, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rv-line-copper);
+    z-index: 1000;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+.nav-container {
+    max-width: 1250px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.2rem 5%;
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
 }
 
-.logo a {
+.logo-link {
     text-decoration: none;
 }
 
-.logo h1 {
-    font-family: var(--font-serif);
-<<<<<<< HEAD
-    font-size: 2.2rem;
-=======
-    font-size: 2rem;
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-    color: var(--text-primary);
-    letter-spacing: 0.05em;
+.logo-text {
     margin: 0;
+    font-family: var(--rv-serif);
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--text-white);
+    letter-spacing: -0.02em;
 }
 
-<<<<<<< HEAD
-.logo h1 span {
-=======
-.logo span {
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-    color: var(--color-arena);
+.logo-text .gold-text {
     font-style: italic;
+    font-weight: 500;
 }
 
-<<<<<<< HEAD
-.nav-menu {
-    display: flex;
-}
-
-=======
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
 .nav-links {
-    list-style: none;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
 }
 
-.nav-links a {
+.nav-item {
+    color: var(--text-gray);
     text-decoration: none;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     position: relative;
+    padding: 5px 0;
 }
 
-.nav-links a:hover {
-    color: var(--color-arena);
-}
-
-<<<<<<< HEAD
-/* Línea dorada animada al pasar el mouse */
-=======
-/* Efecto de línea dorada al pasar el mouse */
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-.nav-links a::after {
+.nav-item::after {
     content: '';
     position: absolute;
-    bottom: -4px;
+    bottom: 0;
     left: 0;
-    width: 0;
+    width: 0%;
     height: 1px;
-    background-color: var(--color-arena);
+    background-color: var(--gold);
     transition: width 0.3s ease;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-.nav-links a:hover::after {
-    width: 100%;
-}
+.nav-item:hover { color: var(--text-white); }
+.nav-item:hover::after { width: 100%; }
 
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
+.nav-actions { display: flex; align-items: center; gap: 15px; }
 
-.user-info span {
-    color: var(--color-arena);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-/* Botones del Navbar (Reservar, Registro, Salir) */
-.btn-reserva, .btn-registro {
-    border: 1px solid var(--color-arena);
-    color: var(--color-arena) !important;
-    padding: 0.5rem 1.2rem;
-    border-radius: 4px;
+.btn-reserva-nav {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--rv-copper-dark) 100%);
+    color: var(--rv-bg-deep) !important;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    padding: 10px 20px;
+    border-radius: 2px;
     text-decoration: none;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(196, 125, 78, 0.25);
+}
+
+.btn-reserva-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(196, 125, 78, 0.4);
+}
+
+.btn-register-nav {
+    border: 1px solid var(--gold);
+    color: var(--gold) !important;
+    font-size: 13px;
     font-weight: 600;
-    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    padding: 8px 16px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.btn-reserva:hover, .btn-registro:hover {
-    background-color: var(--color-arena);
-    color: var(--bg-dark) !important;
+.btn-register-nav:hover {
+    background-color: var(--gold);
+    color: var(--rv-bg-deep) !important;
 }
 
-<<<<<<< HEAD
-=======
-/* Quitar la línea animada de los botones para que se vean limpios */
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-.nav-links a.btn-reserva::after,
-.nav-links a.btn-registro::after {
-    display: none;
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--rv-line-copper);
+    padding: 6px 14px;
+    border-radius: 20px;
 }
 
-/* ========================================================
-   3. CONTENEDOR Y FOOTER
-   ======================================================== */
-.contenedor {
-    padding: 2rem 5%;
-    flex: 1;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
+.user-greeting { font-size: 13px; color: var(--text-gray); }
+.user-greeting strong { color: var(--gold); font-weight: 600; }
+
+.btn-logout {
+    color: #e2726a;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(226, 114, 106, 0.1);
+    transition: 0.2s;
 }
+
+.btn-logout:hover { background: rgba(226, 114, 106, 0.22); }
+
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
 
 .pie-pagina {
     text-align: center;
-    padding: 2rem;
-    background-color: #050505;
-    border-top: 1px solid rgba(212, 175, 55, 0.1);
-    color: var(--text-secondary);
-    font-size: 0.85rem;
+    padding: 25px;
+    border-top: 1px solid var(--rv-line);
+    background: var(--rv-bg-deep);
+    color: var(--text-gray);
+    font-size: 13px;
+    letter-spacing: 0.03em;
 }
 
-/* ========================================================
-<<<<<<< HEAD
-   4. ESTILOS DE FORMULARIOS (Login, Registro, etc.)
-=======
-   4. ESTILOS DE FORMULARIOS (Genérico para toda la app)
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-   ======================================================== */
-.mi-formulario {
-    width: 100%;
-    max-width: 450px;
-    margin: 2rem auto;
-    padding: 2.5rem;
-    background: var(--bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    border-radius: 8px;
+.pie-pagina p {
+    margin: 0;
 }
 
-.mi-formulario h2 { 
-    color: var(--text-primary); 
-    text-align: center; 
-    font-family: var(--font-serif);
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-}
+/* =========================================================================
+   RESPONSIVE — navbar
+   ========================================================================= */
 
-.mi-formulario label { 
-    display: block;
-    margin: 1rem 0 0.5rem 0; 
-    font-weight: 500; 
-    color: var(--text-secondary); 
-    font-size: 0.9rem;
-}
-
-.mi-formulario input, .mi-formulario textarea, .mi-formulario select {
-    width: 100%; 
-    padding: 0.8rem; 
-    background: var(--bg-dark);
-    border: 1px solid #333; 
-    border-radius: 4px;
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-}
-
-.mi-formulario input:focus, .mi-formulario textarea:focus {
-    outline: none;
-    border-color: var(--color-arena);
-}
-
-.mi-formulario button {
-    width: 100%; 
-    padding: 1rem; 
-    margin-top: 2rem; 
-    background-color: var(--color-arena);
-    color: var(--bg-dark); 
-    border: none; 
-    border-radius: 4px; 
-    font-weight: 600; 
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.mi-formulario button:hover { 
-    background-color: var(--color-arena-light); 
-    transform: translateY(-2px);
-}
-
-/* ========================================================
-<<<<<<< HEAD
-   5. RESPONSIVE
-   ======================================================== */
-@media (max-width: 900px) {
-    .navbar {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-    }
+@media (max-width: 860px) {
     .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
+        display: none;
     }
-    .user-info {
-        flex-direction: column;
-        gap: 0.5rem;
+}
+
+@media (max-width: 560px) {
+    .user-greeting {
+        display: none;
     }
-=======
-   5. ESTILOS ESPECÍFICOS DE LA LANDING PAGE
-   ======================================================== */
-.hero-section {
-    position: relative;
-    margin-top: -2rem;
-    padding-top: 8rem;
-    padding-bottom: 6rem;
-    background: linear-gradient(135deg, rgba(74, 4, 4, 0.85) 0%, rgba(10, 10, 10, 0.95) 100%),
-                url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat;
-    text-align: center;
-    border-radius: 0 0 20px 20px;
-}
-
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-
-.hero-subtitle {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-arena);
-    margin-bottom: 1rem;
-}
-
-.hero-content h2 {
-    font-family: var(--font-serif);
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    color: var(--text-primary);
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
-}
-
-.hero-content p {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.7;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn-landing-primary {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: var(--color-arena);
-    color: var(--bg-dark);
-    text-decoration: none;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.btn-landing-primary:hover {
-    background: transparent;
-    color: var(--color-arena);
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
-}
-
-.btn-landing-secondary {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: transparent;
-    color: var(--text-primary);
-    text-decoration: none;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.btn-landing-secondary:hover {
-    border-color: var(--color-arena);
-    color: var(--color-arena);
-}
-
-/* Features Grid */
-.features-section {
-    padding: 6rem 5%;
-    text-align: center;
-}
-
-.section-title {
-    font-family: var(--font-serif);
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-    color: var(--text-primary);
-}
-
-.section-title span {
-    color: var(--color-arena);
-    font-style: italic;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.feature-card {
-    background: var(--bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    border-radius: 12px;
-    padding: 2.5rem 1.5rem;
-    transition: all 0.4s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--color-arena);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-}
-
-.feature-icon { font-size: 3rem; margin-bottom: 1.5rem; }
-.feature-card h3 { color: var(--color-arena); font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; }
-.feature-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; }
-
-/* CTA Section */
-.cta-section {
-    background: linear-gradient(135deg, rgba(74, 4, 4, 0.2) 0%, var(--bg-dark) 100%);
-    border-top: 1px solid rgba(212, 175, 55, 0.2);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    padding: 5rem 2rem;
-    text-align: center;
-    margin: 4rem 0;
-    border-radius: 12px;
-}
-
-.cta-content h3 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 1rem; }
-.cta-content p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem; }
-
-/* Reviews Scroll Horizontal */
-.reviews-section { padding: 4rem 0; }
-.reviews-scroll {
-    display: flex;
-    gap: 2rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 2rem 5%;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-arena) var(--bg-card);
-}
-.reviews-scroll::-webkit-scrollbar { height: 4px; }
-.reviews-scroll::-webkit-scrollbar-thumb { background: var(--color-arena); border-radius: 2px; }
-
-.review-card {
-    flex: 0 0 350px;
-    background: var(--bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.15);
-    border-radius: 8px;
-    padding: 2rem;
-    scroll-snap-align: center;
-}
-.review-stars { color: var(--color-arena); margin-bottom: 1rem; }
-.review-quote { font-family: var(--font-serif); font-style: italic; color: #ddd; line-height: 1.6; margin-bottom: 1.5rem; }
-.author-name { color: var(--text-primary); margin-bottom: 0.2rem; }
-.author-badge { font-size: 0.75rem; color: var(--color-arena); text-transform: uppercase; letter-spacing: 0.1em; }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .navbar { flex-direction: column; gap: 1rem; padding: 1rem; }
-    .nav-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-    .hero-section { padding-top: 10rem; }
-    .hero-buttons { flex-direction: column; align-items: center; }
-    .btn-landing-primary, .btn-landing-secondary { width: 100%; max-width: 300px; text-align: center; }
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
 }

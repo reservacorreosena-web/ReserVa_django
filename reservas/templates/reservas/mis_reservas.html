@@ -1,43 +1,121 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Mis Reservas | ReservA{% endblock %}
+{% block title %}Mis Reservas | ReserVa{% endblock %}
 
 {% block content %}
-<div class="contenedor">
-    <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">Mis Reservas</h2>
+<link rel="stylesheet" href="{% static 'css/mis_reservas.css' %}?v=4.0">
 
-    <div class="lista-reservas">
-        {% for r in reservas %}
-        <div class="reserva-card" style="background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-            
-            <div class="reserva-info">
-                <h3 style="color: #d4af37; margin: 0;">{{ r.nombre }}</h3>
-                <p style="color: #ccc; margin: 0;">Fecha: {{ r.fecha }} | Mesa: {{ r.mesa }}</p>
+<div class="container py-5">
+    
+    <!-- Encabezado -->
+    <div class="reserva-header-section mb-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="header-tag"><i class="bi bi-stars"></i> Panel de Gestión</span>
+                <h2 class="fw-bold text-white mb-1 tracking-tight">Mis Reservaciones</h2>
+                <p class="text-secondary small mb-0">Monitorea y administra la disponibilidad de tus mesas agendadas</p>
             </div>
-
-            <div class="reserva-acciones" style="display: flex; gap: 10px;">
-                <a href="{% url 'actualizar' r.id %}" style="padding: 8px 15px; border: 1px solid #d4af37; color: #d4af37; text-decoration: none; border-radius: 5px;">Editar</a>
-                <a href="#"  style="padding: 8px 15px; border: 1px solid #800020; color: #ff6b6b; text-decoration: none; border-radius: 5px;"
-   onclick="Swal.fire({
-       title: '¿Estás seguro?',
-       text: 'Esta reserva se eliminará permanentemente.',
-       icon: 'warning',
-       showCancelButton: true,
-       confirmButtonColor: '#800020',
-       cancelButtonColor: '#333',
-       background: '#1a1a1a',
-       color: '#ffffff',
-       confirmButtonText: 'Sí, cancelar'
-   }).then((result) => {
-       if (result.isConfirmed) {
-           window.location.href = '{% url 'cancelar' r.id %}';
-       }
-   })" 
-   class="btn-eliminar">Cancelar</a>
-            </div>
-            
         </div>
+    </div>
+
+    <!-- Lista Horizontal Elegante -->
+    <div class="reservas-list-container">
+        {% for r in reservas %}
+            <div class="reserva-card-v3">
+                
+                <!-- Glow decorativo de fondo -->
+                <div class="card-glow"></div>
+
+                <!-- 1. Cuadro grande a la izquierda + Nombre/ID -->
+                <div class="card-col col-main">
+                    <div class="avatar-box-lg">
+                        <i class="bi bi-bookmark-star-fill"></i>
+                        <span class="box-subtext">ReserVa</span>
+                    </div>
+                    <div class="truncate-container">
+                        <div class="reserva-id">RESERVA #{{ r.id }}</div>
+                        <h5 class="reserva-title" title="{{ r.nombre }}">{{ r.nombre }}</h5>
+                    </div>
+                </div>
+
+                <!-- Separador vertical -->
+                <div class="col-divider"></div>
+
+                <!-- 2. Fecha y Hora -->
+                <div class="card-col">
+                    <span class="meta-label">Fecha Programada</span>
+                    <div class="meta-value">
+                        <i class="bi bi-calendar2-week text-gold"></i>
+                        <span>{{ r.fecha }}</span>
+                    </div>
+                </div>
+
+                <!-- Separador vertical -->
+                <div class="col-divider"></div>
+
+                <!-- 3. Mesa / Ubicación -->
+                <div class="card-col">
+                    <span class="meta-label">Mesa Asignada</span>
+                    <div class="meta-value">
+                        <i class="bi bi-shop text-gold"></i>
+                        <span>Mesa {{ r.mesa }}</span>
+                    </div>
+                </div>
+
+                <!-- 4. Badge de Estado -->
+                <div class="card-col col-status">
+                    <span class="status-pill status-activa">
+                        <span class="pulse-dot"></span> Activa
+                    </span>
+                </div>
+
+                <!-- 5. Acciones con Nombres Visibles -->
+                <div class="card-col col-actions">
+                    <a href="{% url 'actualizar' r.id %}" class="btn-action-text btn-edit">
+                        <i class="bi bi-pencil-fill"></i>
+                        <span>Editar</span>
+                    </a>
+                    
+                    <button class="btn-action-text btn-delete" 
+                            type="button"
+                            onclick="Swal.fire({
+                               title: '¿Cancelar reserva?',
+                               text: 'Esta acción liberará la mesa asignada inmediatamente.',
+                               icon: 'warning',
+                               showCancelButton: true,
+                               confirmButtonColor: '#800020',
+                               cancelButtonColor: '#27272a',
+                               background: '#121215',
+                               color: '#ffffff',
+                               confirmButtonText: 'Sí, cancelar',
+                               cancelButtonText: 'Mantener'
+                           }).then((result) => {
+                               if (result.isConfirmed) {
+                                   window.location.href = '{% url 'cancelar' r.id %}';
+                               }
+                           });">
+                        <i class="bi bi-trash3-fill"></i>
+                        <span>Cancelar</span>
+                    </button>
+                </div>
+
+            </div>
+        {% empty %}
+            <!-- Estado vacío -->
+            <div class="empty-state-v3 text-center py-5">
+                <div class="empty-icon-box mb-3">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h4 class="text-white fw-bold mb-2">No tienes reservas activas</h4>
+                <p class="text-secondary small mb-4">Agenda una mesa para disfrutar de una experiencia gastronómica única.</p>
+                <a href="{% url 'crear_reserva' %}" class="btn btn-gold-premium">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Crear mi primera reserva</span>
+                </a>
+            </div>
         {% endfor %}
     </div>
+
 </div>
 {% endblock %}

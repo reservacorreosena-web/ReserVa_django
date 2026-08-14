@@ -1,7 +1,7 @@
 {% extends 'base_admin.html' %}
 {% load static %}
 
-{% block title %}Crear Plato - ReserVa{% endblock %}
+{% block title %}Editar Plato - ReserVa{% endblock %}
 
 {% block content %}
 <div class="container-fluid px-4 py-3">
@@ -9,8 +9,8 @@
     <!-- ENCABEZADO SUPERIOR -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-white mb-0">Agregar Nuevo Plato a la Carta</h2>
-            <small class="text-white-50">Ingresa la información del nuevo producto para el menú</small>
+            <h2 class="fw-bold text-white mb-0">Editar Plato</h2>
+            <small class="text-white-50">Modifica los detalles del producto en la carta</small>
         </div>
         <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">← Volver</a>
     </div>
@@ -25,19 +25,19 @@
     <div class="card bg-dark text-light border-secondary shadow-lg mx-auto" style="max-width: 600px; background-color: #181818 !important; border-color: rgba(255, 255, 255, 0.08) !important; border-radius: 12px;">
         <div class="card-body p-4 p-md-5">
 
-            <form action="{% url 'crear_plato' %}" method="POST">
+            <form action="" method="POST">
                 {% csrf_token %}
 
                 <!-- NOMBRE DEL PLATO -->
                 <div class="mb-4 text-center">
                     <label for="nombre" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Nombre del Plato</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required>
+                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{platos.nombre}}">
                 </div>
 
                 <!-- DESCRIPCIÓN -->
                 <div class="mb-4 text-center">
                     <label for="descripcion" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30"></textarea>
+                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30">{{platos.descripcion}}</textarea>
                 </div>
 
                 <!-- FILA DOBLE: CATEGORÍA Y PRECIO -->
@@ -54,7 +54,7 @@
 
                     <div class="col-md-6 text-center">
                         <label for="precio" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Precio ($)</label>
-                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required>
+                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{platos.precio}}">
                     </div>
                 </div>
 
@@ -70,7 +70,7 @@
                     <div class="form-check">
                         <input type="checkbox" id="disponible" name="disponible" value="on" class="form-check-input bg-dark border-secondary" checked>
                         <label for="disponible" class="form-check-label text-light small">
-                            Actualmente esta disponible?
+                            Actualmente está disponible?
                         </label>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 <!-- BOTÓN PRINCIPAL CENTRADO -->
                 <div class="text-center pt-2">
                     <button type="submit" class="btn btn-warning fw-bold px-5 py-2" style="border-radius: 8px;">
-                        Guardar Plato
+                        ACTUALIZAR Plato
                     </button>
                 </div>
 

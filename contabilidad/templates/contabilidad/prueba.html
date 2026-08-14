@@ -1,380 +1,138 @@
 {% extends 'base_admin.html' %}
 {% load static %}
 
-<<<<<<< HEAD
-{% block title %}Control de Gastos - ReserVa{% endblock %}
-
-{% block content %}
-
-<!-- ESTILOS ESPECÍFICOS PARA ESTE MÓDULO (Consistencia visual garantizada) -->
-<style>
-    /* Grid de Estadísticas (Reutilizado del dashboard) */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2.5rem;
-        animation: fadeUp 0.6s ease-out;
-    }
-
-    .stat-card {
-        background: rgba(20, 20, 20, 0.6);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        border-radius: 16px;
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(212, 175, 55, 0.4);
-        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
-    }
-
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        background: rgba(212, 175, 55, 0.1);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: #D4AF37;
-    }
-
-    .stat-info h3 {
-        font-size: 0.75rem;
-        color: #9ca3af;
-        margin: 0 0 0.25rem 0;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-
-    .stat-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #ffffff;
-        margin: 0;
-        font-family: 'Cormorant Garamond', serif;
-    }
-
-    /* Contenedor de la Tabla */
-    .expenses-table-wrapper {
-        background: rgba(20, 20, 20, 0.6);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        border-radius: 16px;
-        padding: 2rem;
-        animation: fadeUp 0.8s ease-out;
-    }
-
-    .expenses-table-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2rem;
-        color: #ffffff;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .expenses-table-title i { color: #D4AF37; }
-
-    /* Sobrescritura de DataTables para Tema Oscuro */
-    .dataTables_wrapper .dataTables_length, 
-    .dataTables_wrapper .dataTables_filter, 
-    .dataTables_wrapper .dataTables_info, 
-    .dataTables_wrapper .dataTables_paginate {
-        color: #9ca3af !important;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-    }
-
-    .dataTables_wrapper .dataTables_filter input,
-    .dataTables_wrapper .dataTables_length select {
-        background: rgba(10, 10, 10, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #ffffff;
-        padding: 6px 12px;
-        margin: 0 8px;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        outline: none;
-        border-color: #D4AF37;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: #9ca3af !important;
-        background: transparent !important;
-        border: 1px solid transparent !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        color: #D4AF37 !important;
-        background: rgba(212, 175, 55, 0.1) !important;
-        border-color: rgba(212, 175, 55, 0.3) !important;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        color: #050505 !important;
-        background: #D4AF37 !important;
-        border-color: #D4AF37 !important;
-        font-weight: 600;
-    }
-
-    /* Estilos de la Tabla Premium */
-    .table-premium {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        color: #ffffff;
-    }
-
-    .table-premium thead th {
-        background: rgba(0, 0, 0, 0.3);
-        color: #9ca3af;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 1rem 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .table-premium tbody td {
-        padding: 1rem 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 0.9rem;
-        vertical-align: middle;
-        transition: all 0.2s ease;
-    }
-
-    .table-premium tbody tr:hover td {
-        background: rgba(212, 175, 55, 0.03);
-        color: #ffffff;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: #9ca3af;
-        font-style: italic;
-    }
-
-    /* Badges de Categoría */
-    .badge-category {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .cat-insumos { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
-    .cat-servicios { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
-    .cat-nomina { background: rgba(236, 72, 153, 0.1); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.2); }
-    .cat-otros { background: rgba(156, 163, 175, 0.1); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.2); }
-
-    /* Botones de Acción */
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid transparent;
-    }
-
-    .btn-edit {
-        background: rgba(212, 175, 55, 0.1);
-        color: #D4AF37;
-        border-color: rgba(212, 175, 55, 0.3);
-    }
-    .btn-edit:hover {
-        background: #D4AF37;
-        color: #050505;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-    }
-
-    .btn-delete {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border-color: rgba(239, 68, 68, 0.3);
-    }
-    .btn-delete:hover {
-        background: #ef4444;
-        color: #ffffff;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-    }
-
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
-<!-- 1. TARJETAS DE RESUMEN CONTABLE -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
-        <div class="stat-info">
-            <h3>Gasto Total</h3>
-            <p class="stat-value">${{ gasto_total }}</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-        <div class="stat-info">
-            <h3>Gasto en Efectivo</h3>
-            <p class="stat-value">${{ gasto_efectivo }}</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon"><i class="bi bi-bank"></i></div>
-        <div class="stat-info">
-            <h3>Gasto en Banco</h3>
-            <p class="stat-value">${{ gasto_banco }}</p>
-        </div>
-    </div>
-</div>
-
-<!-- 2. TABLA DE GASTOS -->
-<div class="expenses-table-wrapper">
-    <h2 class="expenses-table-title">
-        <i class="bi bi-receipt-cutoff"></i> Listado de Gastos
-    </h2>
-
-    <table id="tabla_gastos" class="table-premium">
-=======
 {% block title %}Dashboard - ReserVa{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <!-- Pon esto arriba de tu tabla de gastos -->
-<div>
-    <!-- Tarjeta 1 -->
-    <div>
-        <strong>Gasto Total:</strong>
-        <span>${{ gasto_total }}</span>
+
+<div class="container-fluid text-white">
+
+    <!-- TARJETAS KPI DE RESUMEN -->
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+
+        <!-- Tarjeta 1: Total Gastos -->
+        <div class="col">
+            <div class="card card-kpi p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Gasto Total</span>
+                        <h3 class="mb-0 text-white fw-bold">${{ gasto_total|default:"0" }}</h3>
+                    </div>
+                    <div class="kpi-icon-box">
+                        <i class="bi bi-cash-stack fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2: Efectivo -->
+        <div class="col">
+            <div class="card card-kpi p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Gasto en Efectivo</span>
+                        <h3 class="mb-0 text-white fw-bold">${{ gasto_efectivo|default:"0" }}</h3>
+                    </div>
+                    <div class="kpi-icon-box">
+                        <i class="bi bi-wallet2 fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3: Datáfono / Banco -->
+        <div class="col">
+            <div class="card card-kpi p-3 h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Gasto en Datafono</span>
+                        <h3 class="mb-0 text-white fw-bold">${{ gasto_banco|default:"0" }}</h3>
+                    </div>
+                    <div class="kpi-icon-box">
+                        <i class="bi bi-credit-card-2-front fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Tarjeta 2 -->
-    <div>
-        <strong>Gasto en Efectivo:</strong>
-        <span>${{ gasto_efectivo }}</span>
+    <!-- CONTENEDOR DE LA TABLA CON ENCABEZADO DEDICADO -->
+    <div class="tabla-container">
+
+        <!-- Encabezado superior dentro de la tarjeta -->
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-25 pb-3">
+            <div>
+                <h4 class="m-0 fw-bold text-white">Listado de Gastos</h4>
+                <p class="text-secondary">Historia de Gastos Registrados</p>
+            </div>
+        </div>
+
+        <!-- Tabla estilizada -->
+        <div class="table-responsive">
+            <table id="tabla_gastos" class="table w-100 align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Categoría</th>
+                        <th>Valor</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Método de Pago</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in gastos %}
+                        <tr>
+                            <td class="fw-semibold">{{ g.concepto }}</td>
+
+                            <!-- Badge Categoría -->
+                            <td>
+                                <span class="badge" style="background-color: #262626; color: #6EA8FE; border: 1px solid rgba(110,168,254,0.3); font-weight: 500;">
+                                    {{ g.categoria }}
+                                </span>
+                            </td>
+
+                            <td class="fw-bold text-warning">${{ g.valor }}</td>
+                            <td class="text-secondary">{{ g.fecha }}</td>
+                            <td class="text-secondary">{{ g.hora }}</td>
+
+                            <!-- Badge Método de Pago -->
+                            <td>
+                                {% if g.metodo_pago == "Efectivo" %}
+                                    <span class="badge" style="background-color: rgba(25, 135, 84, 0.15); color: #75b798; border: 1px solid rgba(25, 135, 84, 0.3);">
+                                        <i class="bi bi-cash me-1"></i> {{ g.metodo_pago }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge" style="background-color: rgba(13, 202, 240, 0.15); color: #6edff6; border: 1px solid rgba(13, 202, 240, 0.3);">
+                                        <i class="bi bi-credit-card me-1"></i> {{ g.metodo_pago }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Acciones con íconos compactos -->
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{% url 'editar_gasto' g.id %}" class="btn btn-sm btn-outline-warning px-2">Editar
+                                
+                                    </a>
+                                    <a href="{% url 'eliminar_gasto' g.id %}" class="btn btn-sm btn-outline-danger btn-eliminar px-2">Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No hay gastos registrados.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Tarjeta 3 -->
-    <div>
-        <strong>Gasto en Banco:</strong>
-        <span>${{ gasto_banco }}</span>
-    </div>
-</div>
-
-<hr> <!-- Una línea para separar las tarjetas de la tabla -->
-
-<div class="container-fluid mt-4 text-white">
-    <h2 class="mb-4">Listado de Gastos</h2>
-
-    <table id="tabla_gastos" class="table table-dark table-hover align-middle">
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-        <thead>
-            <tr>
-                <th>Concepto</th>
-                <th>Categoría</th>
-                <th>Valor</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Método de Pago</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for g in gastos %}
-                <tr>
-<<<<<<< HEAD
-                    <td><strong>{{ g.concepto }}</strong></td>
-                    <td>
-                        <!-- Lógica visual para colorear categorías automáticamente -->
-                        {% if g.categoria == "INSUMOS" %}
-                            <span class="badge-category cat-insumos"><i class="bi bi-box-seam"></i> Insumos</span>
-                        {% elif g.categoria == "SERVICIOS" %}
-                            <span class="badge-category cat-servicios"><i class="bi bi-lightning-charge"></i> Servicios</span>
-                        {% elif g.categoria == "NOMINA" %}
-                            <span class="badge-category cat-nomina"><i class="bi bi-people"></i> Nómina</span>
-                        {% else %}
-                            <span class="badge-category cat-otros"><i class="bi bi-three-dots"></i> Otros</span>
-                        {% endif %}
-                    </td>
-                    <td style="font-weight: 600; color: #ffffff;">${{ g.valor }}</td>
-=======
-                    <td>{{ g.concepto }}</td>
-                    <td>{{ g.categoria }}</td>
-                    <td>${{ g.valor }}</td>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-                    <td>{{ g.fecha }}</td>
-                    <td>{{ g.hora }}</td>
-                    <td>{{ g.metodo_pago }}</td>
-                    <td>
-                        <div class="d-flex gap-2">
-<<<<<<< HEAD
-                            <a href="{% url 'editar_gasto' g.id %}" class="btn-action btn-edit">
-                                <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            <a href="{% url 'eliminar_gasto' g.id %}" class="btn-action btn-delete btn-eliminar">
-                                <i class="bi bi-trash"></i> Eliminar
-=======
-                            <a href="{% url 'editar_gasto' g.id %}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Editar
-                            </a>
-                            <!-- Botón con su respectiva clase y el href de Django -->
-                            <a href="{% url 'eliminar_gasto' g.id %}" class="btn btn-danger btn-sm btn-eliminar">
-                                <i class="fas fa-trash"></i> Eliminar
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-<<<<<<< HEAD
-                    <td colspan="7" class="empty-state">
-                        <i class="bi bi-inbox" style="font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.5;"></i>
-                        No hay gastos registrados aún.
-                    </td>
-=======
-                    <td colspan="7" class="text-center text-muted">No hay gastos registrados.</td>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 
 <!-- Scripts necesarios -->
@@ -384,69 +142,30 @@
 
 <script>
     $(document).ready(function() {
-<<<<<<< HEAD
-        // Inicialización de DataTables en español
         $('#tabla_gastos').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
             },
             "pageLength": 10,
-            "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                   '<"row"<"col-sm-12"tr>>' +
-                   '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-            "drawCallback": function() {
-                // Animación suave al cambiar de página o filtrar
-                $('.table-premium tbody tr').css('animation', 'fadeUp 0.3s ease-out');
-            }
+            "ordering": true
         });
 
-        // Lógica de eliminación con SweetAlert2 (Intacta y blindada)
         $('#tabla_gastos').on('click', '.btn-eliminar', function(e) {
-            e.preventDefault(); 
-            let url = $(this).attr('href'); 
+            e.preventDefault();
+            let url = $(this).attr('href');
 
-            Swal.fire({
-                title: "¿Estás seguro?",
-                text: "¡No podrás revertir la eliminación de este gasto!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#D4AF37", 
-                cancelButtonColor: "#ef4444",     
-                confirmButtonText: "Sí, ¡bórralo!",
-                cancelButtonText: "Cancelar",
-                background: "#141414",         
-                color: "#ffffff",
-                fontFamily: "'Montserrat', sans-serif"
-            }).then((result) => {
-=======
-        // Inicialización de tu DataTables en español
-        $('#tabla_gastos').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-            }
-        });
-
-        // 1. Escuchamos el clic de forma blindada con delegación de eventos
-        $('#tabla_gastos').on('click', '.btn-eliminar', function(e) {
-            e.preventDefault(); // Detiene el viaje inmediato del enlace
-
-            let url = $(this).attr('href'); // Guarda la ruta en el "papelito"
-
-            // 2. Dispara el SweetAlert sencillo y sin enredos de JavaScript complejo
             Swal.fire({
                 title: "¿Estás seguro?",
                 text: "¡No podrás revertir este gasto eliminado!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#FFC107", // Amarillo corporativo de ReserVa
-                cancelButtonColor: "#d33",     // Rojo de peligro/cancelar
+                confirmButtonColor: "#FFC107",
+                cancelButtonColor: "#800020",
                 confirmButtonText: "Sí, ¡bórralo!",
                 cancelButtonText: "Cancelar",
-                background: "#1e1e1e",         // Fondo dark impecable
-                color: "#ffffff"               // Texto blanco
+                background: "#1c1c1c",
+                color: "#ffffff"
             }).then((result) => {
-                // 3. Si confirma la acción, se redirige a la URL guardada
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
                 if (result.isConfirmed) {
                     window.location.href = url;
                 }

@@ -1,301 +1,118 @@
 {% extends 'base_admin.html' %}
 {% load static %}
 
-<<<<<<< HEAD
-{% block title %}Listado de Usuarios - ReserVa{% endblock %}
-
-{% block content %}
-
-<!-- ESTILOS ESPECÍFICOS PARA ESTA TABLA (Garantiza el look premium sin romper nada más) -->
-<style>
-    /* Contenedor principal con efecto vidrio */
-    .users-table-wrapper {
-        background: rgba(20, 20, 20, 0.6);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        border-radius: 16px;
-        padding: 2rem;
-        animation: fadeUp 0.6s ease-out;
-    }
-
-    .users-table-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2rem;
-        color: #ffffff;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .users-table-title i { color: #D4AF37; }
-
-    /* Sobrescritura de DataTables para Tema Oscuro Premium */
-    .dataTables_wrapper .dataTables_length, 
-    .dataTables_wrapper .dataTables_filter, 
-    .dataTables_wrapper .dataTables_info, 
-    .dataTables_wrapper .dataTables_processing, 
-    .dataTables_wrapper .dataTables_paginate {
-        color: #9ca3af !important;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-    }
-
-    .dataTables_wrapper .dataTables_filter input {
-        background: rgba(10, 10, 10, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #ffffff;
-        padding: 6px 12px;
-        margin-left: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        outline: none;
-        border-color: #D4AF37;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-    }
-
-    .dataTables_wrapper .dataTables_length select {
-        background: rgba(10, 10, 10, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        color: #ffffff;
-        padding: 6px 12px;
-        margin: 0 8px;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        color: #9ca3af !important;
-        background: transparent !important;
-        border: 1px solid transparent !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        color: #D4AF37 !important;
-        background: rgba(212, 175, 55, 0.1) !important;
-        border-color: rgba(212, 175, 55, 0.3) !important;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        color: #050505 !important;
-        background: #D4AF37 !important;
-        border-color: #D4AF37 !important;
-        font-weight: 600;
-    }
-
-    /* Estilos de la Tabla */
-    .table-premium {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        color: #ffffff;
-    }
-
-    .table-premium thead th {
-        background: rgba(0, 0, 0, 0.3);
-        color: #9ca3af;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 1rem 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .table-premium tbody td {
-        padding: 1rem 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 0.9rem;
-        vertical-align: middle;
-        transition: all 0.2s ease;
-    }
-
-    .table-premium tbody tr:hover td {
-        background: rgba(212, 175, 55, 0.03);
-        color: #ffffff;
-    }
-
-    /* Badges Premium */
-    .badge-premium {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .badge-role {
-        background: rgba(212, 175, 55, 0.1);
-        color: #D4AF37;
-        border: 1px solid rgba(212, 175, 55, 0.2);
-    }
-
-    .badge-active {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
-    }
-
-    .badge-suspended {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
-    }
-
-    /* Botones de Acción */
-    .btn-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 16px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid transparent;
-    }
-
-    .btn-activate {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-        border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-activate:hover {
-        background: #10b981;
-        color: #050505;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-suspend {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-suspend:hover {
-        background: #ef4444;
-        color: #ffffff;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-    }
-
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
-<div class="users-table-wrapper">
-    <h2 class="users-table-title">
-        <i class="bi bi-people-fill"></i> Listado General de Usuarios
-    </h2>
-
-    <table id="tablaDeBryan" class="table-premium">
-=======
 {% block title %}Dashboard - ReserVa{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<!-- CSS personalizado (versión v=1.2 para forzar actualización de caché) -->
+<link rel="stylesheet" href="{% static 'css/contabilidad.css' %}?v=1.2">
 
-<div class="container-fluid mt-4 text-white">
-    <h2 class="mb-4">Listado General de Usuarios</h2>
+<div class="container-fluid text-white py-2">
 
-    <table id="tablaDeBryan" class="table table-dark table-hover align-middle">
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Nombre Completo</th>
-                <th>Correo Electrónico</th>
-                <th>Rol</th>
-<<<<<<< HEAD
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-=======
-                <th>Estado</th> <th>Acciones</th> </tr>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-        </thead>
-        <tbody>
-            {% for u in usuarios %}
-                <tr>
-<<<<<<< HEAD
-                    <td><strong>{{ u.usuario }}</strong></td>
-                    <td>{{ u.nombre }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>
-                        <span class="badge-premium badge-role">
-                            <i class="bi bi-shield-check"></i> {{ u.rol }}
-                        </span>
-                    </td>
-                    <td>
-                        {% if "[SUSPENDIDO]" in u.nombre %}
-                            <span class="badge-premium badge-suspended">
-                                <i class="bi bi-x-circle-fill"></i> Suspendido
-                            </span>
-                        {% else %}
-                            <span class="badge-premium badge-active">
-                                <i class="bi bi-check-circle-fill"></i> Activo
-                            </span>
-=======
-                    <td>{{ u.usuario }}</td>
-                    <td>{{ u.nombre }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>
-                        <span class="badge bg-secondary">{{ u.rol }}</span>
-                    </td>
-                    <td>
-                        {% if "[SUSPENDIDO]" in u.nombre %}
-                            <span class="badge bg-danger"> Suspendido</span>
-                        {% else %}
-                            <span class="badge bg-success"> Activo</span>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if "[SUSPENDIDO]" in u.nombre %}
-<<<<<<< HEAD
-                            <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn-action btn-activate">
-                                <i class="bi bi-unlock"></i> Activar
-                            </a>
-                        {% else %}
-                            <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn-action btn-suspend">
-                                <i class="bi bi-lock"></i> Suspender
-=======
-                            <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-success py-1 px-3" style="font-size: 0.85rem;">
-                                 Activar
-                            </a>
-                        {% else %}
-                            <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-outline-danger py-1 px-3" style="font-size: 0.85rem;">
-                                 Suspender
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-                            </a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- CONTENEDOR DE LA TABLA -->
+    <div class="tabla-container">
+
+        <!-- Encabezado de la Tarjeta -->
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-25 pb-3">
+            <div>
+                <h4 class="m-0 fw-bold text-white">Listado General de Usuarios</h4>
+                <small class="text-secondary">Gestión de roles, accesos y estado de cuentas en la plataforma</small>
+            </div>
+            <div>
+                <span class="badge bg-dark border border-secondary text-light px-3 py-2">
+                    <i class="bi bi-people me-1"></i> Total: {{ usuarios|length }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Tabla de Usuarios -->
+        <div class="table-responsive">
+            <table id="tablaDeBryan" class="table table-dark table-hover w-100 align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre Completo</th>
+                        <th>Correo Electrónico</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                        <tr>
+                            <!-- Username con Avatar -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="user-avatar">
+                                        {{ u.usuario|first|upper }}
+                                    </div>
+                                    <span class="fw-semibold text-white">{{ u.usuario }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Nombre Completo -->
+                            <td class="text-light">{{ u.nombre }}</td>
+
+                            <!-- Correo -->
+                            <td class="text-secondary">{{ u.email }}</td>
+
+                            <!-- Rol -->
+                            <td>
+                                {% if u.rol == 'admin' or u.rol == 'Administrador' %}
+                                    <span class="badge badge-role-admin text-uppercase px-2 py-1">
+                                        <i class="bi bi-shield-lock me-1"></i> {{ u.rol }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-role-cliente text-uppercase px-2 py-1">
+                                        <i class="bi bi-person me-1"></i> {{ u.rol }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Estado según validación -->
+                            <td>
+                                {% if "[SUSPENDIDO]" in u.nombre %}
+                                    <span class="badge" style="background-color: rgba(220, 53, 69, 0.15); color: #ea868f; border: 1px solid rgba(220, 53, 69, 0.3);">
+                                        ● Suspendido
+                                    </span>
+                                {% else %}
+                                    <span class="badge" style="background-color: rgba(25, 135, 84, 0.15); color: #75b798; border: 1px solid rgba(25, 135, 84, 0.3);">
+                                        ● Activo
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Acciones -->
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    {% if "[SUSPENDIDO]" in u.nombre %}
+                                        <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-outline-success px-3" title="Activar Usuario">
+                                            <i class="bi bi-person-check me-1"></i> Activar
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-outline-danger px-3 btn-suspender" title="Suspender Usuario">
+                                            <i class="bi bi-person-x me-1"></i> Suspender
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No hay usuarios registrados.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
 </div>
 
-<<<<<<< HEAD
-<!-- Scripts de DataTables -->
-=======
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
+<!-- Scripts de DataTables & SweetAlert -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
@@ -305,19 +122,32 @@
         $('#tablaDeBryan').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-<<<<<<< HEAD
             },
             "pageLength": 10,
-            "ordering": true,
-            "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                   '<"row"<"col-sm-12"tr>>' +
-                   '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-            "drawCallback": function() {
-                // Pequeña animación cada vez que se cambia de página o se filtra
-                $('.table-premium tbody tr').css('animation', 'fadeUp 0.3s ease-out');
-=======
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-            }
+            "ordering": true
+        });
+
+        // Confirmación con SweetAlert para suspender/cambiar estado
+        $('#tablaDeBryan').on('click', '.btn-suspender', function(e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: "¿Cambiar estado del usuario?",
+                text: "Esta acción modificaría los accesos del usuario a la plataforma.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#800020",
+                cancelButtonColor: "#333",
+                confirmButtonText: "Sí, cambiar",
+                cancelButtonText: "Cancelar",
+                background: "#1c1c1c",
+                color: "#ffffff"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
         });
     });
 </script>

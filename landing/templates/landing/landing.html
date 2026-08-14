@@ -1,417 +1,197 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}ReserVa - Medellín{% endblock %}
+{% block title %}Inicio - ReserVa{% endblock %}
 
 {% block content %}
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+<!-- landing.css ya se carga globalmente desde base.html, no se vuelve a incluir aquí -->
 
-    /* OCULTAR EL NAVBAR VIEJO DE BASE.HTML */
-    body > nav, body > header, .navbar, .navbar-expand-lg, .fixed-top {
-        display: none !important;
-    }
+<div class="rv-landing">
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <!-- ============================================================
+         HERO INMERSIVO — full screen, se extiende detrás del navbar
+         fijo con blur (navbar-luxury) para lograr el efecto inmersivo
+         ============================================================ -->
+    <section class="rv-hero" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80');">
+    <!-- Sugerencia de producción: reemplaza por {% static 'img/hero-ambiente.jpg' %} -->
+        <div class="rv-hero__scrim"></div>
+        <div class="rv-hero__grain"></div>
 
-    :root {
-        --bg-dark: #050505;
-        --bg-card: #0f0f0f;
-        --color-arena: #D4AF37;
-        --color-vino: #722F37;
-        --color-vino-light: #8a3a44;
-        --text-primary: #ffffff;
-        --text-secondary: #a0a0a0;
-        --font-serif: 'Cormorant Garamond', serif;
-        --font-sans: 'Montserrat', sans-serif;
-    }
+        <div class="rv-hero__center">
+            <span class="rv-eyebrow">Reserva. Disfruta. Vive la experiencia.</span>
+            <h1 class="rv-headline">
+                Tu mesa te espera,<br>
+                nosotros la <em>preparamos</em>
+            </h1>
+            <p class="rv-hero__lede">
+                Experiencias gastronómicas exclusivas en Medellín. Reserva tu mesa
+                ideal en segundos y asegura una noche inolvidable.
+            </p>
 
-    body {
-        background-color: var(--bg-dark);
-        color: var(--text-primary);
-        font-family: var(--font-sans);
-        overflow-x: hidden;
-    }
-
-    /* NAVBAR ELEGANTE */
-    .reserva-navbar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-        background: rgba(5, 5, 5, 0.85);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-        padding: 1.2rem 0;
-    }
-
-    .nav-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .nav-logo {
-        font-family: var(--font-serif);
-        font-size: 2.2rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        text-decoration: none;
-        letter-spacing: 0.05em;
-    }
-
-    .nav-logo span {
-        color: var(--color-arena);
-        font-style: italic;
-    }
-
-    .nav-menu {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-    }
-
-    .nav-link {
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--text-primary);
-        text-decoration: none;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        transition: color 0.3s ease;
-        position: relative;
-    }
-
-    .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 0;
-        height: 1px;
-        background-color: var(--color-arena);
-        transition: width 0.3s ease;
-    }
-
-    .nav-link:hover { color: var(--color-arena); }
-    .nav-link:hover::after { width: 100%; }
-
-    /* Botón Registrarse (Arena) */
-    .btn-nav-register {
-        border: 1px solid var(--color-arena);
-        padding: 0.6rem 1.5rem;
-        border-radius: 4px;
-        color: var(--color-arena) !important;
-    }
-    .btn-nav-register:hover {
-        background-color: var(--color-arena);
-        color: var(--bg-dark) !important;
-    }
-    .btn-nav-register::after { display: none; }
-
-    /* Botón Admin (Vino Tinto) */
-    .btn-nav-admin {
-        background-color: var(--color-vino);
-        border: 1px solid var(--color-vino);
-        padding: 0.6rem 1.5rem;
-        border-radius: 4px;
-        color: var(--text-primary) !important;
-    }
-    .btn-nav-admin:hover {
-        background-color: var(--color-vino-light);
-        border-color: var(--color-vino-light);
-    }
-    .btn-nav-admin::after { display: none; }
-
-    /* HERO SECTION */
-    .hero-section {
-        position: relative;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        padding-top: 100px;
-        background: linear-gradient(135deg, rgba(5,5,5,0.8) 0%, rgba(10,10,10,0.7) 100%),
-                    url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        max-width: 900px;
-        padding: 0 2rem;
-        animation: fadeInScale 1.2s ease-out;
-    }
-
-    @keyframes fadeInScale {
-        from { opacity: 0; transform: scale(0.96); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    .hero-subtitle {
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        font-weight: 500;
-        letter-spacing: 0.4em;
-        text-transform: uppercase;
-        color: var(--color-arena);
-        margin-bottom: 1.5rem;
-        display: block;
-    }
-
-    .hero-title {
-        font-family: var(--font-serif);
-        font-size: clamp(3rem, 8vw, 6rem);
-        font-weight: 400;
-        line-height: 1.1;
-        margin-bottom: 1.5rem;
-        color: var(--text-primary);
-    }
-
-    .hero-title span {
-        font-style: italic;
-        color: var(--color-arena);
-    }
-
-    .hero-description {
-        font-size: 1.1rem;
-        font-weight: 300;
-        line-height: 1.8;
-        color: var(--text-secondary);
-        margin-bottom: 3rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .hero-cta {
-        display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .btn-primary {
-        display: inline-block;
-        padding: 1rem 2.5rem;
-        background: var(--color-arena);
-        color: var(--bg-dark);
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        border: 2px solid var(--color-arena);
-        border-radius: 4px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: transparent;
-        color: var(--color-arena);
-        transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-        display: inline-block;
-        padding: 1rem 2.5rem;
-        background: transparent;
-        color: var(--text-primary);
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 4px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-        border-color: var(--color-arena);
-        color: var(--color-arena);
-        transform: translateY(-2px);
-    }
-
-    /* FEATURES */
-    section { padding: 6rem 2rem; max-width: 1400px; margin: 0 auto; }
-    .features-section { background: var(--bg-card); max-width: 100%; }
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .feature-item {
-        text-align: center;
-        padding: 3rem 2rem;
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        background: var(--bg-dark);
-        border-radius: 8px;
-        transition: all 0.4s ease;
-    }
-    .feature-item:hover {
-        border-color: var(--color-arena);
-        transform: translateY(-8px);
-    }
-    .feature-icon { font-size: 2.5rem; margin-bottom: 1.5rem; display: block; }
-    .feature-title { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary); }
-    .feature-text { font-size: 0.95rem; line-height: 1.7; color: var(--text-secondary); font-weight: 300; }
-
-    /* CTA */
-    .cta-section {
-        background: linear-gradient(135deg, rgba(114, 47, 55, 0.15) 0%, rgba(5,5,5,0.95) 100%);
-        text-align: center;
-        max-width: 100%;
-        border-top: 1px solid rgba(212, 175, 55, 0.2);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    }
-    .section-label { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-arena); margin-bottom: 1rem; display: block; text-align: center; }
-    .cta-content h3 { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; }
-    .cta-content p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8; }
-
-    /* REVIEWS */
-    .reviews-section { max-width: 100%; overflow: hidden; padding: 6rem 0; }
-    .reviews-scroll {
-        display: flex; gap: 2rem; overflow-x: auto; scroll-snap-type: x mandatory;
-        padding: 2rem; scrollbar-width: thin; scrollbar-color: var(--color-arena) var(--bg-card);
-    }
-    .reviews-scroll::-webkit-scrollbar { height: 4px; }
-    .reviews-scroll::-webkit-scrollbar-thumb { background: var(--color-arena); border-radius: 2px; }
-    
-    .review-card {
-        flex: 0 0 400px; max-width: 400px; background: var(--bg-card);
-        border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 8px;
-        padding: 2.5rem; scroll-snap-align: center; transition: all 0.3s ease;
-    }
-    .review-card:hover { border-color: var(--color-arena); transform: translateY(-5px); }
-    .review-stars { color: var(--color-arena); margin-bottom: 1.5rem; letter-spacing: 0.2em; }
-    .review-quote { font-family: var(--font-serif); font-size: 1.2rem; font-style: italic; line-height: 1.7; margin-bottom: 2rem; }
-    .review-author { border-top: 1px solid rgba(212, 175, 55, 0.2); padding-top: 1.5rem; }
-    .review-author-name { font-family: var(--font-serif); font-size: 1.1rem; }
-    .review-author-badge { font-size: 0.7rem; color: var(--color-arena); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; margin-top: 0.3rem; }
-    .reviews-empty { text-align: center; color: var(--text-secondary); font-style: italic; width: 100%; padding: 2rem; }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-        .nav-menu { gap: 1rem; flex-wrap: wrap; justify-content: center; }
-        .nav-logo { font-size: 1.8rem; }
-        .hero-section { padding-top: 140px; }
-        .hero-cta { flex-direction: column; align-items: center; }
-        .btn-primary, .btn-secondary { width: 100%; max-width: 300px; text-align: center; }
-        .review-card { flex: 0 0 85vw; max-width: 85vw; }
-    }
-</style>
-
-<!-- NAVBAR CON URLS CORRECTAS -->
-<nav class="reserva-navbar">
-    <div class="nav-container">
-        <a href="{% url 'inicio' %}" class="nav-logo">Reser<span>Va</span></a>
-        
-        <div class="nav-menu">
-            <a href="{% url 'inicio' %}" class="nav-link">Inicio</a>
-            <a href="{% url 'ver_carta' %}" class="nav-link">Menú</a>
-            
-            {% if request.session.logueado %}
-                {% if request.session.logueado.rol == "admin" %}
-                    <a href="{% url 'mis_reservas' %}" class="nav-link btn-nav-admin">Panel Admin</a>
-                    <a href="{% url 'inicio' %}" class="nav-link">Salir</a>
-                {% else %}
-                    <a href="{% url 'mis_reservas' %}" class="nav-link">Mis Reservas</a>
-                    <a href="{% url 'inicio' %}" class="nav-link">Salir</a>
+            <div class="rv-hero__actions">
+                {% if not request.session.logueado or request.session.logueado.rol == 'cliente' %}
+                    <a href="{% url 'iniciar_sesion' %}" class="btn-gold"><i class="bi bi-calendar-event"></i> Reservar Mesa Ahora</a>
+                    <a href="{% url 'ver_carta' %}" class="btn-dark"><i class="bi bi-journal-richtext"></i> Ver Menú</a>
                 {% endif %}
-            {% else %}
-                <a href="{% url 'crear_usuario' %}" class="nav-link btn-nav-register">Crear Cuenta</a>
-            {% endif %}
-        </div>
-    </div>
-</nav>
 
-<!-- HERO SECTION -->
-<section class="hero-section">
-    <div class="hero-content">
-        <span class="hero-subtitle">Restaurante & Bar</span>
-        <h1 class="hero-title">Experiencias <span>Exclusivas</span></h1>
-        <p class="hero-description">
-            Reserva tu mesa ideal en segundos y asegura una noche inolvidable con la mejor cocina de Medellín.
-        </p>
-        
-        <div class="hero-cta">
-            {% if not request.session.logueado or request.session.logueado.rol == 'cliente' %}
-                <a href="{% url 'crear_reserva' %}" class="btn-primary">Reservar Mesa</a>
-                <a href="{% url 'ver_carta' %}" class="btn-secondary">Ver Menú</a>
-            {% endif %}
-
-            {% if request.session.logueado and request.session.logueado.rol == "admin" %}
-                <a href="{% url 'mis_reservas' %}" class="btn-primary">Panel de Administración</a>
-            {% endif %}
-        </div>
-    </div>
-</section>
-
-<!-- FEATURES SECTION -->
-<section class="features-section">
-    <div class="features-grid">
-        <div class="feature-item">
-            <span class="feature-icon">🍷</span>
-            <h3 class="feature-title">Ambiente Único</h3>
-            <p class="feature-text">Espacios diseñados para ofrecerte comodidad, elegancia y la mejor atmósfera de la ciudad.</p>
-        </div>
-        <div class="feature-item">
-            <span class="feature-icon">🥩</span>
-            <h3 class="feature-title">Carta Premium</h3>
-            <p class="feature-text">Cortes de carne seleccionados, platos de autor y una coctelería diseñada por expertos.</p>
-        </div>
-        <div class="feature-item">
-            <span class="feature-icon">📱</span>
-            <h3 class="feature-title">Reserva Instantánea</h3>
-            <p class="feature-text">Olvídate de las filas. Elige tu mesa interactiva y asegura tu lugar en tiempo real.</p>
-        </div>
-    </div>
-</section>
-
-<!-- CTA SECTION -->
-{% if not request.session.logueado %}
-<section class="cta-section">
-    <div class="cta-content">
-        <span class="section-label">Únete a la experiencia</span>
-        <h3>¿Aún no tienes una cuenta?</h3>
-        <p>Regístrate hoy mismo para gestionar tus reservas, ver tu historial y recibir beneficios exclusivos.</p>
-        <a href="{% url 'crear_usuario' %}" class="btn-primary">Crear Cuenta</a>
-    </div>
-</section>
-{% endif %}
-
-<!-- REVIEWS SECTION -->
-<section class="reviews-section">
-    <span class="section-label">Testimonios</span>
-    <h2 class="section-title" style="text-align: center; margin-bottom: 3rem;">Lo que dicen de <span style="color: var(--color-arena); font-style: italic;">ReserVa</span></h2>
-
-    <div class="reviews-scroll">
-        {% for r in reseñas %}
-        <div class="review-card">
-            <div class="review-stars">★★★★★</div>
-            <p class="review-quote">"{{ r.comentario }}"</p>
-            <div class="review-author">
-                <div class="review-author-name">{{ r.usuario }}</div>
-                <div class="review-author-badge">Cliente Verificado</div>
+                {% if request.session.logueado and request.session.logueado.rol == "admin" %}
+                    <a href="{% url 'mis_reservas' %}" class="btn-gold"><i class="bi bi-shield-lock"></i> Panel de Administración</a>
+                {% endif %}
             </div>
         </div>
-        {% empty %}
-        <div class="reviews-empty">
-            Aún no hay reseñas. Sé el primero en vivir la experiencia ReserVa.
-        </div>
-        {% endfor %}
-    </div>
-</section>
 
+        <div class="rv-hero__scroll">
+            <span></span>
+            <small>Desliza</small>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         BOOKING BAR — franja horizontal integrada en la narrativa
+         ============================================================ -->
+    <section class="rv-bookingbar">
+        <form action="{% url 'crear_reserva' %}" method="POST" class="rv-bookingbar__form">
+            {% csrf_token %}
+
+            <div class="rv-bookingbar__label">
+                <i class="bi bi-calendar2-check"></i>
+                <span>Haz tu reserva</span>
+            </div>
+
+            <div class="rv-bookingbar__field">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha" required>
+            </div>
+
+            <div class="rv-bookingbar__field">
+                <label for="hora">Hora</label>
+                <input type="time" id="hora" name="hora" required>
+            </div>
+
+            <div class="rv-bookingbar__field">
+                <label for="cantidad_personas">Personas</label>
+                <select id="cantidad_personas" name="cantidad_personas" required>
+                    <option value="1">1 Persona</option>
+                    <option value="2" selected>2 Personas</option>
+                    <option value="4">4 Personas</option>
+                    <option value="6">6+ Personas</option>
+                </select>
+            </div>
+
+            <div class="rv-bookingbar__field">
+                <label for="mesa">Área / Mesa</label>
+                <select id="mesa" name="mesa">
+                    <option value="Interior">Interior</option>
+                    <option value="Terraza">Terraza</option>
+                    <option value="VIP">Zona VIP</option>
+                </select>
+            </div>
+
+            <button type="submit" class="rv-bookingbar__submit">Buscar Disponibilidad</button>
+        </form>
+    </section>
+
+    <!-- ============================================================
+         GALERÍA EDITORIAL — composición asimétrica con imágenes
+         ============================================================ -->
+    <section class="rv-gallery">
+        <div class="rv-gallery__intro">
+            <span class="rv-eyebrow">¿Por qué elegirnos?</span>
+            <h2>La experiencia ReserVa</h2>
+        </div>
+
+        <div class="rv-gallery__grid">
+
+            <figure class="rv-gallery__item rv-gallery__item--tall">
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80" alt="Ambiente del restaurante">
+                <!-- {% static 'img/ambiente.jpg' %} -->
+                <figcaption>
+                    <span class="rv-gallery__num">I.</span>
+                    <h4>Ambiente Único</h4>
+                    <p>Espacios diseñados para ofrecerte comodidad, elegancia y la mejor atmósfera de la ciudad.</p>
+                </figcaption>
+            </figure>
+
+            <figure class="rv-gallery__item rv-gallery__item--offset">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80" alt="Carta premium de cortes">
+                <!-- {% static 'img/carta.jpg' %} -->
+                <figcaption>
+                    <span class="rv-gallery__num">II.</span>
+                    <h4>Carta Premium</h4>
+                    <p>Cortes de carne seleccionados, platos de autor y una coctelería diseñada por expertos.</p>
+                </figcaption>
+            </figure>
+
+            <figure class="rv-gallery__item rv-gallery__item--wide">
+                <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1600&q=80" alt="Coctelería de autor">
+                <!-- {% static 'img/coctel.jpg' %} -->
+                <figcaption>
+                    <span class="rv-gallery__num">III.</span>
+                    <h4>Reserva Instantánea</h4>
+                    <p>Olvídate de las filas. Elige tu mesa y asegura tu lugar en tiempo real.</p>
+                </figcaption>
+            </figure>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         CTA REGISTRO
+         ============================================================ -->
+    {% if not request.session.logueado %}
+    <section class="rv-cta">
+        <div class="rv-cta__inner">
+            <span class="rv-eyebrow">Membresía ReserVa</span>
+            <h3>¿Aún no tienes una cuenta?</h3>
+            <p>Regístrate hoy mismo para gestionar tus reservas, ver tu historial y recibir beneficios exclusivos.</p>
+            <a href="{% url 'crear_usuario' %}" class="btn-gold">Crear una Cuenta</a>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ============================================================
+         RESEÑAS — diario de clientes, carrusel horizontal
+         ============================================================ -->
+    <section class="rv-diary">
+        <div class="rv-diary__intro">
+            <span class="rv-eyebrow">Opiniones</span>
+            <h2>Lo que dicen de <em>ReserVa</em></h2>
+        </div>
+
+        <div class="rv-diary__track">
+            {% for r in reseñas %}
+            <article class="rv-diary__entry">
+                <span class="rv-diary__index">{{ forloop.counter|stringformat:"02d" }}</span>
+                <div class="rv-diary__stars">★★★★★</div>
+                <p class="rv-diary__comment">&ldquo;{{ r.comentario }}&rdquo;</p>
+                <div class="rv-diary__footer">
+                    <span class="rv-diary__name">{{ r.usuario }}</span>
+                    <span class="rv-diary__badge">Cliente Verificado</span>
+                </div>
+            </article>
+            {% empty %}
+            <p class="rv-diary__empty">Aún no hay reseñas, ¡sé el primero en opinar!</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ============================================================
+         TICKER DE GARANTÍAS — cinta corrediza continua
+         ============================================================ -->
+    <footer class="rv-ticker">
+        <div class="rv-ticker__track">
+            <div class="rv-ticker__set">
+                <span><i class="bi bi-shield-check"></i> Reserva 100% Segura — Tus datos están protegidos</span>
+                <span><i class="bi bi-lightning-charge"></i> Confirmación Inmediata — Recibe tu reserva al instante</span>
+                <span><i class="bi bi-hand-thumbs-up"></i> Atención Personalizada — Estamos para ayudarte</span>
+            </div>
+            <div class="rv-ticker__set" aria-hidden="true">
+                <span><i class="bi bi-shield-check"></i> Reserva 100% Segura — Tus datos están protegidos</span>
+                <span><i class="bi bi-lightning-charge"></i> Confirmación Inmediata — Recibe tu reserva al instante</span>
+                <span><i class="bi bi-hand-thumbs-up"></i> Atención Personalizada — Estamos para ayudarte</span>
+            </div>
+        </div>
+    </footer>
+
+</div>
 {% endblock %}

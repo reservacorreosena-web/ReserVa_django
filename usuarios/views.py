@@ -5,7 +5,7 @@ from usuarios.models import Usuario
 def inicio_sesion(request):
     if request.method == "POST":
         # Creamos una variable que atrapa lo que viene en el HTML
-        usuario_html = request.POST.get("usuario")
+        usuario_html = request.POST.get("usuario").strip().lower()
         clave_html = request.POST.get("contraseña")
 
         try:
@@ -44,12 +44,15 @@ def logout(request):
 def crear_usuario(request):
     if request.method == "POST":
         # Obtenemos los datos del formulario
-        usuario = request.POST.get("usuario")
-        nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
-        email = request.POST.get("email")
-        contraseña = request.POST.get("contraseña")
+        usuario = request.POST.get("usuario").strip()
+        nombre = request.POST.get("nombre").strip().title()
+        apellido = request.POST.get("apellido").strip().title()
+        email = request.POST.get("email").strip().lower()
+        contraseña = request.POST.get("contraseña").strip()
 
+    
+
+        
         Usuario.objects.create(
             usuario=usuario,
             nombre=nombre,

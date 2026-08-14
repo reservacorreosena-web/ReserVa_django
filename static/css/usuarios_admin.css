@@ -1,0 +1,242 @@
+/* ==========================================
+   ESTILOS BASE DE USUARIOS
+   ========================================== */
+
+/* Avatar con inicial del usuario */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: #262626;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    color: #FFC107;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badging limpio para Roles */
+.badge-role-admin {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #FFC107 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-role-cliente {
+    background-color: rgba(110, 168, 254, 0.15) !important;
+    color: #6EA8FE !important;
+    border: 1px solid rgba(110, 168, 254, 0.3);
+}
+
+/* Reglas de sobreescritura para la tabla de usuarios */
+#tabla_usuarios,
+#tabla_usuarios tbody,
+#tabla_usuarios tbody tr,
+#tabla_usuarios tbody td {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+#tabla_usuarios tbody tr:hover,
+#tabla_usuarios tbody tr:hover > td {
+    background-color: rgba(128, 0, 32, 0.25) !important;
+}
+
+#tabla_usuarios tbody td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ==========================================
+   ESTILOS BASE Y FIX OSCURO PARA DATATABLES
+   ========================================== */
+
+/* Avatar con inicial del usuario */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: #262626;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    color: #FFC107;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badging limpio para Roles */
+.badge-role-admin {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #FFC107 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-role-cliente {
+    background-color: rgba(110, 168, 254, 0.15) !important;
+    color: #6EA8FE !important;
+    border: 1px solid rgba(110, 168, 254, 0.3);
+}
+
+/* FIX DEFINITIVO: Sobreescritura por ID real (#tablaDeBryan) y por Tag generales */
+#tablaDeBryan,
+#tablaDeBryan tbody,
+#tablaDeBryan tr,
+#tablaDeBryan td,
+#tablaDeBryan th {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Destruir cualquier estilo striped/blanco nativo de Bootstrap/DataTables */
+#tablaDeBryan.table > :not(caption) > * > * {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Hover fino vino tinto */
+#tablaDeBryan tbody tr:hover,
+#tablaDeBryan tbody tr:hover > td {
+    background-color: rgba(128, 0, 32, 0.25) !important;
+}
+
+
+/* ==========================================
+   RESET DEFINITIVO DE DATATABLES / BOOTSTRAP 5
+   ========================================== */
+
+/* 1. Anulamos las variables nativas de Bootstrap 5 en la tabla */
+.table,
+#tablaDeBryan,
+#tabla_gastos {
+    --bs-table-bg: #1a1a1a !important;
+    --bs-table-accent-bg: #1a1a1a !important;
+    --bs-table-striped-bg: #1a1a1a !important;
+    --bs-table-hover-bg: rgba(128, 0, 32, 0.25) !important;
+    --bs-table-color: #e0e0e0 !important;
+    background-color: #1a1a1a !important;
+}
+
+/* 2. Sobrescribimos todas las celdas y filas */
+.table > :not(caption) > * > * {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 3. Encabezados oscuros */
+.table thead th {
+    background-color: #121212 !important;
+    color: #888888 !important;
+    border-bottom: 1px solid #2a2a2a !important;
+}
+
+/* 4. Hover vino tinto */
+.table tbody tr:hover > * {
+    background-color: rgba(128, 0, 32, 0.25) !important;
+    color: #ffffff !important;
+}
+
+
+
+/* ==========================================
+   ESTILOS BASE DE USUARIOS Y ROLES
+   ========================================== */
+
+/* Avatar con inicial del usuario */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: #262626;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    color: #FFC107;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badges limpios para Roles */
+.badge-role-admin {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #FFC107 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-role-cliente {
+    background-color: rgba(110, 168, 254, 0.15) !important;
+    color: #6EA8FE !important;
+    border: 1px solid rgba(110, 168, 254, 0.3);
+}
+
+/* ==========================================
+   RESET DEFINITIVO DE DATATABLES / BOOTSTRAP 5
+   ========================================== */
+
+/* 1. Anulamos las variables nativas de Bootstrap 5 en la tabla */
+.table,
+#tablaDeBryan,
+#tabla_gastos,
+#tabla_usuarios {
+    --bs-table-bg: #1a1a1a !important;
+    --bs-table-accent-bg: #1a1a1a !important;
+    --bs-table-striped-bg: #1a1a1a !important;
+    --bs-table-hover-bg: rgba(128, 0, 32, 0.25) !important;
+    --bs-table-color: #e0e0e0 !important;
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+/* 2. Sobrescribimos todas las celdas, encabezados y filas */
+#tablaDeBryan,
+#tablaDeBryan tbody,
+#tablaDeBryan tr,
+#tablaDeBryan td,
+#tablaDeBryan th {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.table > :not(caption) > * > * {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 3. Encabezados oscuros */
+.table thead th,
+#tablaDeBryan thead th {
+    background-color: #121212 !important;
+    color: #a0a0a0 !important;
+    border-bottom: 1px solid #2a2a2a !important;
+}
+
+/* 4. Hover vino tinto */
+.table tbody tr:hover > *,
+#tablaDeBryan tbody tr:hover,
+#tablaDeBryan tbody tr:hover > td {
+    background-color: rgba(128, 0, 32, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* 5. Controles de DataTables (Buscador, Select, Textos de paginación) */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    color: #a0a0a0 !important;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    background-color: #222222 !important;
+    border: 1px solid #333333 !important;
+    color: #ffffff !important;
+    border-radius: 6px;
+    padding: 4px 8px;
+}

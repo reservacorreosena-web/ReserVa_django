@@ -1,146 +1,52 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<<<<<<< HEAD
-{% block title %}Crear Cuenta - ReserVa{% endblock %}
-=======
-{% block title %}Registrarse - ReserVa{% endblock %}
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/formularios.css' %}">
-{% endblock %}
+{% block title %}Registro - ReserVa{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
-<div class="auth-container">
-    
-    <!-- Botón Volver -->
-    <a href="{% url 'inicio' %}" class="back-button">
-        <span class="arrow">←</span> Volver al Inicio
-    </a>
-    
-    <!-- Tarjeta de Registro -->
-    <div class="auth-card">
-        <div class="auth-header">
-            <h2 class="auth-title">Crear una Cuenta</h2>
-            <p class="auth-subtitle">Únete a <span class="gold-text">ReserVa</span> y gestiona tus reservas</p>
-        </div>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px 20px 0;">
+    <a href="{% url 'inicio' %}" class="btn-dark" style="display: inline-block; padding: 8px 16px; text-decoration: none; font-size: 14px;">← Volver al inicio</a>
+</div>
 
-        <form method="POST" class="auth-form">
+<div style="display: flex; justify-content: center; align-items: center; padding: 30px 20px 60px;">
+    <div class="reserva-card" style="width: 100%; max-width: 480px;">
+        <h2 style="text-align: center; color: #fff; margin-bottom: 8px; font-size: 26px;">Crear una Cuenta</h2>
+        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Únete a <span class="gold-text">ReserVa</span> y gestiona tus reservas</p>
+
+        <form action="" method="POST">
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="usuario" class="form-label">Usuario</label>
-                <input 
-                    type="text" 
-                    id="usuario" 
-                    name="usuario" 
-                    class="form-input" 
-                    placeholder="Ej. bryan_dev" 
-                    required
-                />
-            </div>
-
-            <!-- Fila para Nombre y Apellido -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        name="nombre" 
-                        class="form-input" 
-                        placeholder="Tu nombre" 
-                        required
-                    />
-                </div>
-                <div class="form-group">
-                    <label for="apellido" class="form-label">Apellido</label>
-                    <input 
-                        type="text" 
-                        id="apellido" 
-                        name="apellido" 
-                        class="form-input" 
-                        placeholder="Tu apellido" 
-                        required
-                    />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    class="form-input" 
-                    placeholder="correo@ejemplo.com" 
-                    required
-                />
-            </div>
-
-            <div class="form-group">
-                <label for="contraseña" class="form-label">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="contraseña" 
-                    name="contraseña" 
-                    class="form-input" 
-                    placeholder="••••••••" 
-                    required
-                />
-            </div>
-
-            <button type="submit" class="btn-submit">
-                Registrarme
-            </button>
-
-            <div class="auth-footer">
-                <p>¿Ya tienes una cuenta?</p>
-                <a href="{% url 'iniciar_sesion' %}" class="auth-link">Inicia sesión aquí</a>
-=======
-<a href="{% url 'inicio' %}" class="back-button-link">← Volver</a>
-
-<div class="form-container">
-    <div class="mi-formulario">
-        <h2>Registrarse</h2>
-        <p class="form-subtitle">Por favor complete la siguiente información:</p>
-        
-        <form action="{% url 'crear_usuario' %}" method="POST">
-            {% csrf_token %}
-            
-            <p>
                 <label for="usuario">Usuario:</label>
-                <input type="text" placeholder="Ej: bryan123" required name="usuario" id="usuario">
-            </p>
-            
-            <p>
-                <label for="nombre">Nombre:</label>
-                <input type="text" placeholder="Tu nombre" required name="nombre" id="nombre">
-            </p>
-            
-            <p>
-                <label for="apellido">Apellido:</label>
-                <input type="text" placeholder="Tu apellido" required name="apellido" id="apellido">
-            </p>
-            
-            <p>
+                <input type="text" placeholder="Ej. bryan_dev" required name="usuario" id="usuario" minlength="3"/>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" placeholder="Tu nombre" required name="nombre" id="nombre" minlength="3"/>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" placeholder="Tu apellido" required name="apellido" id="apellido"/>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="email">Correo Electrónico:</label>
-                <input type="email" placeholder="ejemplo@correo.com" required name="email" id="email">
-            </p>
-            
-            <p>
+                <input type="email" placeholder="correo@ejemplo.com" required name="email" id="email"/>
+            </div>
+
+            <div class="form-group">
                 <label for="contraseña">Contraseña:</label>
-                <input type="password" placeholder="Crea una contraseña segura" required name="contraseña" id="contraseña">
-            </p>
-            
-            <button type="submit">CREAR MI CUENTA</button>
-            
-            <div class="form-footer-link">
-                <p>¿Ya tienes una cuenta?</p> 
-                <a href="{% url 'iniciar_sesion' %}">Inicia Sesión</a>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
+                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" minlength="6"/>
+            </div>
+
+            <button type="submit" class="btn-gold-block" style="margin-top: 20px; font-size: 16px;">Registrarme</button>
+
+            <div style="text-align: center; margin-top: 25px; border-top: 1px solid #2a2f38; padding-top: 20px;">
+                <p style="color: #a0a5b1; font-size: 14px; margin-bottom: 5px;">¿Ya tienes una cuenta?</p>
+                <a href="{% url 'iniciar_sesion' %}" class="gold-text" style="text-decoration: none; font-weight: bold; font-size: 14px;">Inicia sesión aquí</a>
             </div>
         </form>
     </div>

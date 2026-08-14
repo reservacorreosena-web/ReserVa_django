@@ -3,87 +3,35 @@
 
 {% block title %}Inicia Sesión - ReserVa{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/formularios.css' %}">
-{% endblock %}
-
 {% block content %}
-<<<<<<< HEAD
-<div class="auth-container">
-    
-    <!-- Botón Volver -->
-    <a href="{% url 'inicio' %}" class="back-button">
-        <span class="arrow">←</span> Volver al Inicio
-    </a>
-    
-    <!-- Tarjeta de Login -->
-    <div class="auth-card">
-        <div class="auth-header">
-            <h2 class="auth-title">Bienvenido de nuevo</h2>
-            <p class="auth-subtitle">Inicia sesión para continuar</p>
-        </div>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px 20px 0;">
+    <a href="{% url 'inicio' %}" class="btn-dark" style="display: inline-block; padding: 8px 16px; text-decoration: none; font-size: 14px;">← Volver al inicio</a>
+</div>
 
-        <form method="POST" class="auth-form">
-            {% csrf_token %}
-
-            <div class="form-group">
-                <label for="usuario" class="form-label">Usuario</label>
-                <input 
-                    type="text" 
-                    id="usuario" 
-                    name="usuario" 
-                    class="form-input" 
-                    placeholder="Tu nombre de usuario" 
-                    required
-                />
-            </div>
-
-            <div class="form-group">
-                <label for="contraseña" class="form-label">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="contraseña" 
-                    name="contraseña" 
-                    class="form-input" 
-                    placeholder="••••••••" 
-                    required
-                />
-            </div>
-
-            <button type="submit" class="btn-submit">
-                Iniciar Sesión
-            </button>
-
-            <div class="auth-footer">
-                <p>¿No tienes cuenta?</p>
-                <a href="{% url 'crear_usuario' %}" class="auth-link">Crea una cuenta aquí</a>
-=======
-<a href="{% url 'inicio' %}" class="back-button-link">← Volver</a>
-
-<div class="form-container">
-    <div class="mi-formulario">
-        <h2>Iniciar Sesión</h2>
-        <p class="form-subtitle">Por favor, introduzca su usuario y contraseña:</p>
+<div style="display: flex; justify-content: center; align-items: center; padding: 30px 20px 60px;">
+    <div class="reserva-card" style="width: 100%; max-width: 420px;">
+        <h2 style="text-align: center; color: #fff; margin-bottom: 8px; font-size: 26px;">Bienvenido de nuevo</h2>
+        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Por favor, introduce tu usuario y contraseña:</p>
 
         <form action="" method="POST">
             {% csrf_token %}
 
-            <p>
+            <div class="form-group">
                 <label for="usuario">Usuario:</label>
-                <input type="text" placeholder="Usuario" required="" name="usuario" id="usuario"/>
-            </p>
+                <input type="text" placeholder="Tu nombre de usuario" required name="usuario" id="usuario"/>
+            </div>
 
-            <p>
+            <div class="form-group">
                 <label for="contraseña">Contraseña:</label>
-                <input type="password" placeholder="Contraseña" required="" name="contraseña" id="contraseña"/>
-            </p>
+                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña"/>
+            
+            </div>
 
-            <button type="submit">Iniciar Sesión</button>
+            <button type="submit" class="btn-gold-block" style="margin-top: 20px; font-size: 16px;">Iniciar Sesión</button>
 
-            <div class="form-footer-link">
-                <p>¿No tienes cuenta?</p>
-                <a href="{% url 'crear_usuario' %}">Crea una</a>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
+            <div style="text-align: center; margin-top: 25px; border-top: 1px solid #2a2f38; padding-top: 20px;">
+                <p style="color: #a0a5b1; font-size: 14px; margin-bottom: 5px;">¿No tienes cuenta?</p>
+                <a href="{% url 'crear_usuario' %}" class="gold-text" style="text-decoration: none; font-weight: bold; font-size: 14px;">Crea una cuenta aquí</a>
             </div>
         </form>
     </div>

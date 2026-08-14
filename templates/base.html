@@ -1,100 +1,79 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ReserVa - Medellín{% endblock %}</title>
-    
-    <!-- CSS Global del proyecto -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-<<<<<<< HEAD
-=======
-    
-    <!-- CSS Extra solo para páginas que lo necesiten (como la landing o el menú) -->
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-    {% block extra_css %}{% endblock %}
+    <title>{% block title %}ReservA{% endblock %}</title>
 
-    <!-- SweetAlert2 para mensajes -->
+    <!-- Estilos base e identidad visual -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="[https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css](https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css)">
+
+    {% block extra_css %}
+    {% endblock %}
+
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="dark-theme">
 
-    <header class="navbar">
-        <div class="logo">
-            <a href="{% url 'inicio' %}"><h1>Reser<span>Va</span></h1></a>
-        </div>
+    <header class="navbar-luxury">
+    <div class="nav-container">
+        <!-- LOGO -->
+        <a href="{% url 'inicio' %}" class="logo-link">
+            <h1 class="logo-text">Reser<span class="gold-text">Va</span> <span class="logo-icon">🍽️</span></h1>
+        </a>
 
+        <!-- MENÚ DE NAVEGACIÓN -->
         <nav class="nav-menu">
             <ul class="nav-links">
-<<<<<<< HEAD
-                <li><a href="{% url 'inicio' %}">Inicio</a></li>
-                <li><a href="{% url 'ver_carta' %}">Menú</a></li>
+                <li><a href="{% url 'inicio' %}" class="nav-item">Inicio</a></li>
+                <li><a href="{% url 'ver_carta' %}" class="nav-item">Menú</a></li>
 
+                <!-- MENÚS EXCLUSIVOS PARA EL CLIENTE LOGUEADO -->
                 {% if request.session.logueado and request.session.logueado.rol == "cliente" %}
-                    <li><a href="{% url 'mis_reservas' %}">Mis Reservas</a></li>
-                    <li><a href="{% url 'comentarios:crear_resena' %}">Reseñar</a></li>
-                {% endif %}
-
-                {% if request.session.logueado %}
-                    {% if request.session.logueado.rol != "admin" %}
-                        <li><a href="{% url 'crear_reserva' %}" class="btn-reserva">Reservar</a></li>
-                    {% endif %}
-                {% else %}
-                    <li><a href="{% url 'iniciar_sesion' %}" class="btn-reserva">Reservar</a></li>
-                {% endif %}
-
-                {% if request.session.logueado %}
-                <li class="user-info">
-                    <span>Hola, {{ request.session.logueado.nombre }}</span>
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-registro">Salir</a>
-                </li>
-                {% else %}
-                <li><a href="{% url 'iniciar_sesion' %}">Entrar</a></li>
-                <li><a href="{% url 'crear_usuario' %}" class="btn-registro">Registro</a></li>
-=======
-                <!-- 1. INICIO -->
-                <li><a href="{% url 'inicio' %}">Inicio</a></li>
-                
-                <!-- 2. MENÚ -->
-                <li><a href="{% url 'ver_carta' %}">Menú</a></li>
-
-                <!-- 3. RESERVAR (Dinámico según sesión) -->
-                {% if request.session.logueado and request.session.logueado.rol != "admin" %}
-                    <li><a href="{% url 'crear_reserva' %}" class="btn-reserva">Reservar</a></li>
-                {% elif not request.session.logueado %}
-                    <li><a href="{% url 'iniciar_sesion' %}" class="btn-reserva">Reservar</a></li>
-                {% endif %}
-
-                <!-- 4. ENTRAR / REGISTRO (O panel de usuario si ya está logueado) -->
-                {% if request.session.logueado %}
-                    <!-- Opciones extra solo para clientes -->
-                    {% if request.session.logueado.rol == "cliente" %}
-                        <li><a href="{% url 'mis_reservas' %}">Mis Reservas</a></li>
-                        <li><a href="{% url 'comentarios:crear_resena' %}">Reseñar</a></li>
-                    {% endif %}
-                    
-                    <li class="user-info">
-                        <span>Hola, {{ request.session.logueado.nombre }}</span>
-                        <a href="{% url 'cerrar_sesion' %}" class="btn-registro">Salir</a>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'iniciar_sesion' %}">Entrar</a></li>
-                    <li><a href="{% url 'crear_usuario' %}" class="btn-registro">Registro</a></li>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
+                    <li><a href="{% url 'mis_reservas' %}" class="nav-item">Mis Reservas</a></li>
+                    <li><a href="{% url 'comentarios:crear_resena' %}" class="nav-item">Reseñar</a></li>
                 {% endif %}
             </ul>
         </nav>
-    </header>
 
-    <main class="contenedor">
+        <!-- ACCIONES Y USUARIO -->
+        <div class="nav-actions">
+            <!-- BOTÓN DINÁMICO DE RESERVAR -->
+            {% if request.session.logueado %}
+                {% if request.session.logueado.rol != "admin" %}
+                    <a href="{% url 'crear_reserva' %}" class="btn-reserva-nav">Reservar Mesa</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'iniciar_sesion' %}" class="btn-reserva-nav">Reservar Mesa</a>
+            {% endif %}
+
+            <!-- PANEL DE USUARIO / LOGIN -->
+            {% if request.session.logueado %}
+                <div class="user-badge">
+                    <span class="user-greeting">Hola, <strong>{{ request.session.logueado.nombre }}</strong></span>
+                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Salir</a>
+                </div>
+            {% else %}
+                <a href="{% url 'iniciar_sesion' %}" class="nav-item login-link">Entrar</a>
+                <a href="{% url 'crear_usuario' %}" class="btn-register-nav">Registro</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+    <main class="contenedor" style="padding-top: 90px; min-height: 80vh;">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="pie-pagina">
-        <p>&copy; 2026 ReserVa - Medellín. Todos los derechos reservados.</p>
+    <footer class="pie-pagina" style="text-align: center; padding: 25px; border-top: 1px solid #2a2f38; background: #0b0c0e; color: #a0a5b1; font-size: 14px;">
+        <p>&copy; 2026 ReservA - Medellín | Todos los derechos reservados.</p>
     </footer>
 
     {% if messages %}
@@ -103,13 +82,13 @@
         Swal.fire({
             text: "{{ message }}",
             icon: "{{ message.tags }}",
-            confirmButtonColor: "#D4AF37",
-            background: "#1a1a1a",
-            color: "#ffffff",
-            fontFamily: "'Montserrat', sans-serif"
+            confirmButtonColor: "#d9ac58",
+            background: "#16191e",
+            color: "#ffffff"
         });
         {% endfor %}
     </script>
     {% endif %}
 </body>
+
 </html>

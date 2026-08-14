@@ -1,168 +1,137 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Panel de Control - ReserVa{% endblock %}</title>
+    <title>{% block title %}Panel Control - ReserVa{% endblock %}</title>
 
-<<<<<<< HEAD
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- CSS DEL ADMIN -->
-    <link rel="stylesheet" href="{% static 'css/base_admin.css' %}">
-=======
-    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- CSS Global y Específico del Admin -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base_admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contabilidad.css' %}">
 
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="admin-dark-theme">
+<body class="dark-theme" style="background-color: #131313; overflow-x: hidden;">
 
-    <div class="admin-layout">
-<<<<<<< HEAD
-=======
-        
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-        <!-- ==========================================
-             BARRA LATERAL (SIDEBAR)
-             ========================================== -->
-        <aside class="admin-sidebar">
-            <div class="sidebar-header">
-                <a href="{% url 'inicio' %}" class="sidebar-logo-link">
-                    <h3 class="sidebar-logo">Reser<span>Va</span></h3>
-                </a>
-                <span class="admin-badge">PANEL ADMIN</span>
+    <div class="d-flex" style="min-height: 100vh;">
+
+        <!-- Barra Lateral Izquierda -->
+        <div class="p-3 text-white d-flex flex-column" style="width: 280px; background-color: #131313; border-right: 1px solid rgba(255,255,255,0.1); min-height: 100vh;">
+
+            <!-- Logo del Sistema -->
+            <div class="mb-4 text-center text-md-start ps-2">
+                <h3 class="fs-4 fw-bold m-0 text-white">Reser<span class="text-warning">Va</span> <small class="text-warning" style="font-size: 0.5em;">ADMIN</small></h3>
             </div>
-            
-            <div class="sidebar-divider"></div>
+            <hr style="border-color: rgba(255,255,255,0.15);">
 
-            <nav class="sidebar-nav">
-                <!-- 1. Dashboard -->
-                <a href="{% url 'inicio' %}" class="nav-item active">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>Dashboard</span>
-                </a>
+            <!-- Contenedor del Menú Desplegable -->
+            <div class="accordion accordion-flush" id="menuAdminLateral" style="--bs-accordion-bg: transparent;">
 
-                <!-- 2. Gestión de Mesas -->
-                <div class="nav-group">
-                    <button class="nav-item nav-toggle" data-bs-toggle="collapse" data-bs-target="#dropMesas" aria-expanded="false">
-                        <i class="bi bi-calendar-event"></i>
-                        <span>Gestión de Mesas</span>
-                        <i class="bi bi-chevron-down toggle-icon"></i>
-                    </button>
-                    <div id="dropMesas" class="collapse">
-                        <div class="nav-subitems">
-                            <a href="#" class="nav-subitem"><i class="bi bi-grid-3x3-gap"></i> Mesas & Aforo</a>
-                            <a href="#" class="nav-subitem"><i class="bi bi-sliders"></i> Configurar Zonas</a>
-                            <a href="#" class="nav-subitem"><i class="bi bi-clock-history"></i> Historial Reservas</a>
+                <!-- Opción 1: Dashboard -->
+                <div class="mb-2">
+                    <a href="{% url 'inicio' %}" class="btn text-start w-100 fw-bold d-flex align-items-center gap-2 style-link-admin active-dashboard">
+                        <i class="bi bi-speedometer2 text-warning fs-5"></i> Dashboard
+                    </a>
+                </div>
+
+                <!-- Opción 2: Gestión de Mesas -->
+                <div class="accordion-item mb-2" style="border: none;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropMesas">
+                            <i class="bi bi-calendar-event text-warning fs-5"></i> Gestión de Mesas
+                        </button>
+                    </h2>
+                    <div id="dropMesas" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
+                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
+                            <a href="#" class="sublink-admin"><i class="bi bi-grid-3x3-gap me-2"></i> Mesas & Aforo</a>
+                            <a href="#" class="sublink-admin"><i class="bi bi-sliders me-2"></i> Configurar Zonas</a>
+                            <a href="#" class="sublink-admin"><i class="bi bi-clock-history me-2"></i> Historial Reservas</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. Control de la Carta -->
-                <div class="nav-group">
-                    <button class="nav-item nav-toggle" data-bs-toggle="collapse" data-bs-target="#dropCarta" aria-expanded="false">
-                        <i class="bi bi-egg-fried"></i>
-                        <span>Control de la Carta</span>
-                        <i class="bi bi-chevron-down toggle-icon"></i>
-                    </button>
-                    <div id="dropCarta" class="collapse">
-                        <div class="nav-subitems">
-                            <a href="#" class="nav-subitem"><i class="bi bi-arrow-repeat"></i> Actualizar Stock</a>
-                            <a href="{% url 'crear_plato' %}" class="nav-subitem"><i class="bi bi-plus-circle"></i> Nuevo Plato / Categoría</a>
-                            <a href="#" class="nav-subitem"><i class="bi bi-tags"></i> Precios y Ofertas</a>
+                <!-- Opción 3: Control de la Carta -->
+                <div class="accordion-item mb-2" style="border: none;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropCarta">
+                            <i class="bi bi-egg-fried text-warning fs-5"></i> Control de la Carta
+                        </button>
+                    </h2>
+                    <div id="dropCarta" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
+                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
+                            <a href="#" class="sublink-admin"><i class="bi bi-arrow-repeat me-2"></i> Actualizar Stock</a>
+                            <a href="{% url 'ver_carta_admin' %}" class="sublink-admin"><i class="bi bi-plus-circle me-2"></i> Nuevo Plato / Categoría</a>
+                            <a href="#" class="sublink-admin"><i class="bi bi-tags me-2"></i> Precios y Ofertas</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. Base de Usuarios -->
-                <div class="nav-group">
-                    <button class="nav-item nav-toggle" data-bs-toggle="collapse" data-bs-target="#dropUsuarios" aria-expanded="false">
-                        <i class="bi bi-people"></i>
-                        <span>Base de Usuarios</span>
-                        <i class="bi bi-chevron-down toggle-icon"></i>
-                    </button>
-                    <div id="dropUsuarios" class="collapse">
-                        <div class="nav-subitems">
-                            <a href="{% url 'listado_general' %}" class="nav-subitem"><i class="bi bi-list-ul"></i> Listado General</a>
-                            <a href="#" class="nav-subitem"><i class="bi bi-person-badge"></i> Perfiles de Cliente</a>
+                <!-- Opción 4: Base de Usuarios -->
+                <div class="accordion-item mb-2" style="border: none;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropUsuarios">
+                            <i class="bi bi-people me-2"></i> Base de Usuarios
+                        </button>
+                    </h2>
+                    <div id="dropUsuarios" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
+                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
+                            <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul me-2"></i> Listado General</a>
+                            <a href="#" class="sublink-admin"><i class="bi bi-person-badge me-2"></i> Perfiles de Cliente</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 5. Pequeña Contabilidad -->
-                <div class="nav-group">
-                    <button class="nav-item nav-toggle" data-bs-toggle="collapse" data-bs-target="#dropContabilidad" aria-expanded="false">
-                        <i class="bi bi-cash-coin"></i>
-                        <span>Contabilidad</span>
-                        <i class="bi bi-chevron-down toggle-icon"></i>
-                    </button>
-                    <div id="dropContabilidad" class="collapse">
-                        <div class="nav-subitems">
-                            <a href="{% url 'inicio_contabilidad' %}" class="nav-subitem"><i class="bi bi-graph-up-arrow"></i> Reportes Diarios</a>
-                            <a href="{% url 'control_gastos' %}" class="nav-subitem"><i class="bi bi-wallet2"></i> Control de Gastos</a>
+                <!-- Opción 5: Pequeña Contabilidad -->
+                <div class="accordion-item mb-2" style="border: none;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropContabilidad">
+                            <i class="bi bi-cash-coin text-warning fs-5"></i> Pequeña Contabilidad
+                        </button>
+                    </h2>
+                    <div id="dropContabilidad" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
+                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
+                            <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i class="bi bi-graph-up-arrow me-2"></i> Reportes Diarios</a>
+                            <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2 me-2"></i> Control de Gastos</a>
                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex-grow-1 d-flex flex-column" style="background-color: #50060A;">
+
+            <nav class="navbar navbar-dark bg-dark px-4" style="height: 70px; border-bottom: 2px solid #800020;">
+                <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
+                    <div class="text-white small">
+                        <span class="text-success me-1">●</span> Sistema: <strong>ONLINE</strong>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-warning fw-bold m-0">
+                            🔑 {{ request.session.logueado.nombre }}
+                        </span>
+                        <a href="{% url 'cerrar_sesion' %}" class="btn text-white fw-bold" style="background-color: #800020; border: none;">Cerrar Sesión</a>
                     </div>
                 </div>
             </nav>
-        </aside>
 
-        <!-- ==========================================
-             CONTENIDO PRINCIPAL
-             ========================================== -->
-        <div class="admin-main-content">
-<<<<<<< HEAD
-=======
-            
-            <!-- Top Navbar -->
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-            <header class="admin-topbar">
-                <div class="topbar-status">
-                    <span class="status-dot"></span> 
-                    <span>Sistema Operativo</span>
-                </div>
-                <div class="topbar-user">
-                    <span class="user-name">👤 {{ request.session.logueado.nombre }}</span>
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">
-                        <i class="bi bi-box-arrow-right"></i> Salir
-                    </a>
-                </div>
-            </header>
-
-<<<<<<< HEAD
-            <main class="admin-content-area">
-                <!-- Aquí se inyectará el contenido del dashboard -->
-                {% block content %}{% endblock %}
-            </main>
-=======
-            <!-- Área de Contenido con Scroll -->
-            <main class="admin-content-area">
+            <main class="p-4 flex-grow-1">
                 {% block content %}
                 {% endblock %}
             </main>
 
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<<<<<<< HEAD
-=======
-    <!-- Mensajes SweetAlert -->
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
     {% if messages %}
     <script>
         {% for message in messages %}
@@ -170,13 +139,13 @@
             title: "¡Éxito!",
             text: "{{ message }}",
             icon: "{{ message.tags }}",
-            confirmButtonColor: "#D4AF37",
-            background: "#141414",
-            color: "#ffffff",
-            fontFamily: "'Montserrat', sans-serif"
+            confirmButtonColor: "#8f7325",
+            background: "#1a1a1a",
+            color: "#ffffff"
         });
         {% endfor %}
     </script>
     {% endif %}
 </body>
+
 </html>

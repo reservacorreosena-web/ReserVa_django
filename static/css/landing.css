@@ -1,0 +1,672 @@
+/* =========================================================================
+   ReserVa — Landing editorial radical
+   Dirección: hero inmersivo, narrativa por bloques, sin layout estándar
+   Paleta: espresso #121110, cobre oxidado #c47d4e, crema envejecido #f4eee0
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --rv-bg: #121110;
+    --rv-bg-deep: #0b0a09;
+    --rv-bg-raised: #1a1815;
+
+    --rv-copper: #c47d4e;
+    --rv-copper-light: #e3a877;
+    --rv-copper-dark: #8a5530;
+
+    --rv-cream: #f4eee0;
+    --rv-cream-dim: #cdc3b0;
+    --rv-cream-faint: #948a78;
+
+    --rv-line: rgba(244, 238, 224, 0.16);
+    --rv-line-copper: rgba(196, 125, 78, 0.45);
+
+    --rv-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --rv-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.rv-landing {
+    background: var(--rv-bg);
+    color: var(--rv-cream);
+    font-family: var(--rv-sans);
+}
+
+.rv-landing * {
+    box-sizing: border-box;
+}
+
+.rv-landing a {
+    text-decoration: none;
+}
+
+.rv-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--rv-copper-light);
+    margin-bottom: 1.2rem;
+}
+
+/* -------------------------------------------------------------------------
+   BOTONES — sutiles, integrados, sin bloques pesados
+   ------------------------------------------------------------------------- */
+
+.btn-gold,
+.btn-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.1rem;
+    font-family: var(--rv-sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease, gap 0.25s ease;
+}
+
+.btn-gold {
+    color: var(--rv-copper-light);
+    border-bottom-color: var(--rv-copper-light);
+}
+
+.btn-gold:hover {
+    color: var(--rv-cream);
+    gap: 0.9rem;
+}
+
+.btn-dark {
+    color: var(--rv-cream-dim);
+    border-bottom-color: var(--rv-line);
+}
+
+.btn-dark:hover {
+    color: var(--rv-cream);
+    border-bottom-color: var(--rv-cream);
+    gap: 0.9rem;
+}
+
+/* =========================================================================
+   HERO — full screen inmersivo con imagen de fondo
+   ========================================================================= */
+
+.rv-hero {
+    position: relative;
+    /* Rompe el max-width/padding de .contenedor para ir de borde a borde */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    /* .contenedor lleva padding-top:90px por el navbar-luxury fijo;
+       lo compensamos para que el hero llegue hasta el borde superior
+       real de la ventana y el navbar (translúcido, con blur) flote encima */
+    margin-top: -90px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: calc(90px + 3rem) 6vw 5rem;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    isolation: isolate;
+}
+
+.rv-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(180deg, rgba(11, 10, 9, 0.55) 0%, rgba(11, 10, 9, 0.72) 55%, rgba(11, 10, 9, 0.94) 100%),
+        radial-gradient(ellipse 70% 55% at 50% 40%, rgba(18, 17, 16, 0.15), rgba(11, 10, 9, 0.75));
+}
+
+.rv-hero__grain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.4;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/></svg>");
+}
+
+.rv-hero__center {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.rv-headline {
+    font-family: var(--rv-serif);
+    font-weight: 400;
+    font-size: clamp(2.8rem, 7vw, 5.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    color: var(--rv-cream);
+    margin: 0 0 1.6rem;
+}
+
+.rv-headline em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--rv-copper-light);
+}
+
+.rv-hero__lede {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--rv-cream-dim);
+    max-width: 480px;
+    margin: 0 auto 2.4rem;
+}
+
+.rv-hero__actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2.4rem;
+}
+
+.rv-hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 2.2rem;
+    z-index: 1;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.rv-hero__scroll span {
+    width: 1px;
+    height: 42px;
+    background: linear-gradient(180deg, var(--rv-copper-light), transparent);
+    animation: rv-scroll-pulse 2.2s ease-in-out infinite;
+}
+
+.rv-hero__scroll small {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rv-cream-faint);
+}
+
+@keyframes rv-scroll-pulse {
+    0%, 100% { opacity: 0.25; transform: scaleY(0.7); transform-origin: top; }
+    50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+}
+
+/* =========================================================================
+   BOOKING BAR — franja horizontal, se monta sobre el hero
+   ========================================================================= */
+
+.rv-bookingbar {
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: var(--rv-bg-raised);
+    border-top: 1px solid var(--rv-line-copper);
+    border-bottom: 1px solid var(--rv-line);
+    margin-top: -4.5rem;
+}
+
+.rv-bookingbar__form {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.rv-bookingbar__label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.4rem 2rem;
+    font-family: var(--rv-serif);
+    font-size: 1.05rem;
+    color: var(--rv-cream);
+    border-right: 1px dashed var(--rv-line);
+    white-space: nowrap;
+}
+
+.rv-bookingbar__label i {
+    color: var(--rv-copper-light);
+    font-size: 0.95rem;
+}
+
+.rv-bookingbar__field {
+    flex: 1 1 150px;
+    padding: 1.1rem 1.6rem;
+    border-right: 1px dashed var(--rv-line);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.rv-bookingbar__field label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rv-cream-faint);
+}
+
+.rv-bookingbar__field input,
+.rv-bookingbar__field select {
+    background: transparent;
+    border: none;
+    color: var(--rv-cream);
+    font-family: var(--rv-sans);
+    font-size: 0.92rem;
+    padding: 0.1rem 0;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.rv-bookingbar__field select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%23c47d4e'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+    padding-right: 1rem;
+}
+
+.rv-bookingbar__field option {
+    background: var(--rv-bg-raised);
+    color: var(--rv-cream);
+}
+
+.rv-bookingbar__field input::-webkit-calendar-picker-indicator {
+    filter: invert(0.7) sepia(1) saturate(2) hue-rotate(340deg);
+    cursor: pointer;
+}
+
+.rv-bookingbar__submit {
+    flex: 0 0 auto;
+    background: var(--rv-copper);
+    color: var(--rv-bg-deep);
+    border: none;
+    padding: 1.1rem 2.2rem;
+    font-family: var(--rv-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.rv-bookingbar__submit:hover {
+    background: var(--rv-copper-light);
+}
+
+/* =========================================================================
+   GALERÍA EDITORIAL — composición asimétrica de imágenes
+   ========================================================================= */
+
+.rv-gallery {
+    padding: 7rem 6vw 5rem;
+    background: var(--rv-bg);
+}
+
+.rv-gallery__intro {
+    text-align: center;
+    max-width: 560px;
+    margin: 0 auto 4rem;
+}
+
+.rv-gallery__intro h2 {
+    font-family: var(--rv-serif);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
+    color: var(--rv-cream);
+    margin: 0;
+}
+
+.rv-gallery__grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+}
+
+.rv-gallery__item {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--rv-line-copper);
+    padding: 6px;
+    background: var(--rv-bg-deep);
+}
+
+.rv-gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.92) contrast(1.05);
+}
+
+.rv-gallery__item--tall {
+    grid-row: 1 / 3;
+}
+
+.rv-gallery__item--tall img {
+    aspect-ratio: 3 / 4.4;
+}
+
+.rv-gallery__item--offset {
+    margin-top: 3rem;
+}
+
+.rv-gallery__item--offset img,
+.rv-gallery__item--wide img {
+    aspect-ratio: 16 / 10;
+}
+
+.rv-gallery__item--wide {
+    grid-column: 2 / 3;
+}
+
+.rv-gallery__item figcaption {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    padding: 1.4rem 1.5rem 1.2rem;
+    background: linear-gradient(180deg, transparent, rgba(11, 10, 9, 0.92) 60%);
+}
+
+.rv-gallery__num {
+    display: block;
+    font-family: var(--rv-serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--rv-copper-light);
+    margin-bottom: 0.3rem;
+}
+
+.rv-gallery__item figcaption h4 {
+    font-family: var(--rv-serif);
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: var(--rv-cream);
+    margin: 0 0 0.4rem;
+}
+
+.rv-gallery__item figcaption p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--rv-cream-dim);
+    margin: 0;
+    max-width: 320px;
+}
+
+/* =========================================================================
+   CTA — invitación de membresía
+   ========================================================================= */
+
+.rv-cta {
+    padding: 6rem 6vw;
+    display: flex;
+    justify-content: center;
+    background: var(--rv-bg-deep);
+    border-top: 1px solid var(--rv-line);
+    border-bottom: 1px solid var(--rv-line);
+}
+
+.rv-cta__inner {
+    max-width: 620px;
+    text-align: center;
+}
+
+.rv-cta__inner h3 {
+    font-family: var(--rv-serif);
+    font-weight: 400;
+    font-size: 1.9rem;
+    color: var(--rv-cream);
+    margin: 0 0 0.9rem;
+}
+
+.rv-cta__inner p {
+    color: var(--rv-cream-dim);
+    font-size: 0.96rem;
+    line-height: 1.65;
+    margin: 0 auto 1.6rem;
+    max-width: 440px;
+}
+
+/* =========================================================================
+   DIARIO DE RESEÑAS — carrusel horizontal, no grid de tarjetas
+   ========================================================================= */
+
+.rv-diary {
+    padding: 6rem 0 7rem;
+    background: var(--rv-bg);
+}
+
+.rv-diary__intro {
+    text-align: center;
+    padding: 0 6vw;
+    margin-bottom: 3rem;
+}
+
+.rv-diary__intro h2 {
+    font-family: var(--rv-serif);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 3vw, 2.6rem);
+    color: var(--rv-cream);
+    margin: 0;
+}
+
+.rv-diary__intro h2 em {
+    font-style: italic;
+    color: var(--rv-copper-light);
+}
+
+.rv-diary__track {
+    display: flex;
+    gap: 1.6rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 0.5rem 6vw 1.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rv-copper-dark) transparent;
+}
+
+.rv-diary__track::-webkit-scrollbar {
+    height: 6px;
+}
+
+.rv-diary__track::-webkit-scrollbar-thumb {
+    background: var(--rv-copper-dark);
+}
+
+.rv-diary__entry {
+    flex: 0 0 min(340px, 82vw);
+    scroll-snap-align: start;
+    background: var(--rv-bg-raised);
+    border: 1px solid var(--rv-line);
+    border-top: 2px solid var(--rv-copper);
+    padding: 2rem 1.8rem;
+    position: relative;
+}
+
+.rv-diary__index {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.4rem;
+    font-family: var(--rv-serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--rv-copper-light);
+    opacity: 0.7;
+}
+
+.rv-diary__stars {
+    color: var(--rv-copper-light);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+}
+
+.rv-diary__comment {
+    font-family: var(--rv-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--rv-cream);
+    margin: 0 0 1.6rem;
+    min-height: 3.2em;
+}
+
+.rv-diary__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rv-line);
+}
+
+.rv-diary__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--rv-cream);
+}
+
+.rv-diary__badge {
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--rv-copper-light);
+}
+
+.rv-diary__empty {
+    color: var(--rv-cream-faint);
+    padding: 2rem 6vw;
+}
+
+/* =========================================================================
+   TICKER DE GARANTÍAS — cinta corrediza continua
+   ========================================================================= */
+
+.rv-ticker {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: var(--rv-copper);
+    overflow: hidden;
+    border-top: 1px solid var(--rv-copper-dark);
+}
+
+.rv-ticker__track {
+    display: flex;
+    width: max-content;
+    animation: rv-marquee 26s linear infinite;
+}
+
+.rv-ticker__set {
+    display: flex;
+    align-items: center;
+}
+
+.rv-ticker__set span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 1rem 3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--rv-bg-deep);
+    white-space: nowrap;
+    border-right: 1px solid rgba(11, 10, 9, 0.25);
+}
+
+@keyframes rv-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.rv-ticker:hover .rv-ticker__track {
+    animation-play-state: paused;
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 980px) {
+    .rv-gallery__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rv-gallery__item--tall {
+        grid-row: auto;
+    }
+
+    .rv-gallery__item--tall img {
+        aspect-ratio: 16 / 10;
+    }
+
+    .rv-gallery__item--offset {
+        margin-top: 0;
+    }
+
+    .rv-gallery__item--wide {
+        grid-column: 1;
+    }
+
+    .rv-bookingbar__label {
+        flex: 1 1 100%;
+        border-right: none;
+        border-bottom: 1px dashed var(--rv-line);
+    }
+}
+
+@media (max-width: 560px) {
+    .rv-hero {
+        padding: calc(90px + 2rem) 6vw 3.5rem;
+    }
+
+    .rv-hero__actions {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .rv-bookingbar {
+        margin-top: -2.5rem;
+    }
+
+    .rv-bookingbar__field {
+        flex: 1 1 100%;
+        border-right: none;
+        border-bottom: 1px dashed var(--rv-line);
+    }
+}
+
+/* Movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+    .rv-hero__scroll span,
+    .rv-ticker__track {
+        animation: none;
+    }
+}

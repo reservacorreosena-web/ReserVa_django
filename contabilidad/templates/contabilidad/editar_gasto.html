@@ -1,315 +1,79 @@
 {% extends 'base_admin.html' %}
 {% load static %}
 
-<<<<<<< HEAD
-{% block title %}Editar Gasto #{{ gasto.id }} - ReserVa{% endblock %}
-
-{% block content %}
-
-<!-- ESTILOS ESPECÍFICOS (Idénticos al formulario de crear, para consistencia total) -->
-<style>
-    .admin-form-container {
-        max-width: 650px;
-        margin: 0 auto;
-        background: rgba(20, 20, 20, 0.6);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        border-radius: 16px;
-        padding: 3rem;
-        animation: fadeUp 0.6s ease-out;
-    }
-
-    .admin-form-header {
-        text-align: center;
-        margin-bottom: 2.5rem;
-    }
-
-    .admin-form-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2.2rem;
-        color: #ffffff;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-    }
-
-    .expense-id-badge {
-        display: inline-block;
-        background: rgba(212, 175, 55, 0.1);
-        color: #D4AF37;
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        font-family: 'Montserrat', sans-serif;
-        letter-spacing: 0.05em;
-    }
-
-    .admin-form-subtitle {
-        color: #9ca3af;
-        font-size: 0.95rem;
-        margin-top: 0.5rem;
-    }
-
-    .admin-form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .admin-form-label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #9ca3af;
-        margin-bottom: 0.6rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-
-    .admin-form-input, 
-    .admin-form-select {
-        width: 100%;
-        padding: 0.9rem 1rem;
-        background: rgba(10, 10, 10, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        color: #ffffff;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-
-    .admin-form-input:focus, 
-    .admin-form-select:focus {
-        outline: none;
-        border-color: #D4AF37;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-        background: rgba(10, 10, 10, 1);
-    }
-
-    /* Fix para el icono del calendario en inputs de fecha (modo oscuro) */
-    .admin-form-input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(0.8) sepia(1) saturate(5) hue-rotate(5deg);
-        cursor: pointer;
-    }
-
-    .admin-form-select {
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23D4AF37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        padding-right: 2.5rem;
-    }
-
-    .admin-form-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2.5rem;
-    }
-
-    .admin-btn-submit {
-        flex: 2;
-        padding: 1rem;
-        background: linear-gradient(135deg, #D4AF37, #E6C27A);
-        color: #050505;
-        border: none;
-        border-radius: 8px;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .admin-btn-submit:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-    }
-
-    .admin-btn-cancel {
-        flex: 1;
-        padding: 1rem;
-        background: transparent;
-        color: #9ca3af;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1rem;
-        font-weight: 600;
-        text-decoration: none;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .admin-btn-cancel:hover {
-        background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: #ef4444;
-    }
-
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 600px) {
-        .admin-form-actions { flex-direction: column-reverse; }
-        .admin-form-container { padding: 2rem 1.5rem; }
-    }
-</style>
-
-<div class="admin-form-container">
-    <div class="admin-form-header">
-        <h2 class="admin-form-title">
-            <i class="bi bi-pencil-square" style="color: #D4AF37;"></i>
-            Editar Gasto
-        </h2>
-        <span class="expense-id-badge">ID: #{{ gasto.id }}</span>
-        <p class="admin-form-subtitle">Modifica los detalles del egreso y guarda los cambios</p>
-    </div>
-
-    <!-- Formulario con funcionalidad 100% intacta -->
-    <form action="{% url 'editar_gasto' gasto.id %}" method="POST">
-        {% csrf_token %}
-
-        <div class="admin-form-group">
-            <label for="concepto" class="admin-form-label">Concepto</label>
-            <input 
-                type="text" 
-                id="concepto" 
-                name="concepto" 
-                class="admin-form-input" 
-                value="{{ gasto.concepto }}" 
-                required
-            >
-        </div>
-
-        <div class="admin-form-group">
-            <label for="categoria" class="admin-form-label">Categoría</label>
-            <input 
-                type="text" 
-                id="categoria" 
-                name="categoria" 
-                class="admin-form-input" 
-                value="{{ gasto.categoria }}" 
-                required
-            >
-        </div>
-
-        <div class="admin-form-group">
-            <label for="valor" class="admin-form-label">Valor ($)</label>
-            <input 
-                type="number" 
-                step="0.01" 
-                id="valor" 
-                name="valor" 
-                class="admin-form-input" 
-                value="{{ gasto.valor }}" 
-                required
-            >
-        </div>
-
-        <div class="admin-form-group">
-            <label for="fecha" class="admin-form-label">Fecha</label>
-            <input 
-                type="date" 
-                id="fecha" 
-                name="fecha" 
-                class="admin-form-input" 
-                value="{{ gasto.fecha|date:'Y-m-d' }}" 
-                required
-            >
-        </div>
-
-        <div class="admin-form-group">
-            <label for="metodo_pago" class="admin-form-label">Método de Pago</label>
-            <select id="metodo_pago" name="metodo_pago" class="admin-form-select" required>
-                <option value="Efectivo" {% if gasto.metodo_pago == "Efectivo" %}selected{% endif %}>Efectivo</option>
-                <option value="Transferencia" {% if gasto.metodo_pago == "Transferencia" %}selected{% endif %}>Transferencia</option>
-                <option value="Tarjeta" {% if gasto.metodo_pago == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
-            </select>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div class="admin-form-actions">
-            <a href="{% url 'inicio_contabilidad' %}" class="admin-btn-cancel">
-                <i class="bi bi-x-circle"></i> Cancelar
-            </a>
-            <button type="submit" class="admin-btn-submit">
-                <i class="bi bi-check-circle"></i> Guardar Cambios
-            </button>
-        </div>
-    </form>
-</div>
-=======
 {% block title %}Editar Gasto - ReserVa{% endblock %}
 
 {% block content %}
+<div class="container-fluid py-4">
 
-<h1>Editar Gasto</h1>
-<p>ID: #{{ gasto.id }}</p>
-
-<!-- Formulario limpio que apunta a la vista con el ID del gasto -->
-<form action="{% url 'editar_gasto' gasto.id %}" method="POST">
-    {% csrf_token %}
-
-    <!-- Concepto -->
-    <div>
-        <label for="concepto">Concepto:</label>
-        <input type="text" id="concepto" name="concepto" value="{{ gasto.concepto }}" required>
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="text-white fw-bold mb-0">Editar Gasto</h2>
+            <span class="text-secondary small">ID del Registro: #{{ gasto.id }}</span>
+        </div>
+        <a href="{% url 'inicio_contabilidad' %}" class="btn btn-outline-secondary btn-sm text-light">
+            <i class="bi bi-arrow-left me-1"></i> Volver a Contabilidad
+        </a>
     </div>
 
-    <!-- Categoría -->
-    <div>
-        <label for="categoria">Categoría:</label>
-        <input type="text" id="categoria" name="categoria" value="{{ gasto.categoria }}" required>
+    <!-- Formulario dentro de Tarjeta Oscura -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card card-reserva p-4">
+
+                <form action="{% url 'editar_gasto' gasto.id %}" method="POST">
+                    {% csrf_token %}
+
+                    <!-- Concepto -->
+                    <div class="mb-3">
+                        <label for="concepto" class="form-label text-light fw-semibold">Concepto</label>
+                        <input type="text" id="concepto" name="concepto" class="form-control form-control-dark" value="{{ gasto.concepto }}" required>
+                    </div>
+
+                    <div class="row">
+                        <!-- Categoría -->
+                        <div class="col-md-6 mb-3">
+                            <label for="categoria" class="form-label text-light fw-semibold">Categoría</label>
+                            <input type="text" id="categoria" name="categoria" class="form-control form-control-dark" value="{{ gasto.categoria }}" required>
+                        </div>
+
+                        <!-- Valor -->
+                        <div class="col-md-6 mb-3">
+                            <label for="valor" class="form-label text-light fw-semibold">Valor ($)</label>
+                            <input type="number" step="0.01" id="valor" name="valor" class="form-control form-control-dark" value="{{ gasto.valor }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Fecha -->
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha" class="form-label text-light fw-semibold">Fecha</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control form-control-dark" value="{{ gasto.fecha|date:'Y-m-d' }}" required>
+                        </div>
+
+                        <!-- Método de Pago -->
+                        <div class="col-md-6 mb-3">
+                            <label for="metodo_pago" class="form-label text-light fw-semibold">Método de Pago</label>
+                            <select id="metodo_pago" name="metodo_pago" class="form-select form-control-dark" required>
+                                <option value="Efectivo" {% if gasto.metodo_pago == "Efectivo" %}selected{% endif %}>Efectivo</option>
+                                <option value="Transferencia" {% if gasto.metodo_pago == "Transferencia" %}selected{% endif %}>Transferencia</option>
+                                <option value="Tarjeta" {% if gasto.metodo_pago == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top border-secondary border-opacity-25">
+                        <a href="{% url 'inicio_contabilidad' %}" class="btn btn-wine px-4">Cancelar</a>
+                        <button type="submit" class="btn btn-gold px-4">Guardar Cambios</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
     </div>
 
-    <!-- Valor -->
-    <div>
-        <label for="valor">Valor ($):</label>
-        <input type="number" step="0.01" id="valor" name="valor" value="{{ gasto.valor }}" required>
-    </div>
-
-    <!-- Fecha -->
-    <div>
-        <label for="fecha">Fecha:</label>
-        <input type="date" id="fecha" name="fecha" value="{{ gasto.fecha|date:'Y-m-d' }}" required>
-    </div>
-
-    <!-- Método de Pago -->
-    <div>
-        <label for="metodo_pago">Método de Pago:</label>
-        <select id="metodo_pago" name="metodo_pago" required>
-            <option value="Efectivo" {% if gasto.metodo_pago == "Efectivo" %}selected{% endif %}>Efectivo</option>
-            <option value="Transferencia" {% if gasto.metodo_pago == "Transferencia" %}selected{% endif %}>Transferencia</option>
-            <option value="Tarjeta" {% if gasto.metodo_pago == "Tarjeta" %}selected{% endif %}>Tarjeta</option>
-        </select>
-    </div>
-
-    <br>
-
-    <!-- Botones de Acción -->
-    <div>
-        <!-- Cambié el enlace de cancelar a 'inicio_contabilidad' como lo tenías en tu código original -->
-        <a href="{% url 'inicio_contabilidad' %}">Cancelar</a>
-        <button type="submit">Guardar Cambios</button>
-    </div>
-</form>
->>>>>>> 2ad86eca5a351f6ef790524eeba42b88b58ca80e
-
+</div>
 {% endblock %}
