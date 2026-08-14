@@ -110,3 +110,4 @@ def cambiar_estado_usuario(request, usuario_id):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+
