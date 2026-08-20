@@ -136,7 +136,6 @@
     <script>
         {% for message in messages %}
         Swal.fire({
-            title: "¡Éxito!",
             text: "{{ message }}",
             icon: "{{ message.tags }}",
             confirmButtonColor: "#8f7325",
@@ -145,6 +144,7 @@
         });
         {% endfor %}
     </script>
+    
     {% endif %}
 </body>
 

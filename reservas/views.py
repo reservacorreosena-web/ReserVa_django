@@ -7,8 +7,8 @@ from django.contrib import messages
 def crear_reserva(request):
     if request.method == "POST":
         # Obtenemos los datos del formulario usando los 'name' de los inputs
-        nombre = request.POST.get("nombre")
-        telefono = request.POST.get("telefono")
+        nombre = request.POST.get("nombre").strip().title()
+        telefono = request.POST.get("telefono").strip()
         cantidad_personas = request.POST.get("cantidad_personas")
         mesa = request.POST.get("mesa")
         fecha = request.POST.get("fecha")
@@ -16,6 +16,28 @@ def crear_reserva(request):
         notas = request.POST.get("notas")
         preordenar = request.POST.get("preordenar")
 
+        if not nombre or not telefono or not cantidad_personas or not mesa or not fecha or not hora:
+            messages.error(request, "Por favor llene todos los campos")
+            return redirect('crear_reserva')
+
+        if not telefono.isdigit() or len(telefono)<9:
+            messages.error(request,"El telefono debe ser un numero valido.")
+            return redirect('crear_reserva')
+        if len(nombre)<3 or not nombre.replace(" ","").isalpha():  
+            messages.error(request,"El nombre debe tener al menos 3 caracteres y no puede tener numeros")
+            return redirect('crear_reserva')
+        if len(cantidad_personas)>20:
+            messages.warning(request,"Las reservas no pueden superar las 20 personas")
+            return redirect('crear_reserva')
+        try:
+            personas = int(cantidad_personas)
+            if personas <= 0:
+                messages.error(request,"La cantidad de personas debe ser mayor a 0.")
+        except ValueError:
+            messages.error(request, "Ingrese un caracter valido.")
+
+        
+            pass
         if preordenar == 'SI':
             request.session['datos_reserva_temporal'] = {
                 'nombre': nombre,
@@ -67,11 +89,11 @@ def cancelar_reserva(request, id):
 def actualizar_reserva(request, id):
     r = Reserva.objects.get(id=id)
     if request.method =="POST":
-        r.nombre = request.POST.get('nombre')
+        r.nombre = request.POST.get('nombre').strip()
         r.fecha = request.POST.get('fecha')
         r.hora = request.POST.get('hora')
         r.cantidad_personas = request.POST.get('cantidad_personas')
-        r.telefono = request.POST.get('telefono')
+        r.telefono = request.POST.get('telefono').strip()
         r.mesa = request.POST.get('mesa')
         r.notas = request.POST.get('notas')
         r.save()
