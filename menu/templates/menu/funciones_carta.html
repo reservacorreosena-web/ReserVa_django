@@ -7,7 +7,7 @@
 <div class="container my-4">
   <h2>Gestión de Menú y Stock</h2>
 
-<p>Total {{ plato|length }}</p>
+  <p>Total {{ plato|length }}</p>
 
   <a href="{% url 'crear_plato' %}" class="btn btn-warning mb-3">➕ Crear Plato</a>
 
@@ -40,12 +40,9 @@
              <a href="{% url 'editar_plato' p.id %}" class="btn btn-warning btn-sm">
                Editar
             </a>
-            <!-- 👈 1. Clase 'btn-eliminar' agregada al enlace -->
             <a href="{% url 'eliminar_plato' p.id %}" class="btn btn-danger btn-sm btn-eliminar">
                Eliminar
             </a>
-
-
           </div>
         </td>
       </tr>
@@ -58,6 +55,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<!-- 👈 AÑADIDO: CDN de SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- INICIALIZACIÓN Y DELEGACIÓN DE EVENTOS -->
 <script>
@@ -76,40 +75,44 @@
       // 2. Delegación de eventos con jQuery para capturar la clase .btn-eliminar
       $('#listado_platos').on('click', '.btn-eliminar', function(e) {
 
-            // 🛑 FRENO DE MANO: Le decimos al navegador "¡Alto ahí! No te vayas a Django todavía".
             e.preventDefault();
-
-            // 📄 EL PAPELITO: Le quitamos el enlace 'href' al botón que tocaron y lo guardamos en la variable 'url'.
-            // Ejemplo: url = "/menu/eliminar_plato/5/"
             let url = $(this).attr('href');
 
-            //esto FUNCIONA ESCUCHANDO LAS CLASES DE LOS BOTONES
-
-            // 🎭 LA VENTANA EMERGENTE: Mostramos el aviso en pantalla.
             Swal.fire({
                 title: "¿Estás seguro?",
                 text: "¡No podrás revertir este plato eliminado!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#FFC107", // Amarillo corporativo
-                cancelButtonColor: "#d33",     // Rojo de cancelar
+                confirmButtonColor: "#FFC107", 
+                cancelButtonColor: "#d33",     
                 confirmButtonText: "Sí, ¡bórralo!",
                 cancelButtonText: "Cancelar",
-                background: "#1e1e1e",         // Modo oscuro
+                background: "#1e1e1e",         
                 color: "#ffffff"
-            })
-            // ⌛ Y LUEGO... (Esperamos a que el usuario presione un botón de la ventana)
-            .then((result) => {
-
-                // ❓ PREGUNTA: ¿El usuario le dio clic al botón de "Sí, ¡bórralo!"?
+            }).then((result) => {
                 if (result.isConfirmed) {
-
-                    // 🚀 LUZ VERDE: Tomamos el papelito ('url') que guardamos arriba y obligamos
-                    // al navegador a viajar a la ruta de Django para que borre el plato.
-                    window.location.href = url;// Si confirma, viaja a eliminar
-              }
-          });
+                    window.location.href = url;
+                }
+            });
       });
   });
 </script>
+
+<!-- 👈 AÑADIDto/error provenientes de Django -->
+{% if messages %}O: Muestra las alertas de éxi
+  {% for message in messages %}
+    <script>
+      Swal.fire({
+        title: "{% if message.tags == 'error' %}¡Error!{% else %}¡Logrado!{% endif %}",
+        text: "{{ message }}",
+        icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
+        background: "#1e1e1e",
+        color: "#ffffff",
+        timer: 2500,
+        showConfirmButton: false
+      });
+    </script>
+  {% endfor %}
+{% endif %}
+
 {% endblock %}

@@ -43,18 +43,25 @@ def guardar_gasto(request):
     if request.method == "POST":
         concepto = request.POST.get("concepto", "").strip().title()
         categoria = request.POST.get("categoria", "").strip().title()
-        valor_raw = request.POST.get("valor", 0)
+        valor = request.POST.get("valor", 0)
         metodo_pago = request.POST.get("metodo_pago", "").strip()
 
-        if not concepto or not valor_raw:
+        if not concepto or not valor or not categoria or not metodo_pago:
             messages.error(request, "Por favor llena los campos obligatorios.")
-            return redirect('control_gastos')
+            return redirect('inicio_contabilidad')
+
+        if len(concepto)<5:
+            messages.warning(request,"El concepto debe tener al menos 5 caracteres")
+            return redirect('inicio_contabilidad')
 
         try:
-            valor = float(valor_raw)
+            valor = float(valor)
+            if valor <=0:
+                messages.error(request,"Ingrese un valor valido")
+                return redirect('inicio_contabilidad')
         except ValueError:
             messages.error(request, "El valor ingresado debe ser un número válido.")
-            return redirect('control_gastos')
+            return redirect('inicio_contabilidad')
 
         Movimiento.objects.create(
             concepto=concepto,
@@ -70,7 +77,7 @@ def guardar_gasto(request):
 
 @verificar
 def eliminar_gasto(request, id):
-    g = get_object_or_404(Movimiento, pk=id)
+    g = get_object_or_404(Movimiento, id=id)
     g.delete()
     messages.success(request, "Gasto eliminado correctamente.")
     return redirect('inicio_contabilidad')
@@ -78,18 +85,42 @@ def eliminar_gasto(request, id):
 
 @verificar
 def editar_gasto(request, id):
-    g = get_object_or_404(Movimiento, pk=id)
+    g = get_object_or_404(Movimiento, id=id)
     
     if request.method == "POST":
-        g.concepto = request.POST.get('concepto', '').strip().title()
-        g.categoria = request.POST.get('categoria', '').strip().title()
-        g.valor = request.POST.get('valor', 0)
-        g.metodo_pago = request.POST.get('metodo_pago', '').strip()
-        
-        if request.POST.get('fecha'):
-            g.fecha = request.POST.get('fecha')
+        concepto = request.POST.get('concepto', '').strip().title()
+        categoria = request.POST.get('categoria', '').strip().title()
+        valor_raw = request.POST.get('valor', 0)
+        metodo_pago = request.POST.get('metodo_pago', '').strip()
 
-        g.save()  # <--- Persistir cambios en BD
+       
+        if not concepto or not categoria or not valor_raw or not metodo_pago:
+            messages.error(request, 'Los campos no pueden estar vacíos.')
+            return redirect('editar_gasto', id=id)
+
+       
+        if len(concepto) < 5:
+            messages.warning(request, 'El concepto tiene que tener al menos 5 caracteres.')
+            return redirect('editar_gasto', id=id)
+
+        try:
+            valor = float(valor_raw)
+            if valor <=0:
+                messages.error(request,"El valor ingresado tiene que ser un numero valido")
+                return redirect('editar_gasto',id=id)
+        except ValueError:
+            messages.error(request,"El valor ingresado debe ser un numero.")
+            return redirect('editar_gasto', id=id)
+        
+
+
+            
+
+        g.concepto = concepto
+        g.categoria = categoria
+        g.valor = valor
+        g.metodo_pago = metodo_pago
+        g.save()
         messages.success(request, "Gasto actualizado con éxito.")
         return redirect('inicio_contabilidad')
 

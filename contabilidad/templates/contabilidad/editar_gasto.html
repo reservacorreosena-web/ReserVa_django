@@ -34,8 +34,15 @@
                     <div class="row">
                         <!-- Categoría -->
                         <div class="col-md-6 mb-3">
-                            <label for="categoria" class="form-label text-light fw-semibold">Categoría</label>
-                            <input type="text" id="categoria" name="categoria" class="form-control form-control-dark" value="{{ gasto.categoria }}" required>
+                            <label for="categoria" class="form-label fw-semibold text-secondary small text-uppercase">Categoría</label>
+                            <select id="categoria" name="categoria" class="form-select form-control-dark" required>
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option value="Insumos">INSUMOS</option>
+                                <option value="Nomina">NÓMINA</option>
+                                <option value="Servicios">SERVICIOS</option>
+                                <option value="Mantenimiento">MANTENIMIENTO</option>
+                                <option value="Otros">OTROS</option>
+                            </select>
                         </div>
 
                         <!-- Valor -->
@@ -46,11 +53,7 @@
                     </div>
 
                     <div class="row">
-                        <!-- Fecha -->
-                        <div class="col-md-6 mb-3">
-                            <label for="fecha" class="form-label text-light fw-semibold">Fecha</label>
-                            <input type="date" id="fecha" name="fecha" class="form-control form-control-dark" value="{{ gasto.fecha|date:'Y-m-d' }}" required>
-                        </div>
+
 
                         <!-- Método de Pago -->
                         <div class="col-md-6 mb-3">

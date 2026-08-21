@@ -23,11 +23,27 @@ def listar_platos(request):
 def crear_plato(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre").strip().title()
-        descripcion = request.POST.get("descripcion").Capitalize()
-        precio = request.POST.get("precio")
+        descripcion = request.POST.get("descripcion")
+        precio_raw = request.POST.get("precio")
         categoria = request.POST.get("categoria")
         disponible = request.POST.get("disponible") == 'on'
         destacado = request.POST.get("destacado") == 'on'
+
+        if not nombre or not descripcion or not precio_raw or not categoria:
+            messages.error(request,"Debes llenar todos los campos")
+            return redirect('ver_carta_admin')
+        try:
+            precio = int(precio_raw)
+            if precio <=0:
+                messages.error(request, "Ingresa un valor valido.")
+                return redirect('ver_carta_admin')
+        except ValueError:
+            messages.error(request,"Debes ingresar un numero.")
+            return redirect('ver_carta_admin')
+
+        if len(nombre)<3:
+            messages.error(request, "El nombre debe tener mas de 5 caracteres")
+            return redirect('ver_carta_admin')
 
         Plato.objects.create(
             nombre=nombre,
@@ -45,22 +61,46 @@ def crear_plato(request):
 
     return render(request, "menu/crear_plato.html")
 
-def eliminar_plato(request,plato_id):
-    plato = Plato.objects.get(pk=plato_id)
-    plato.delete()
-    messages.alert=("Seguro que quieres eliminar este plato?")
+def eliminar_plato(request, plato_id):
+    try:
+        plato = Plato.objects.get(pk=plato_id)
+        plato.delete()
+        messages.success(request, "El plato ha sido eliminado correctamente.")
+    except Plato.DoesNotExist:
+        messages.error(request, "El plato que intentas eliminar ya no existe.")
+        
     return redirect('ver_carta_admin')
 
 
 def editar_plato(request,id):
     plato = Plato.objects.get(id=id)
     if request.method=="POST":
-        plato.nombre=request.POST.get("nombre").strip().title()
-        plato.descripcion = request.POST.get("descripcion").capitalize()
-        plato.precio = request.POST.get("precio")
-        plato.categoria = request.POST.get("categoria")
-        plato.disponible = request.POST.get("disponible") == 'on'
-        plato.destacado = request.POST.get("destacado") == 'on'
+        nombre=request.POST.get("nombre").strip().title()
+        descripcion = request.POST.get("descripcion").capitalize()
+        precio_raw = request.POST.get("precio")
+        categoria = request.POST.get("categoria")
+        disponible = request.POST.get("disponible") == 'on'
+        destacado = request.POST.get("destacado") == 'on'
+        if not nombre or not descripcion or not precio_raw or not categoria:
+            messages.error(request, "Todos los campos deben estar llenos")
+            return redirect('editar_plato', id=id)
+        try:
+            precio = int(precio_raw)
+            if precio <=0:
+                messages.error(request,"Ingresa un valor valido.")
+                return redirect('editar_plato', id=id)
+        except ValueError:
+            messages.error(request,"Debes ingresar un numero.")
+            return redirect('editar_plato',id=id)
+        if len(nombre)<3:
+            messages.error(request, "El plato debe tener mas de 5 caracteres.")
+            return redirect('editar_plato', id=id)
+        plato.nombre = nombre
+        plato.descripcion = descripcion
+        plato.precio=precio
+        plato.categoria=categoria
+        plato.disponible=disponible
+        plato.destacado=destacado
         plato.save()
         return redirect('ver_carta_admin')
     else:
