@@ -6,11 +6,68 @@
 {% block content %}
 <div class="container-fluid p-0">
 
+    <!-- Hero de Bienvenida -->
     <div class="p-5 mb-4 text-white rounded-3 hero-admin-panel" style="background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); border: 1px solid #222;">
         <h2 class="display-6 fw-bold">Consola de Administración General</h2>
-        <p class="col-md-10 fs-6 text-white-50">Bienvenido, {{ request.session.logueado.nombre }}. Desde este módulo tienes acceso total para modificar el estado del restaurante, controlar el aforo y actualizar la oferta gastronómica en tiempo real.</p>
+        <p class="col-md-10 fs-6 text-white-50 mb-0">Bienvenido, {{ request.session.logueado.nombre }}. Desde este módulo tienes acceso total para modificar el estado del restaurante, controlar el aforo y actualizar la oferta gastronómica en tiempo real.</p>
     </div>
 
+    <!-- TARJETAS DE MÉTRICAS RÁPIDAS DE HOY -->
+    <div class="row g-3 mb-4">
+        <!-- Reservas Hoy -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card text-white border-0 shadow-sm p-3 h-100" style="background-color: #181818; border-radius: 12px; border-left: 4px solid #ffc107 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 small text-uppercase fw-semibold">Reservas Hoy</span>
+                        <h2 class="fw-bold text-warning mb-0 mt-1">{{ reservas_hoy }}</h2>
+                    </div>
+                    <div class="fs-1 text-warning"><i class="bi bi-calendar-event"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pendientes Hoy -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card text-white border-0 shadow-sm p-3 h-100" style="background-color: #181818; border-radius: 12px; border-left: 4px solid #fd7e14 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 small text-uppercase fw-semibold">Pendientes Hoy</span>
+                        <h2 class="fw-bold mb-0 mt-1" style="color: #fd7e14;">{{ pendientes_hoy }}</h2>
+                    </div>
+                    <div class="fs-1" style="color: #fd7e14;"><i class="bi bi-clock-history"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmadas Hoy -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card text-white border-0 shadow-sm p-3 h-100" style="background-color: #181818; border-radius: 12px; border-left: 4px solid #198754 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 small text-uppercase fw-semibold">Confirmadas Hoy</span>
+                        <h2 class="fw-bold text-success mb-0 mt-1">{{ confirmadas_hoy }}</h2>
+                    </div>
+                    <div class="fs-1 text-success"><i class="bi bi-check-circle"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Platos -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card text-white border-0 shadow-sm p-3 h-100" style="background-color: #181818; border-radius: 12px; border-left: 4px solid #0d6efd !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 small text-uppercase fw-semibold">Platos en Carta</span>
+                        <h2 class="fw-bold text-primary mb-0 mt-1">{{ total_platos }}</h2>
+                    </div>
+                    <div class="fs-1 text-primary"><i class="bi bi-egg-fried"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIONES PRINCIPALES CON TUS URLS ORIGINALES -->
     <div class="row g-4 features-admin-section">
 
         <div class="col-md-4">
@@ -18,7 +75,7 @@
                 <div class="card-body d-flex flex-column align-items-center gap-2">
                     <div class="fs-1 text-warning mb-2"><i class="bi bi-calendar3"></i></div>
                     <h5 class="card-title fw-bold text-warning">Gestión de Mesas</h5>
-                    <p class="fw-bold text-white small m-0">12 Hoy</p>
+                    <p class="fw-bold text-white small m-0">{{ reservas_hoy }} Hoy</p>
                     <p class="card-text text-white-50 small">Revisa el consolidado de reservas del restaurante, cancela asignaciones o modifica estados de asistencia.</p>
                     <a href="{% url 'inicio' %}" class="btn w-100 mt-auto text-white" style="background-color: #800020;">Ver Tablero</a>
                 </div>
@@ -32,7 +89,7 @@
                     <h5 class="card-title fw-bold text-warning">Control de la Carta</h5>
                     <p class="fw-bold text-white small m-0">Editar Menú</p>
                     <p class="card-text text-white-50 small">Accede de forma directa a la carta interactiva para agregar platos premium, cambio de precios o eliminar stock.</p>
-                    <a href="#" class="btn w-100 mt-auto text-white" style="background-color: #800020;">Editar Menú</a>
+                    <a href="{% url 'ver_carta_admin' %}" class="btn w-100 mt-auto text-white" style="background-color: #800020;">Editar Menú</a>
                 </div>
             </div>
         </div>

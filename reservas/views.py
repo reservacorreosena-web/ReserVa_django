@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from .models import Reserva
 from django.http import HttpResponse
-from usuarios.decorador import verificar
+from usuarios.decorador import verificar,solo_admin
 from django.contrib import messages
 @verificar
 def crear_reserva(request):
@@ -107,5 +107,22 @@ def actualizar_reserva(request, id):
 
 def confirmacion(request):
     return render(request, "reservas/exito.html")
+
+@solo_admin
+def historial_reservas(request):
+    reservas = Reserva.objects.all().order_by('-id')
+    
+   
+    total_reservas = reservas.count()
+    confirmadas = reservas.filter(estado__iexact='confirmada').count()
+    pendientes = reservas.filter(estado__iexact='pendiente').count()
+
+    contexto = {
+        'reservas': reservas,
+        'total_reservas': total_reservas,
+        'confirmadas': confirmadas,
+        'pendientes': pendientes,
+    }
+    return render(request, 'reservas/historial_reservas.html', contexto)
 
 

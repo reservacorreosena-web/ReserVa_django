@@ -1,0 +1,86 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<!-- Usamos container-fluid con px-4/px-5 para darle máximo ancho sin pegarse a los bordes de la pantalla -->
+<div class="container-fluid px-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">Historial de Reservas</h2>
+
+    </div>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <h6 class="text-uppercase fw-bold mb-1">Total Reservas</h6>
+                <h2 class="mb-0 fw-bold">{{ total_reservas }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <h6 class="text-uppercase fw-bold mb-1">Confirmadas</h6>
+                <h2 class="mb-0 fw-bold">{{ confirmadas }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <h6 class="text-uppercase fw-bold mb-1">Pendientes</h6>
+                <h2 class="mb-0 fw-bold">{{ pendientes }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <!-- Agregamos 'fs-5' para agrandar la letra y 'py-3' en el encabezado para darle más altura -->
+                <table class="table table-hover align-middle fs-5 mb-0">
+                    <thead class="table-dark text-center align-middle">
+                        <tr>
+                            <th class="py-3">#</th>
+                            <th class="py-3 text-start">Cliente / Nombre</th>
+                            <th class="py-3">Mesa</th>
+                            <th class="py-3">Fecha</th> 
+                            <th class="py-3">Hora</th>
+                            <th class="py-3">Personas</th>
+                            <th class="py-3">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reservas %}
+                        <tr class="text-center">
+                            <td class="fw-bold py-3">#{{ r.id }}</td>
+                            <td class="text-start py-3 fw-semibold">{{ r.nombre_cliente }}</td>
+                            <td class="py-3">Mesa {{ r.mesa.numero|default:r.mesa }}</td>
+                            <td class="py-3">{{ r.fecha }}</td>
+                            <td class="py-3">{{ r.hora }}</td>
+                            <td class="py-3"><span class="badge bg-light text-dark fs-6 border">{{ r.cantidad_personas }} personas</span></td>
+                            <td class="py-3">
+                                {% if r.estado == 'confirmada' or r.estado == 'Confirmada' %}
+                                    <span class="badge bg-success fs-6 px-3 py-2">Confirmada</span>
+                                {% elif r.estado == 'pendiente' or r.estado == 'Pendiente' %}
+                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">Pendiente</span>
+                                {% elif r.estado == 'cancelada' or r.estado == 'Cancelada' %}
+                                    <span class="badge bg-danger fs-6 px-3 py-2">Cancelada</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6 px-3 py-2">{{ r.estado }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5 fs-4">
+                                No hay reservas registradas en el sistema.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

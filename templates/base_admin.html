@@ -49,9 +49,8 @@
                     </h2>
                     <div id="dropMesas" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
-                            <a href="#" class="sublink-admin"><i class="bi bi-grid-3x3-gap me-2"></i> Mesas & Aforo</a>
                             <a href="#" class="sublink-admin"><i class="bi bi-sliders me-2"></i> Configurar Zonas</a>
-                            <a href="#" class="sublink-admin"><i class="bi bi-clock-history me-2"></i> Historial Reservas</a>
+                            <a href="{% url 'historial_reservas' %}" class="sublink-admin"><i class="bi bi-clock-history me-2"></i> Historial Reservas</a>
                         </div>
                     </div>
                 </div>
@@ -82,7 +81,6 @@
                     <div id="dropUsuarios" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
                             <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul me-2"></i> Listado General</a>
-                            <a href="#" class="sublink-admin"><i class="bi bi-person-badge me-2"></i> Perfiles de Cliente</a>
                         </div>
                     </div>
                 </div>

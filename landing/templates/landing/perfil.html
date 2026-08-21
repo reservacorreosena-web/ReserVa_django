@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - ReserVa{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <!-- Card Principal -->
+            <div class="card border-0 shadow-lg rounded-4 p-4 text-white" style="background-color: #16191e; border: 1px solid #2a2f38 !important;">
+                
+                <!-- Encabezado con Nombre y Rol -->
+                <div class="text-center mb-4 pt-2">
+                    <h3 class="fw-bold text-white mb-2">
+                        {% if usuario_datos %}
+                            {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                        {% else %}
+                            {{ request.session.logueado.nombre }}
+                        {% endif %}
+                    </h3>
+                    <span class="badge text-uppercase fw-bold px-3 py-1 rounded-pill" style="background-color: #d9ac58; color: #0b0c0e;">
+                        <i class="bi bi-shield-check me-1"></i>{% if usuario_datos %}{{ usuario_datos.rol }}{% else %}{{ request.session.logueado.rol }}{% endif %}
+                    </span>
+                </div>
+
+                <hr class="my-4" style="border-color: #2a2f38;">
+
+                <!-- Grid de Información Personal -->
+                <h6 class="text-warning fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-vcard fs-5"></i> Datos de la Cuenta
+                </h6>
+
+                <div class="row g-3 mb-4">
+                    <!-- Usuario -->
+                    <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-3 h-100" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
+                            <small class="text-white-50 d-block mb-1">
+                                <i class="bi bi-at me-1 text-warning"></i>Usuario
+                            </small>
+                            <span class="fw-semibold text-white">
+                                {% if usuario_datos %}{{ usuario_datos.usuario }}{% else %}{{ request.session.logueado.nombre }}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-12 col-sm-6">
+                        <div class="p-3 rounded-3 h-100" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
+                            <small class="text-white-50 d-block mb-1">
+                                <i class="bi bi-circle-fill me-1 text-success fs-6"></i>Estado
+                            </small>
+                            <span class="fw-semibold text-success">
+                                {% if usuario_datos and usuario_datos.estado %}Activo{% else %}Activo{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Nombre Completo -->
+                    <div class="col-12">
+                        <div class="p-3 rounded-3" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
+                            <small class="text-white-50 d-block mb-1">
+                                <i class="bi bi-card-heading me-1 text-warning"></i>Nombre Completo
+                            </small>
+                            <span class="fw-semibold text-white">
+                                {% if usuario_datos %}
+                                    {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                                {% else %}
+                                    {{ request.session.logueado.nombre }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Correo Electrónico -->
+                    <div class="col-12">
+                        <div class="p-3 rounded-3" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
+                            <small class="text-white-50 d-block mb-1">
+                                <i class="bi bi-envelope me-1 text-warning"></i>Correo Electrónico
+                            </small>
+                            <span class="fw-semibold text-white">
+                                {% if usuario_datos %}{{ usuario_datos.email }}{% else %}No registrado{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque Proximamente -->
+                <div class="p-3 rounded-3 text-center mb-4" style="background: linear-gradient(180deg, #121418 0%, #0b0c0e 100%); border: 1px dashed #3a3f4d;">
+                    <i class="bi bi-gear-wide-connected text-warning fs-3 mb-2 d-block"></i>
+                    <h6 class="fw-bold text-white mb-1">Próximas funciones</h6>
+                    <p class="text-white-50 small mb-0">Muy pronto podrás cambiar tu contraseña, actualizar tus datos de contacto y ver tu historial de reservas directamente desde aquí.</p>
+                </div>
+
+                <!-- Botón Volver -->
+                <a href="{% url 'inicio' %}" class="btn w-100 py-2 rounded-3 text-white fw-semibold d-flex align-items-center justify-content-center gap-2" style="background-color: #2a2f38; border: 1px solid #3a3f4d;">
+                    <i class="bi bi-arrow-left"></i> Volver al Inicio
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

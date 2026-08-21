@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from comentarios.models import Resena  # <--- Importa tu modelo desde la app de comentarios
 from usuarios.decorador import verificar
+from usuarios.models import Usuario
 
 
 def home(request):
@@ -21,3 +22,14 @@ def home(request):
 
 
     return render(request, 'landing/landing.html', contexto)
+
+
+def perfil_usuario(request):
+    usuario_session = request.session.get('logueado')
+    if not usuario_session:
+        return redirect('iniciar_sesion')
+    
+ 
+    usuario_db = Usuario.objects.filter(id=usuario_session.get('id')).first()
+
+    return render(request, 'landing/perfil.html', {'usuario_datos': usuario_db})

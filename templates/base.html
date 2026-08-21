@@ -10,7 +10,7 @@
     <!-- Estilos base e identidad visual -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
-    <link rel="stylesheet" href="[https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css](https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css)">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     {% block extra_css %}
     {% endblock %}
@@ -22,50 +22,54 @@
 <body class="dark-theme">
 
     <header class="navbar-luxury">
-    <div class="nav-container">
-        <!-- LOGO -->
-        <a href="{% url 'inicio' %}" class="logo-link">
-            <h1 class="logo-text">Reser<span class="gold-text">Va</span> <span class="logo-icon">🍽️</span></h1>
-        </a>
+        <div class="nav-container">
+            <!-- LOGO -->
+            <a href="{% url 'inicio' %}" class="logo-link">
+                <h1 class="logo-text">Reser<span class="gold-text">Va</span> <span class="logo-icon">🍽️</span></h1>
+            </a>
 
-        <!-- MENÚ DE NAVEGACIÓN -->
-        <nav class="nav-menu">
-            <ul class="nav-links">
-                <li><a href="{% url 'inicio' %}" class="nav-item">Inicio</a></li>
-                <li><a href="{% url 'ver_carta' %}" class="nav-item">Menú</a></li>
+            <!-- MENÚ DE NAVEGACIÓN -->
+            <nav class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="{% url 'inicio' %}" class="nav-item">Inicio</a></li>
+                    <li><a href="{% url 'ver_carta' %}" class="nav-item">Menú</a></li>
 
-                <!-- MENÚS EXCLUSIVOS PARA EL CLIENTE LOGUEADO -->
-                {% if request.session.logueado and request.session.logueado.rol == "cliente" %}
-                    <li><a href="{% url 'mis_reservas' %}" class="nav-item">Mis Reservas</a></li>
-                    <li><a href="{% url 'comentarios:crear_resena' %}" class="nav-item">Reseñar</a></li>
+                    <!-- MENÚS EXCLUSIVOS PARA EL CLIENTE LOGUEADO -->
+                    {% if request.session.logueado and request.session.logueado.rol == "cliente" %}
+                        <li><a href="{% url 'mis_reservas' %}" class="nav-item">Mis Reservas</a></li>
+                        <li><a href="{% url 'comentarios:crear_resena' %}" class="nav-item">Reseñar</a></li>
+                        <li><a href="{% url 'perfil' %}" class="nav-item">Mi Perfil</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <!-- ACCIONES Y USUARIO -->
+            <div class="nav-actions">
+                <!-- BOTÓN DINÁMICO DE RESERVAR -->
+                {% if request.session.logueado %}
+                    {% if request.session.logueado.rol != "admin" %}
+                        <a href="{% url 'crear_reserva' %}" class="btn-reserva-nav">Reservar Mesa</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'iniciar_sesion' %}" class="btn-reserva-nav">Reservar Mesa</a>
                 {% endif %}
-            </ul>
-        </nav>
 
-        <!-- ACCIONES Y USUARIO -->
-        <div class="nav-actions">
-            <!-- BOTÓN DINÁMICO DE RESERVAR -->
-            {% if request.session.logueado %}
-                {% if request.session.logueado.rol != "admin" %}
-                    <a href="{% url 'crear_reserva' %}" class="btn-reserva-nav">Reservar Mesa</a>
+                <!-- PANEL DE USUARIO / LOGIN -->
+                {% if request.session.logueado %}
+                    <div class="user-badge d-flex align-items-center gap-2">
+                        <a href="{% url 'perfil' %}" class="user-greeting text-decoration-none" title="Ir a Mi Perfil">
+                            <i class="bi bi-person-circle text-warning me-1"></i>
+                            Hola, <strong>{{ request.session.logueado.nombre }}</strong>
+                        </a>
+                        <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Salir</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'iniciar_sesion' %}" class="nav-item login-link">Entrar</a>
+                    <a href="{% url 'crear_usuario' %}" class="btn-register-nav">Registro</a>
                 {% endif %}
-            {% else %}
-                <a href="{% url 'iniciar_sesion' %}" class="btn-reserva-nav">Reservar Mesa</a>
-            {% endif %}
-
-            <!-- PANEL DE USUARIO / LOGIN -->
-            {% if request.session.logueado %}
-                <div class="user-badge">
-                    <span class="user-greeting">Hola, <strong>{{ request.session.logueado.nombre }}</strong></span>
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Salir</a>
-                </div>
-            {% else %}
-                <a href="{% url 'iniciar_sesion' %}" class="nav-item login-link">Entrar</a>
-                <a href="{% url 'crear_usuario' %}" class="btn-register-nav">Registro</a>
-            {% endif %}
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <main class="contenedor" style="padding-top: 90px; min-height: 80vh;">
         {% block content %}
