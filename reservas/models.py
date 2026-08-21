@@ -1,5 +1,6 @@
 from django.db import models
 
+"""
 class Zona(models.Model):
     ZONAS_DISPONIBLES = [
         ('salon', 'Salón Principal'),
@@ -21,12 +22,13 @@ class Mesa(models.Model):
     ]
     nombre = models.CharField(max_length=100)
     numero_mesa = models.IntegerField(unique=True)
-    capacidad = models.IntegerField()  # Sin unique=True
+    capacidad = models.IntegerField()
     zona = models.ForeignKey(Zona, on_delete=models.CASCADE, related_name='mesas')
     estado = models.CharField(max_length=20, choices=ESTADOS_MESA, default='disponible')
 
     def __str__(self):
         return f"Mesa {self.numero_mesa} ({self.estado}) - {self.zona}"
+"""
 
 
 class Reserva(models.Model):
@@ -40,7 +42,10 @@ class Reserva(models.Model):
     hora = models.TimeField()
     cantidad_personas = models.PositiveIntegerField()
     telefono = models.CharField(max_length=20)
-    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE, related_name='reservas')
+
+    # Campo de texto sencillo para evitar el ForeignKey
+    mesa = models.CharField(max_length=50)
+
     notas = models.TextField(blank=True)
     estado = models.CharField(max_length=20, choices=ESTADOS_RESERVA, default='pendiente')
 

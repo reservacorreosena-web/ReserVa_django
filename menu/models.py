@@ -2,6 +2,7 @@ from django.db import models
 
 class Plato(models.Model):
     nombre = models.CharField(max_length=100)
+    #significa que se puede enviar vacio, si el usuario no envia nada, no se guarda nada
     descripcion = models.TextField(max_length=400, blank=True, null=True)
     precio = models.IntegerField()
     disponible = models.BooleanField(default=True)

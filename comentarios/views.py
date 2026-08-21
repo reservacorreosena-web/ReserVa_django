@@ -5,15 +5,17 @@ from django.contrib import messages
 from usuarios.decorador import verificar
 
 def crear_resena(request):
+    #Atrapamos los datos basicos del formulario
     if request.method == "POST":
         comida = request.POST.get("comida")
         servicio = request.POST.get("servicio")
         comentario = request.POST.get("comentario").strip()
 
+        #Con esto validamos que todos los datos esten llenos
         if not comida or not servicio or not comentario:
             messages.error(request,"Ingrese los campos")
             return redirect('crear_resena')
-
+        #creamos variables nuevas asegurando que los datos que tengan sean INT y empezamos con sus validaciones
         try:
             comida1 = int(comida)
             servicio1 = int(servicio)
@@ -32,7 +34,7 @@ def crear_resena(request):
             return redirect('crear_resena')
 
         
-
+        #Aca ya creamos el objeto
         Resena.objects.create(
             usuario=request.user,
             calificacion_comida=comida,

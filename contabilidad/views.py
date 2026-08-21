@@ -3,10 +3,13 @@ from django.contrib import messages
 
 from usuarios.decorador import verificar
 from .models import Movimiento
+from usuarios.decorador import solo_admin
+
 
 # Esta es la parte principal, acá mostraremos todos los gastos, ganancias ETC
-@verificar
+@solo_admin
 def inicio(request):
+    #Creamos una variable que tiene todos los movimientos registrados
     gastos = Movimiento.objects.all()
 
     gasto_total = 0
@@ -15,14 +18,15 @@ def inicio(request):
 
     for g in gastos:
         gasto_total += g.valor
-
+                                                #Con esto verificamos que el gasto no venga vacio para evitar un none
         metodo = g.metodo_pago.strip().lower() if g.metodo_pago else ""
 
         if metodo == "efectivo":
             gasto_efectivo += g.valor
+            #Any es para comprobar si al menos una condicion se cumple y poder sumarle a gasto_banco
         elif any(x in metodo for x in ["tarjeta", "transferencia", "débito", "debito", "crédito", "credito"]):
             gasto_banco += g.valor
-
+    #Esto es un query para pasarle los datos a el HTML y poder pintarlos mas adelante
     q = {
         'gastos': gastos,
         'gasto_total': gasto_total,
@@ -33,12 +37,12 @@ def inicio(request):
     return render(request, "contabilidad/prueba.html", q)
 
 
-@verificar
+@solo_admin
 def control_gastos(request):
     return render(request, "contabilidad/control_gastos.html")
 
 
-@verificar
+@solo_admin
 def guardar_gasto(request):
     if request.method == "POST":
         concepto = request.POST.get("concepto", "").strip().title()
@@ -75,7 +79,7 @@ def guardar_gasto(request):
     return redirect('inicio_contabilidad')
 
 
-@verificar
+@solo_admin
 def eliminar_gasto(request, id):
     g = get_object_or_404(Movimiento, id=id)
     g.delete()
@@ -83,10 +87,10 @@ def eliminar_gasto(request, id):
     return redirect('inicio_contabilidad')
 
 
-@verificar
+@solo_admin
 def editar_gasto(request, id):
     g = get_object_or_404(Movimiento, id=id)
-    
+
     if request.method == "POST":
         concepto = request.POST.get('concepto', '').strip().title()
         categoria = request.POST.get('categoria', '').strip().title()

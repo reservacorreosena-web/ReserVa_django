@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import Plato
 from django.contrib import messages
+from usuarios.decorador import solo_admin
 
 
-# 1. Lista los platos en la tabla (funciones_carta.html)
+@solo_admin
 def listar_platos_admin(request):
     plato = Plato.objects.all()
     contexto = {
@@ -19,7 +20,7 @@ def listar_platos(request):
     return render(request,"menu/carta.html",contexto)
 
 
-# 2. Muestra el formulario (GET) y procesa la creación (POST)
+@solo_admin
 def crear_plato(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre").strip().title()
@@ -60,7 +61,7 @@ def crear_plato(request):
 
 
     return render(request, "menu/crear_plato.html")
-
+@solo_admin
 def eliminar_plato(request, plato_id):
     try:
         plato = Plato.objects.get(pk=plato_id)
@@ -71,7 +72,7 @@ def eliminar_plato(request, plato_id):
         
     return redirect('ver_carta_admin')
 
-
+@solo_admin
 def editar_plato(request,id):
     plato = Plato.objects.get(id=id)
     if request.method=="POST":
