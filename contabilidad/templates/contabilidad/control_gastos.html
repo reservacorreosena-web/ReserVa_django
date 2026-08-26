@@ -28,7 +28,7 @@
                     <!-- Concepto -->
                     <div class="mb-3">
                         <label for="concepto" class="form-label fw-semibold text-secondary small text-uppercase">Concepto</label>
-                        <input type="text" id="concepto" name="concepto" class="form-control form-control-dark" placeholder="Ej: Compra de carne premium / Insumos" required>
+                        <input type="text" id="concepto" name="concepto" class="form-control form-control-dark" placeholder="Ej: Compra de carne premium / Insumos" required value="{{ datos_contabilidad.concepto }}">
                     </div>
 
                     <div class="row">
@@ -50,7 +50,7 @@
                             <label for="valor" class="form-label fw-semibold text-secondary small text-uppercase">Valor ($)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-dark border-secondary text-warning fw-bold">$</span>
-                                <input type="number" step="0.01" id="valor" name="valor" class="form-control form-control-dark" placeholder="0.00" required>
+                                <input type="number" step="0.01" id="valor" name="valor" class="form-control form-control-dark" placeholder="0.00" required value="{{ datos_contabilidad.valor }}">
                             </div>
                         </div>
                     </div>

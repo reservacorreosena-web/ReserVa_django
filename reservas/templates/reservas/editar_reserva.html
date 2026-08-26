@@ -7,35 +7,22 @@
 <a href="{% url 'inicio' %}" class="back-button">← Volver</a>
 
 <div class="mi-formulario">
-
-
-    <h2>Editar Reserva </h2>
+    <h2>Crear Reserva</h2>
     <hr>
 
-    <form method="POST" action="">
+    <form method="POST" action="{% url 'crear_reserva' %}">
         {% csrf_token %}
 
-        <p>Nombre:</p>
-        <input value="{{datos.nombre}}" type="text" name="nombre" placeholder="Escribe tu nombre" required>
-
-        <p>Teléfono:</p>
-        <input value="{{datos.telefono}}" type="text" name="telefono" placeholder="3177373170" required>
-
         <p>Personas:</p>
-        <input value="{{datos.cantidad_personas}}"  type="number" name="cantidad_personas" min="1" required>
-
-        <p>Mesa:</p>
-        <input value="{{datos.mesa}}" type="text" name="mesa" placeholder="M1, M2..." required>
-
-
+        <input type="number" name="cantidad_personas" min="1" max="20" placeholder="Ej: 4" required>
 
         <p>Fecha:</p>
-        <input  type="date" name="fecha" required>
+        <input type="date" name="fecha" required>
 
         <p>Hora:</p>
         <input type="time" name="hora" required>
 
-       <p>Notas:</p>
+        <p>Notas:</p>
         <textarea name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana..."></textarea>
 
         <label for="preordenar">¿Desea preordenar sus platos de una vez?</label>
@@ -45,8 +32,7 @@
         </select>
 
         <button type="submit">CONFIRMAR RESERVA</button>
+    </form>
 </div>
 
 {% endblock %}
-
-

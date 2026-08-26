@@ -1,3 +1,5 @@
+from multiprocessing.managers import convert_to_error
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -50,22 +52,32 @@ def guardar_gasto(request):
         valor = request.POST.get("valor", 0)
         metodo_pago = request.POST.get("metodo_pago", "").strip()
 
+        datos_contabilidad = {
+            "concepto" : concepto,
+            "categoria" : categoria,
+            "valor" : valor,
+        }
+
+        contexto = {
+            "datos_contabilidad" : datos_contabilidad
+        }
+
         if not concepto or not valor or not categoria or not metodo_pago:
             messages.error(request, "Por favor llena los campos obligatorios.")
-            return redirect('inicio_contabilidad')
+            return render(request, 'contabilidad/control_gastos.html',  contexto)
 
         if len(concepto)<5:
             messages.warning(request,"El concepto debe tener al menos 5 caracteres")
-            return redirect('inicio_contabilidad')
+            return render(request, 'contabilidad/control_gastos.html',  contexto)
 
         try:
             valor = float(valor)
             if valor <=0:
                 messages.error(request,"Ingrese un valor valido")
-                return redirect('inicio_contabilidad')
+                return render(request, 'contabilidad/control_gastos.html',  contexto)
         except ValueError:
             messages.error(request, "El valor ingresado debe ser un número válido.")
-            return redirect('inicio_contabilidad')
+            return render(request, 'contabilidad/control_gastos.html', contexto)
 
         Movimiento.objects.create(
             concepto=concepto,

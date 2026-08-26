@@ -5,44 +5,25 @@
 {% block content %}
 <a href="{% url 'inicio' %}">← Volver</a>
 <div class="mi-formulario">
-    
-
     <h2>Reservar Mesa</h2>
     <hr>
-    
 
     <form method="POST" action="{% url 'crear_reserva' %}">
         {% csrf_token %}
 
-        <p>Nombre:</p>
-        <input type="text" name="nombre" placeholder="Escribe tu nombre" required minlength="3">
-
-        <p>Teléfono:</p>
-        <input type="number" name="telefono" placeholder="3177373170" required>
-
-        <p>Personas:</p>
-        <input type="number" name="cantidad_personas" min="1" required>
-
-        <p>Mesa:</p>
-        <input type="text" name="mesa" placeholder="M1, M2..." required>
-
-
+        <p>Número de personas:</p>
+        <input type="number" name="cantidad_personas" min="1" max="20" placeholder="Ej: 4" required value="{{ datos.cantidad_personas }}">
 
         <p>Fecha:</p>
-        <input type="date" name="fecha" required>
+        <input type="date" name="fecha" required value="{{ datos.fecha }}">
 
         <p>Hora:</p>
-        <input type="time" name="hora" required>
+        <input type="time" name="hora" required value="{{ datos.hora }}">
 
-       <p>Notas:</p>
-        <textarea name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana..."></textarea>
-
-        <label for="preordenar">¿Desea preordenar sus platos de una vez?</label>
-        <select name="preordenar" id="preordenar" class="form-control">
-            <option value="NO">No, solo reservar la mesa</option>
-            <option value="SI">Sí, elegir los platos ahora</option>
-        </select>
+        <p>Notas / Observaciones:</p>
+        <textarea name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana...">{{ datos.notas }}</textarea>
 
         <button type="submit">CONFIRMAR RESERVA</button>
+    </form>
 </div>
 {% endblock %}
