@@ -4,49 +4,261 @@
 {% block title %}Registro - ReserVa{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto; padding: 20px 20px 0;">
-    <a href="{% url 'inicio' %}" class="btn-dark" style="display: inline-block; padding: 8px 16px; text-decoration: none; font-size: 14px;">← Volver al inicio</a>
-</div>
+<style>
+    .rv-page {
+        min-height: 100vh;
+        background: #0a0a0a;
+        padding: 0px 40px 80px;
+    }
 
-<div style="display: flex; justify-content: center; align-items: center; padding: 30px 20px 60px;">
-    <div class="reserva-card" style="width: 100%; max-width: 480px;">
-        <h2 style="text-align: center; color: #fff; margin-bottom: 8px; font-size: 26px;">Crear una Cuenta</h2>
-        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Únete a <span class="gold-text">ReserVa</span> y gestiona tus reservas</p>
+    .rv-back-wrapper {
+        max-width: 1200px;
+        margin: 0 auto 60px;
+    }
 
-        <form action="" method="POST">
+    .rv-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #888;
+        text-decoration: none;
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: color 0.3s ease;
+    }
+
+    .rv-back-link:hover {
+        color: #c9a961;
+    }
+
+    .rv-register-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 0px 40px;
+    }
+
+    .rv-register-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .rv-eyebrow {
+        display: block;
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .rv-register-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        color: #fff;
+        margin: 0 0 16px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+    .rv-register-subtitle {
+        color: #888;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .rv-register-subtitle em {
+        color: #c9a961;
+        font-style: normal;
+    }
+
+    .rv-form {
+        background: transparent;
+    }
+
+    .rv-form-group {
+        margin-bottom: 28px;
+    }
+
+    .rv-form-label {
+        display: block;
+        color: #888;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .rv-input {
+        width: 100%;
+        background: transparent;
+        border: 1px solid #333;
+        border-radius: 0;
+        padding: 18px 20px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .rv-input:focus {
+        outline: none;
+        border-color: #c9a961;
+    }
+
+    .rv-input::placeholder {
+        color: #555;
+    }
+
+    .rv-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #c9a961;
+        color: #0a0a0a;
+        border: none;
+        padding: 18px 32px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    .btn-gold:hover {
+        background: #d4b772;
+        transform: translateY(-2px);
+    }
+
+    .btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: transparent;
+        color: #c9a961;
+        border: 1px solid #c9a961;
+        padding: 14px 28px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .btn-dark:hover {
+        background: #c9a961;
+        color: #0a0a0a;
+    }
+
+    .rv-register-footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 32px;
+        border-top: 1px solid #222;
+    }
+
+    .rv-register-footer p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .rv-link {
+        color: #c9a961;
+        text-decoration: none;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: color 0.3s ease;
+    }
+
+    .rv-link:hover {
+        color: #d4b772;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .rv-page {
+            padding: 100px 20px 60px;
+        }
+        .rv-register-container {
+            padding: 40px 20px;
+        }
+        .rv-register-title {
+            font-size: 36px;
+        }
+        .rv-form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+    }
+</style>
+
+<div class="rv-page">
+    <div class="rv-back-wrapper">
+        <a href="{% url 'inicio' %}" class="btn-dark">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+        </a>
+    </div>
+
+    <div class="rv-register-container">
+        <div class="rv-register-header">
+            <span class="rv-eyebrow">Membresía ReserVa</span>
+            <h1 class="rv-register-title">Crear una Cuenta</h1>
+            <p class="rv-register-subtitle">Únete a <em>ReserVa</em> y gestiona tus reservas con elegancia</p>
+        </div>
+
+        <form action="" method="POST" class="rv-form">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="usuario">Usuario:</label>
-                <input type="text" placeholder="Ej. bryan_dev" required name="usuario" id="usuario" minlength="3"/>
+            <div class="rv-form-group">
+                <label for="usuario" class="rv-form-label">Usuario</label>
+                <input type="text" placeholder="Ej. bryan_dev" required name="usuario" id="usuario" minlength="3" class="rv-input">
             </div>
 
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" placeholder="Tu nombre" required name="nombre" id="nombre" minlength="3"/>
+            <div class="rv-form-row">
+                <div class="rv-form-group">
+                    <label for="nombre" class="rv-form-label">Nombre</label>
+                    <input type="text" placeholder="Tu nombre" required name="nombre" id="nombre" minlength="3" class="rv-input">
                 </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" placeholder="Tu apellido" required name="apellido" id="apellido"/>
+                <div class="rv-form-group">
+                    <label for="apellido" class="rv-form-label">Apellido</label>
+                    <input type="text" placeholder="Tu apellido" required name="apellido" id="apellido" class="rv-input">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="email">Correo Electrónico:</label>
-                <input type="email" placeholder="correo@ejemplo.com" required name="email" id="email"/>
+            <div class="rv-form-group">
+                <label for="email" class="rv-form-label">Correo Electrónico</label>
+                <input type="email" placeholder="correo@ejemplo.com" required name="email" id="email" class="rv-input">
             </div>
 
-            <div class="form-group">
-                <label for="contraseña">Contraseña:</label>
-                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" minlength="8"/>
+            <div class="rv-form-group">
+                <label for="contraseña" class="rv-form-label">Contraseña</label>
+                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" minlength="8" class="rv-input">
             </div>
 
-            <button type="submit" class="btn-gold-block" style="margin-top: 20px; font-size: 16px;">Registrarme</button>
+            <button type="submit" class="btn-gold">
+                <i class="bi bi-person-plus"></i> Registrarme
+            </button>
 
-            <div style="text-align: center; margin-top: 25px; border-top: 1px solid #2a2f38; padding-top: 20px;">
-                <p style="color: #a0a5b1; font-size: 14px; margin-bottom: 5px;">¿Ya tienes una cuenta?</p>
-                <a href="{% url 'iniciar_sesion' %}" class="gold-text" style="text-decoration: none; font-weight: bold; font-size: 14px;">Inicia sesión aquí</a>
+            <div class="rv-register-footer">
+                <p>¿Ya tienes una cuenta?</p>
+                <a href="{% url 'iniciar_sesion' %}" class="rv-link">Inicia sesión aquí</a>
             </div>
         </form>
     </div>

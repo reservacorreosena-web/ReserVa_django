@@ -1,48 +1,235 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Nueva Reserva | ReservA{% endblock %}
+{% block title %}Nueva Reserva | ReserVa{% endblock %}
 
 {% block content %}
-<a href="{% url 'inicio' %}">← Volver</a>
-<div class="mi-formulario">
-    
+<style>
+    .rv-page {
+        min-height: 100vh;
+        background: #0a0a0a;
+        padding: 0px 40px 80px;
+    }
 
-    <h2>Reservar Mesa</h2>
-    <hr>
-    
+    .rv-back-wrapper {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+    }
 
-    <form method="POST" action="{% url 'crear_reserva' %}">
-        {% csrf_token %}
+    .rv-login-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 0px 20px;
+    }
 
-        <p>Nombre:</p>
-        <input type="text" name="nombre" placeholder="Escribe tu nombre" required minlength="3">
+    .rv-login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
 
-        <p>Teléfono:</p>
-        <input type="number" name="telefono" placeholder="3177373170" required>
+    .rv-eyebrow {
+        display: block;
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
 
-        <p>Personas:</p>
-        <input type="number" name="cantidad_personas" min="1" required>
+    .rv-login-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        color: #fff;
+        margin: 0 0 16px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
 
-        <p>Mesa:</p>
-        <input type="text" name="mesa" placeholder="M1, M2..." required>
+    .rv-login-subtitle {
+        color: #888;
+        font-size: 15px;
+        line-height: 1.6;
+    }
 
+    .rv-login-subtitle em {
+        color: #c9a961;
+        font-style: normal;
+    }
 
+    .rv-form {
+        background: transparent;
+    }
 
-        <p>Fecha:</p>
-        <input type="date" name="fecha" required>
+    .rv-form-group {
+        margin-bottom: 24px;
+    }
 
-        <p>Hora:</p>
-        <input type="time" name="hora" required>
+    .rv-form-label {
+        display: block;
+        color: #888;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
 
-       <p>Notas:</p>
-        <textarea name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana..."></textarea>
+    .rv-input {
+        width: 100%;
+        background: transparent;
+        border: 1px solid #333;
+        border-radius: 0;
+        padding: 16px 20px;
+        color: #fff;
+        font-size: 15px;
+        font-family: inherit;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+    }
 
-        <label for="preordenar">¿Desea preordenar sus platos de una vez?</label>
-        <select name="preordenar" id="preordenar" class="form-control">
-            <option value="NO">No, solo reservar la mesa</option>
-            <option value="SI">Sí, elegir los platos ahora</option>
-        </select>
+    .rv-input:focus {
+        outline: none;
+        border-color: #c9a961;
+    }
 
-        <button type="submit">CONFIRMAR RESERVA</button>
+    .rv-input::placeholder {
+        color: #555;
+    }
+
+    /* Estilo para los select y textarea manteniendo la misma línea */
+    select.rv-input option {
+        background: #141414;
+        color: #fff;
+    }
+
+    textarea.rv-input {
+        resize: vertical;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #c9a961;
+        color: #0a0a0a;
+        border: none;
+        padding: 18px 32px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    .btn-gold:hover {
+        background: #d4b772;
+        transform: translateY(-2px);
+    }
+
+    .btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: transparent;
+        color: #c9a961;
+        border: 1px solid #c9a961;
+        padding: 14px 28px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .btn-dark:hover {
+        background: #c9a961;
+        color: #0a0a0a;
+    }
+
+    @media (max-width: 768px) {
+        .rv-page {
+            padding: 0px 20px 60px;
+        }
+        .rv-login-container {
+            padding: 0px 10px;
+        }
+        .rv-login-title {
+            font-size: 32px;
+        }
+    }
+</style>
+
+<div class="rv-page">
+    <div class="rv-back-wrapper">
+        <a href="{% url 'inicio' %}" class="btn-dark">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+        </a>
+    </div>
+
+    <div class="rv-login-container">
+        <div class="rv-login-header">
+            <span class="rv-eyebrow">Experiencia Exclusiva</span>
+            <h1 class="rv-login-title">Reservar Mesa</h1>
+            <p class="rv-login-subtitle">Asegura tu espacio en <em>ReserVa</em> completando los datos</p>
+        </div>
+
+        <form method="POST" action="{% url 'crear_reserva' %}" class="rv-form">
+            {% csrf_token %}
+
+            <div class="rv-form-group">
+                <label for="nombre" class="rv-form-label">Nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required minlength="3" class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="telefono" class="rv-form-label">Teléfono</label>
+                <input type="number" id="telefono" name="telefono" placeholder="3177373170" required class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="cantidad_personas" class="rv-form-label">Número de Personas</label>
+                <input type="number" id="cantidad_personas" name="cantidad_personas" min="1" placeholder="Ej: 2" required class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="mesa" class="rv-form-label">Mesa</label>
+                <input type="text" id="mesa" name="mesa" placeholder="M1, M2..." required class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="fecha" class="rv-form-label">Fecha</label>
+                <input type="date" id="fecha" name="fecha" required class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="hora" class="rv-form-label">Hora</label>
+                <input type="time" id="hora" name="hora" required class="rv-input">
+            </div>
+
+            <div class="rv-form-group">
+                <label for="notas" class="rv-form-label">Notas Adicionales</label>
+                <textarea id="notas" name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input"></textarea>
+            </div>
+
+            <div class="rv-form-group">
+                <label for="preordenar" class="rv-form-label">¿Desea preordenar sus platos de una vez?</label>
+                <select name="preordenar" id="preordenar" class="rv-input">
+                    <option value="NO">No, solo reservar la mesa</option>
+                    <option value="SI">Sí, elegir los platos ahora</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-gold">
+                <i class="bi bi-check2-circle"></i> Confirmar Reserva
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock %}

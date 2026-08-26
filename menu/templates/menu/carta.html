@@ -1,78 +1,108 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Menú del Restaurante - ReserVa{% endblock %}
+{% block title %}Nuestra Carta - ReserVa{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/menu.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="rv-landing py-5" style="background-color: #0c0c0c; min-height: 100vh; color: #f5f2eb;">
 
-    <!-- Encabezado del Menú -->
-    <div class="text-center mb-5">
-        <span class="text-warning text-uppercase fw-bold tracking-widest fs-6">Gastronomía de Autor</span>
-        <h1 class="display-4 fw-bold text-white mt-1">Menú del Restaurante</h1>
-        <p class="text-secondary col-md-6 mx-auto fs-5">
-            Platos preparados con los mejores ingredientes de la ciudad.
-        </p>
-    </div>
+    <div class="container py-5" style="max-width: 1200px;">
 
-    <!-- Grid de Platos -->
-    <div class="row g-4">
-        {% for p in plato %}
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card h-100 bg-dark text-white border-secondary shadow-lg rounded-4 card-plato">
-                
-                <div class="card-body d-flex flex-column p-4">
-                    <!-- Header de la tarjeta: Nombre y Precio -->
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h4 class="card-title fw-bold text-white mb-0 fs-4">{{ p.nombre }}</h4>
-                        <span class="badge bg-warning text-dark fw-bold fs-6 px-3 py-2 rounded-pill ms-2">
-                            ${{ p.precio }}
-                        </span>
-                    </div>
+        <!-- Encabezado Editorial de la Carta -->
+        <div class="text-center mb-5 pb-4 border-bottom" style="border-color: rgba(212, 160, 107, 0.2) !important;">
+            <span class="rv-eyebrow" style="letter-spacing: 4px; color: #d4a06b; font-size: 0.85rem; text-transform: uppercase;">Gastronomía de Autor</span>
+            <h1 class="display-3 fw-normal text-white mt-2 mb-3" style="font-family: 'Playfair Display', serif; letter-spacing: 1px;">Nuestra Carta</h1>
+            <p class="text-secondary col-lg-7 mx-auto fs-5" style="font-style: italic; font-weight: 300;">
+                "Una selección culinaria exclusiva, preparada con ingredientes de la más alta calidad para asegurar una noche inolvidable."
+            </p>
+        </div>
 
-                    <!-- Categoría -->
-                    <div class="mb-3">
-                        <span class="badge bg-secondary text-uppercase px-2 py-1 fs-7">
-                            <i class="bi bi-tag-fill me-1"></i>{{ p.categoria|default:"Especialidad" }}
-                        </span>
-                    </div>
+        <!-- Grid Dinámico y Escalable (Funciona perfecto con 1, pocos o muchos platos) -->
+        <div class="row g-4">
+            {% for p in plato %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-lg rv-menu-card d-flex flex-column" style="background: #141414; border: 1px solid rgba(212, 160, 107, 0.15) !important; border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
                     
-                    <!-- Descripción -->
-                    <p class="card-text text-secondary fs-6 flex-grow-1">
-                        {{ p.descripcion|default:"Preparación exclusiva elaborada por nuestro equipo de cocina." }}
-                    </p>
-                </div>
+                    <!-- Imagen del Plato (Si el modelo la tiene, la muestra; si no, muestra un placeholder elegante o se adapta limpiamente) -->
+                    {% if p.imagen %}
+                    <div class="rv-card-img-wrapper" style="height: 220px; overflow: hidden; position: relative;">
+                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" class="w-100 h-100 object-fit-cover" style="transition: transform 0.5s ease;">
+                        <div style="position: absolute; top: 15px; right: 15px;">
+                            <span class="badge px-3 py-2 shadow" style="background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(5px); color: #d4a06b; border: 1px solid rgba(212, 160, 107, 0.3); font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600;">
+                                ${{ p.precio }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
 
+                    <div class="card-body d-flex flex-column p-4 justify-content-between">
+                        <div>
+                            <!-- Categoría y Precio (Si no hay imagen, el precio va en la cabecera) -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-uppercase" style="font-size: 0.7rem; letter-spacing: 2px; color: #d4a06b; font-weight: 600;">
+                                    {{ p.categoria|default:"Especialidad" }}
+                                </span>
+                                {% if not p.imagen %}
+                                <span class="fs-4 fw-light text-warning" style="color: #d4a06b !important; font-family: 'Playfair Display', serif;">
+                                    ${{ p.precio }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nombre del Plato (Soporta nombres largos de forma limpia) -->
+                            <h3 class="h4 text-white mb-3" style="font-family: 'Playfair Display', serif; font-weight: 500; line-height: 1.3;">
+                                {{ p.nombre }}
+                            </h3>
+
+                            <!-- Descripción (Soporta diferentes longitudes sin romper el diseño) -->
+                            <p class="text-secondary small mb-4 fw-light" style="line-height: 1.6;">
+                                {{ p.descripcion|default:"Preparación exclusiva elaborada al momento por nuestro equipo de cocina." }}
+                            </p>
+                        </div>
+
+                        <!-- Detalle inferior opcional para mantener simetría visual -->
+                        <div class="pt-3 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between">
+                            <span class="text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">
+                                <i class="bi bi-star-fill text-warning me-1" style="color: #d4a06b !important; font-size: 0.7rem;"></i> Alta cocina
+                            </span>
+                            <span class="text-secondary small" style="font-style: italic; font-size: 0.75rem;">ReserVa</span>
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <div class="p-5 bg-dark text-white rounded-4 border border-secondary">
-                <i class="bi bi-journal-x display-1 text-warning mb-3"></i>
-                <h3 class="fw-bold">No hay platos disponibles por el momento</h3>
-                <p class="text-secondary">Estamos actualizando nuestra carta. Consulta de nuevo más tarde.</p>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="p-5 mx-auto rounded-4 shadow-lg" style="background: #141414; border: 1px dashed rgba(212, 160, 107, 0.3); max-width: 600px;">
+                    <i class="bi bi-journal-x display-4 mb-3" style="color: #d4a06b;"></i>
+                    <h3 class="fw-normal mb-2 text-white" style="font-family: 'Playfair Display', serif;">No hay platillos disponibles</h3>
+                    <p class="text-secondary fs-6">El administrador está actualizando la carta en este momento. Vuelve a consultar pronto.</p>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+
     </div>
 
 </div>
 
-<!-- Estilos para animación ligera -->
+<!-- Estilos profesionales y microinteracciones de alta gama -->
 <style>
-    .card-plato {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .rv-menu-card {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .card-plato:hover {
+    .rv-menu-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 10px 20px rgba(255, 193, 7, 0.15) !important;
+        border-color: rgba(212, 160, 107, 0.5) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6) !important;
     }
-    .tracking-widest {
-        letter-spacing: 2px;
+    .rv-menu-card:hover img {
+        transform: scale(1.05);
     }
 </style>
 {% endblock %}

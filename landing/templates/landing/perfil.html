@@ -4,103 +4,248 @@
 {% block title %}Mi Perfil - ReserVa{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
+<style>
+    .rv-page {
+        min-height: 100vh;
+        background: #0a0a0a;
+        padding: 0px 40px 80px;
+        color: #f5f2eb;
+    }
 
-            <!-- Card Principal -->
-            <div class="card border-0 shadow-lg rounded-4 p-4 text-white" style="background-color: #16191e; border: 1px solid #2a2f38 !important;">
-                
-                <!-- Encabezado con Nombre y Rol -->
-                <div class="text-center mb-4 pt-2">
-                    <h3 class="fw-bold text-white mb-2">
-                        {% if usuario_datos %}
-                            {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
-                        {% else %}
-                            {{ request.session.logueado.nombre }}
-                        {% endif %}
-                    </h3>
-                    <span class="badge text-uppercase fw-bold px-3 py-1 rounded-pill" style="background-color: #d9ac58; color: #0b0c0e;">
-                        <i class="bi bi-shield-check me-1"></i>{% if usuario_datos %}{{ usuario_datos.rol }}{% else %}{{ request.session.logueado.rol }}{% endif %}
-                    </span>
-                </div>
+    .rv-back-wrapper {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+    }
 
-                <hr class="my-4" style="border-color: #2a2f38;">
+    .rv-profile-layout {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
 
-                <!-- Grid de Información Personal -->
-                <h6 class="text-warning fw-bold mb-3 d-flex align-items-center gap-2">
-                    <i class="bi bi-person-vcard fs-5"></i> Datos de la Cuenta
-                </h6>
+    /* Banner / Encabezado de la página de perfil */
+    .rv-profile-hero {
+        background: linear-gradient(135deg, #141414 0%, #0d0d0d 100%);
+        border: 1px solid rgba(201, 169, 97, 0.2);
+        border-radius: 12px;
+        padding: 50px 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
 
-                <div class="row g-3 mb-4">
-                    <!-- Usuario -->
-                    <div class="col-12 col-sm-6">
-                        <div class="p-3 rounded-3 h-100" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
-                            <small class="text-white-50 d-block mb-1">
-                                <i class="bi bi-at me-1 text-warning"></i>Usuario
-                            </small>
-                            <span class="fw-semibold text-white">
-                                {% if usuario_datos %}{{ usuario_datos.usuario }}{% else %}{{ request.session.logueado.nombre }}{% endif %}
-                            </span>
-                        </div>
-                    </div>
+    .rv-eyebrow {
+        display: block;
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
 
-                    <!-- Estado -->
-                    <div class="col-12 col-sm-6">
-                        <div class="p-3 rounded-3 h-100" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
-                            <small class="text-white-50 d-block mb-1">
-                                <i class="bi bi-circle-fill me-1 text-success fs-6"></i>Estado
-                            </small>
-                            <span class="fw-semibold text-success">
-                                {% if usuario_datos and usuario_datos.estado %}Activo{% else %}Activo{% endif %}
-                            </span>
-                        </div>
-                    </div>
+    .rv-profile-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        color: #fff;
+        margin: 0 0 12px;
+        font-weight: 400;
+    }
 
-                    <!-- Nombre Completo -->
-                    <div class="col-12">
-                        <div class="p-3 rounded-3" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
-                            <small class="text-white-50 d-block mb-1">
-                                <i class="bi bi-card-heading me-1 text-warning"></i>Nombre Completo
-                            </small>
-                            <span class="fw-semibold text-white">
-                                {% if usuario_datos %}
-                                    {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
-                                {% else %}
-                                    {{ request.session.logueado.nombre }}
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
+    .rv-badge {
+        display: inline-block;
+        background-color: rgba(201, 169, 97, 0.15);
+        color: #c9a961;
+        border: 1px solid rgba(201, 169, 97, 0.4);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+    }
 
-                    <!-- Correo Electrónico -->
-                    <div class="col-12">
-                        <div class="p-3 rounded-3" style="background-color: #0b0c0e; border: 1px solid #2a2f38;">
-                            <small class="text-white-50 d-block mb-1">
-                                <i class="bi bi-envelope me-1 text-warning"></i>Correo Electrónico
-                            </small>
-                            <span class="fw-semibold text-white">
-                                {% if usuario_datos %}{{ usuario_datos.email }}{% else %}No registrado{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+    /* Secciones de contenido estructuradas */
+    .rv-section-title {
+        color: #c9a961;
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-                <!-- Bloque Proximamente -->
-                <div class="p-3 rounded-3 text-center mb-4" style="background: linear-gradient(180deg, #121418 0%, #0b0c0e 100%); border: 1px dashed #3a3f4d;">
-                    <i class="bi bi-gear-wide-connected text-warning fs-3 mb-2 d-block"></i>
-                    <h6 class="fw-bold text-white mb-1">Próximas funciones</h6>
-                    <p class="text-white-50 small mb-0">Muy pronto podrás cambiar tu contraseña, actualizar tus datos de contacto y ver tu historial de reservas directamente desde aquí.</p>
-                </div>
+    .rv-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
 
-                <!-- Botón Volver -->
-                <a href="{% url 'inicio' %}" class="btn w-100 py-2 rounded-3 text-white fw-semibold d-flex align-items-center justify-content-center gap-2" style="background-color: #2a2f38; border: 1px solid #3a3f4d;">
-                    <i class="bi bi-arrow-left"></i> Volver al Inicio
-                </a>
+    .rv-info-box {
+        background-color: #141414;
+        border: 1px solid #222;
+        border-radius: 10px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
 
+    .rv-info-box:hover {
+        border-color: rgba(201, 169, 97, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .rv-info-label {
+        color: #777;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .rv-info-value {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    /* Panel informativo inferior (Próximas funciones) */
+    .rv-coming-soon {
+        background: linear-gradient(180deg, #141414 0%, #0d0d0d 100%);
+        border: 1px dashed rgba(201, 169, 97, 0.3);
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: transparent;
+        color: #c9a961;
+        border: 1px solid #c9a961;
+        padding: 14px 32px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 0;
+    }
+
+    .btn-dark:hover {
+        background: #c9a961;
+        color: #0a0a0a;
+    }
+
+    @media (max-width: 768px) {
+        .rv-page {
+            padding: 0px 20px 60px;
+        }
+        .rv-profile-hero {
+            padding: 30px 20px;
+        }
+        .rv-profile-title {
+            font-size: 32px;
+        }
+    }
+</style>
+
+<div class="rv-page">
+    <!-- Botón de retorno superior -->
+    <div class="rv-back-wrapper">
+        <a href="{% url 'inicio' %}" class="btn-dark">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+        </a>
+    </div>
+
+    <div class="rv-profile-layout">
+        
+        <!-- Hero / Encabezado principal extendido -->
+        <div class="rv-profile-hero">
+            <span class="rv-eyebrow">Panel de Control Personal</span>
+            <h1 class="rv-profile-title">
+                {% if usuario_datos %}
+                    {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                {% else %}
+                    {{ request.session.logueado.nombre }}
+                {% endif %}
+            </h1>
+            <div>
+                <span class="rv-badge">
+                    <i class="bi bi-shield-check me-1"></i>{% if usuario_datos %}{{ usuario_datos.rol }}{% else %}{{ request.session.logueado.rol }}{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Sección: Información del Usuario -->
+        <h3 class="rv-section-title">
+            <i class="bi bi-person-vcard fs-5"></i> Credenciales y Datos de la Cuenta
+        </h3>
+
+        <div class="rv-info-grid">
+            <!-- Usuario -->
+            <div class="rv-info-box">
+                <span class="rv-info-label">
+                    <i class="bi bi-at me-1 text-warning"></i>Nombre de Usuario
+                </span>
+                <span class="rv-info-value">
+                    {% if usuario_datos %}{{ usuario_datos.usuario }}{% else %}{{ request.session.logueado.nombre }}{% endif %}
+                </span>
             </div>
 
+            <!-- Estado -->
+            <div class="rv-info-box">
+                <span class="rv-info-label">
+                    <i class="bi bi-circle-fill me-1 text-success" style="font-size: 8px;"></i>Estado del Sistema
+                </span>
+                <span class="fw-semibold text-success" style="font-size: 16px;">
+                    Activo
+                </span>
+            </div>
+
+            <!-- Nombre Completo -->
+            <div class="rv-info-box">
+                <span class="rv-info-label">
+                    <i class="bi bi-card-heading me-1 text-warning"></i>Nombre Completo
+                </span>
+                <span class="rv-info-value">
+                    {% if usuario_datos %}
+                        {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                    {% else %}
+                        {{ request.session.logueado.nombre }}
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="rv-info-box">
+                <span class="rv-info-label">
+                    <i class="bi bi-envelope me-1 text-warning"></i>Correo Electrónico
+                </span>
+                <span class="rv-info-value">
+                    {% if usuario_datos %}{{ usuario_datos.email }}{% else %}No registrado{% endif %}
+                </span>
+            </div>
         </div>
+
+        <!-- Sección Informativa Estética (Próximas funciones) -->
+        <div class="rv-coming-soon">
+            <i class="bi bi-gear-wide-connected text-warning fs-2 mb-2 d-block" style="color: #c9a961 !important;"></i>
+            <h4 class="fw-normal text-white mb-2" style="font-family: 'Playfair Display', serif; font-size: 22px;">Próximas funciones disponibles</h4>
+            <p class="text-secondary col-lg-8 mx-auto small mb-0" style="line-height: 1.6;">
+                Muy pronto podrás cambiar tu contraseña de acceso, actualizar tus datos de contacto en tiempo real y consultar tu historial completo de reservas y preórdenes directamente desde este panel.
+            </p>
+        </div>
+
     </div>
 </div>
 {% endblock %}

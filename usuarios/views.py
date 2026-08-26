@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from usuarios.models import Usuario
+
 from reservas.models import Reserva
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .decorador import solo_anonimos, verificar, solo_admin
+
+from usuarios.serializador import UsuarioSerializer
+from .serializador import *
+from rest_framework import viewsets
+
 
 
 @solo_anonimos
@@ -122,4 +128,8 @@ def cambiar_estado_usuario(request, usuario_id):
     usuario.save()
     return redirect('listado_general')
 
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
 
