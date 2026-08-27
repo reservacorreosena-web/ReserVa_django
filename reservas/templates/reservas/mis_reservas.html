@@ -4,118 +4,377 @@
 {% block title %}Mis Reservas | ReserVa{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/mis_reservas.css' %}?v=4.0">
+<style>
+    .rv-reservas-page {
+        background: #0a0a0a;
+        padding: 0px 40px 80px;
+        min-height: 100vh;
+    }
 
-<div class="container py-5">
-    
-    <!-- Encabezado -->
-    <div class="reserva-header-section mb-5">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <span class="header-tag"><i class="bi bi-stars"></i> Panel de Gestión</span>
-                <h2 class="fw-bold text-white mb-1 tracking-tight">Mis Reservas</h2>
+    .rv-reservas-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding-top: 20px;
+    }
 
-            </div>
-        </div>
+    .rv-eyebrow {
+        display: block;
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .rv-reservas-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        color: #fff;
+        margin: 0 0 16px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+    .rv-reservas-subtitle {
+        color: #888;
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .rv-reservas-list {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .rv-reserva-card {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 12px;
+        padding: 32px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rv-reserva-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: #c9a961;
+    }
+
+    .rv-reserva-card:hover {
+        border-color: #c9a961;
+        transform: translateX(4px);
+        box-shadow: 0 10px 30px rgba(201, 169, 97, 0.1);
+    }
+
+    .rv-reserva-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #222;
+    }
+
+    .rv-reserva-id {
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .rv-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(201, 169, 97, 0.1);
+        color: #c9a961;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .rv-status-dot {
+        width: 8px;
+        height: 8px;
+        background: #c9a961;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .rv-reserva-info {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 32px;
+        margin-bottom: 28px;
+    }
+
+    .rv-info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .rv-info-label {
+        color: #888;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .rv-info-value {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rv-info-value i {
+        color: #c9a961;
+        font-size: 18px;
+    }
+
+    .rv-reserva-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #fff;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .rv-reserva-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: flex-end;
+        padding-top: 24px;
+        border-top: 1px solid #222;
+    }
+
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: #c9a961;
+        border: 1px solid #c9a961;
+        padding: 12px 24px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .btn-edit:hover {
+        background: #c9a961;
+        color: #0a0a0a;
+    }
+
+    .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: #888;
+        border: 1px solid #333;
+        padding: 12px 24px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+    }
+
+    .btn-delete:hover {
+        background: #800020;
+        color: #fff;
+        border-color: #800020;
+    }
+
+    .rv-empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: #111;
+        border: 1px dashed #333;
+        border-radius: 12px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .rv-empty-icon {
+        font-size: 64px;
+        color: #c9a961;
+        margin-bottom: 24px;
+        opacity: 0.5;
+    }
+
+    .rv-empty-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 0 12px;
+        font-weight: 400;
+    }
+
+    .rv-empty-text {
+        color: #888;
+        font-size: 15px;
+        margin-bottom: 32px;
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #c9a961;
+        color: #0a0a0a;
+        border: none;
+        padding: 16px 32px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .btn-gold:hover {
+        background: #d4b772;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .rv-reservas-page {
+            padding: 0px 20px 60px;
+        }
+        .rv-reservas-title {
+            font-size: 36px;
+        }
+        .rv-reserva-card {
+            padding: 24px;
+        }
+        .rv-reserva-info {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .rv-reserva-actions {
+            flex-direction: column;
+        }
+        .btn-edit, .btn-delete {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="rv-reservas-page">
+    <div class="rv-reservas-header">
+        <span class="rv-eyebrow">Panel de Gestión</span>
+        <h1 class="rv-reservas-title">Mis Reservas</h1>
+        <p class="rv-reservas-subtitle">Gestiona tus reservas activas y mantén el control de tus experiencias gastronómicas.</p>
     </div>
 
-    <!-- Lista Horizontal Elegante -->
-    <div class="reservas-list-container">
+    <div class="rv-reservas-list">
         {% for r in reservas %}
-            <div class="reserva-card-v3">
-                
-                <!-- Glow decorativo de fondo -->
-                <div class="card-glow"></div>
+        <div class="rv-reserva-card">
+            <div class="rv-reserva-header">
+                <span class="rv-reserva-id">Reserva #{{ r.id }}</span>
+                <span class="rv-status-badge">
+                    <span class="rv-status-dot"></span> Activa
+                </span>
+            </div>
 
-                <!-- 1. Cuadro grande a la izquierda + Nombre/ID -->
-                <div class="card-col col-main">
-                    <div class="avatar-box-lg">
-                        <i class="bi bi-bookmark-star-fill"></i>
-                        <span class="box-subtext">ReserVa</span>
-                    </div>
-                    <div class="truncate-container">
-                        <div class="reserva-id">RESERVA #{{ r.id }}</div>
-                        <h5 class="reserva-title" title="{{ r.nombre }}">{{ r.nombre }}</h5>
-                    </div>
+            <div class="rv-reserva-info">
+                <div class="rv-info-group">
+                    <span class="rv-info-label">Evento</span>
+                    <h3 class="rv-reserva-title">{{ r.nombre }}</h3>
                 </div>
 
-                <!-- Separador vertical -->
-                <div class="col-divider"></div>
-
-                <!-- 2. Fecha y Hora -->
-                <div class="card-col">
-                    <span class="meta-label">Fecha Programada</span>
-                    <div class="meta-value">
-                        <i class="bi bi-calendar2-week text-gold"></i>
+                <div class="rv-info-group">
+                    <span class="rv-info-label">Fecha Programada</span>
+                    <div class="rv-info-value">
+                        <i class="bi bi-calendar2-week"></i>
                         <span>{{ r.fecha }}</span>
                     </div>
                 </div>
 
-                <!-- Separador vertical -->
-                <div class="col-divider"></div>
-
-                <!-- 3. Mesa / Ubicación -->
-                <div class="card-col">
-                    <span class="meta-label">Mesa Asignada</span>
-                    <div class="meta-value">
-                        <i class="bi bi-shop text-gold"></i>
+                <div class="rv-info-group">
+                    <span class="rv-info-label">Mesa Asignada</span>
+                    <div class="rv-info-value">
+                        <i class="bi bi-shop"></i>
                         <span>Mesa {{ r.mesa }}</span>
                     </div>
                 </div>
-
-                <!-- 4. Badge de Estado -->
-                <div class="card-col col-status">
-                    <span class="status-pill status-activa">
-                        <span class="pulse-dot"></span> Activa
-                    </span>
-                </div>
-
-                <!-- 5. Acciones con Nombres Visibles -->
-                <div class="card-col col-actions">
-                    <a href="{% url 'actualizar' r.id %}" class="btn-action-text btn-edit">
-                        <i class="bi bi-pencil-fill"></i>
-                        <span>Editar</span>
-                    </a>
-                    
-                    <button class="btn-action-text btn-delete" 
-                            type="button"
-                            onclick="Swal.fire({
-                               title: '¿Cancelar reserva?',
-                               text: 'Esta acción liberará la mesa asignada inmediatamente.',
-                               icon: 'warning',
-                               showCancelButton: true,
-                               confirmButtonColor: '#800020',
-                               cancelButtonColor: '#27272a',
-                               background: '#121215',
-                               color: '#ffffff',
-                               confirmButtonText: 'Sí, cancelar',
-                               cancelButtonText: 'Mantener'
-                           }).then((result) => {
-                               if (result.isConfirmed) {
-                                   window.location.href = '{% url 'cancelar' r.id %}';
-                               }
-                           });">
-                        <i class="bi bi-trash3-fill"></i>
-                        <span>Cancelar</span>
-                    </button>
-                </div>
-
             </div>
-        {% empty %}
-            <!-- Estado vacío -->
-            <div class="empty-state-v3 text-center py-5">
-                <div class="empty-icon-box mb-3">
-                    <i class="bi bi-calendar-x"></i>
-                </div>
-                <h4 class="text-white fw-bold mb-2">No tienes reservas activas</h4>
-                <p class="text-secondary small mb-4">Agenda una mesa para disfrutar de una experiencia gastronómica única.</p>
-                <a href="{% url 'crear_reserva' %}" class="btn btn-gold-premium">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>Crear mi primera reserva</span>
+
+            <div class="rv-reserva-actions">
+                <a href="{% url 'actualizar' r.id %}" class="btn-edit">
+                    <i class="bi bi-pencil-fill"></i> Editar
                 </a>
+                
+                <button class="btn-delete" 
+                        type="button"
+                        onclick="Swal.fire({
+                           title: '¿Cancelar reserva?',
+                           text: 'Esta acción liberará la mesa asignada inmediatamente.',
+                           icon: 'warning',
+                           showCancelButton: true,
+                           confirmButtonColor: '#800020',
+                           cancelButtonColor: '#27272a',
+                           background: '#121215',
+                           color: '#ffffff',
+                           confirmButtonText: 'Sí, cancelar',
+                           cancelButtonText: 'Mantener'
+                       }).then((result) => {
+                           if (result.isConfirmed) {
+                               window.location.href = '{% url 'cancelar' r.id %}';
+                           }
+                       });">
+                    <i class="bi bi-trash3-fill"></i> Cancelar
+                </button>
             </div>
+        </div>
+        {% empty %}
+        <div class="rv-empty-state">
+            <div class="rv-empty-icon">
+                <i class="bi bi-calendar-x"></i>
+            </div>
+            <h3 class="rv-empty-title">No tienes reservas activas</h3>
+            <p class="rv-empty-text">Agenda una mesa para disfrutar de una experiencia gastronómica única.</p>
+            <a href="{% url 'crear_reserva' %}" class="btn-gold">
+                <i class="bi bi-plus-lg"></i> Crear mi primera reserva
+            </a>
+        </div>
         {% endfor %}
     </div>
-
 </div>
 {% endblock %}

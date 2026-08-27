@@ -210,15 +210,15 @@
         <div class="rv-login-header">
             <span class="rv-eyebrow">Acceso a tu cuenta</span>
             <h1 class="rv-login-title">Bienvenido de nuevo</h1>
-            <p class="rv-login-subtitle">Ingresa tus credenciales para continuar en <em>ReserVa</em></p>
+            <p class="rv-login-subtitle">Ingresa tu correo y contraseña para continuar en <em>ReserVa</em></p>
         </div>
 
         <form action="" method="POST" class="rv-form">
             {% csrf_token %}
 
             <div class="rv-form-group">
-                <label for="usuario" class="rv-form-label">Usuario</label>
-                <input type="text" placeholder="Tu nombre de usuario" required name="usuario" id="usuario" class="rv-input">
+                <label for="email" class="rv-form-label">Correo Electrónico</label>
+                <input type="email" placeholder="admin@reserva.com" required name="email" id="email" class="rv-input">
             </div>
 
             <div class="rv-form-group">

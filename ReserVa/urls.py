@@ -14,34 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-
-from rest_framework import routers
-
-from comentarios import views
-from usuarios.views import UsuarioViewSet
-router = routers.DefaultRouter()
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from rest_framework.authtoken.views import obtain_auth_token
-
-#PRUEBAS MI PP
-
-
-from django.contrib.auth.views import LogoutView
-
-
-from comentarios.views import ResenaViewSet
-from reservas.views import ReservaViewSet
-from usuarios.views import UsuarioViewSet
-from contabilidad.views import MovimientoViewSet
-
-router.register('reservas', ReservaViewSet)
-router.register('resenas', ResenaViewSet)
-router.register('usuarios', UsuarioViewSet)
-router.register('movimientos', MovimientoViewSet)
-
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -52,21 +28,8 @@ urlpatterns = [
     path('menu/',include('menu.urls')),
     path('contabilidad/',include('contabilidad.urls')),
 
-    #apis
-    path('api/', include(router.urls)),
-
-    #login apis
-    path('api/auth/', include('rest_framework.urls')),
-
-    #drf spectacular
-    # 🚀 RUTAS PARA DRF-SPECTACULAR (DOCUMENTACIÓN)
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-
-    #URL DE TOKENS
-    path('api/api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('api/auth/logout/', LogoutView.as_view(), name='api_logout'),
-    
 
 ]
+#Configuramos para que ReserVa admita imagenes
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

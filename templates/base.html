@@ -5,9 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ReservA{% endblock %}</title>
+    <title>{% block title %}ReserVa{% endblock %}</title>
 
-    <!-- Estilos base e identidad visual -->
+    <!-- Fuentes Premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Estilos base e identidad visual (se mantienen por si hay reglas adicionales) -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -17,82 +22,308 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --gold: #c9a961;
+            --gold-light: #d4b772;
+            --dark-bg: #0a0a0a;
+            --border-color: #222;
+            --text-muted: #888;
+            --text-primary: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           NAVBAR PREMIUM
+           ========================================= */
+        .rv-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .rv-nav-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rv-logo-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rv-logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: var(--text-primary);
+            margin: 0;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .gold-text {
+            color: var(--gold);
+        }
+
+        .rv-nav-menu {
+            display: flex;
+        }
+
+        .rv-nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 32px;
+        }
+
+        .rv-nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .rv-nav-item:hover {
+            color: var(--gold);
+        }
+
+        .rv-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .rv-btn-gold-sm {
+            background: var(--gold);
+            color: var(--dark-bg);
+            padding: 10px 24px;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .rv-btn-gold-sm:hover {
+            background: var(--gold-light);
+            transform: translateY(-1px);
+        }
+
+        .rv-btn-outline-sm {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 9px 24px;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .rv-btn-outline-sm:hover {
+            background: var(--gold);
+            color: var(--dark-bg);
+        }
+
+        .rv-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rv-user-greeting {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .rv-user-greeting i {
+            color: var(--gold);
+            font-size: 18px;
+        }
+
+        .rv-user-greeting:hover {
+            color: var(--gold);
+        }
+
+        .rv-btn-logout {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid #333;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .rv-btn-logout:hover {
+            border-color: #800020;
+            color: #fff;
+            background: #800020;
+        }
+
+        /* =========================================
+           MAIN & FOOTER
+           ========================================= */
+        .rv-main {
+            flex-grow: 1;
+            padding-top: 100px; /* Espacio para el navbar fijo */
+            min-height: 80vh;
+        }
+
+        .rv-footer {
+            text-align: center;
+            padding: 32px 40px;
+            border-top: 1px solid var(--border-color);
+            background: var(--dark-bg);
+            color: #666;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media (max-width: 992px) {
+            .rv-nav-menu {
+                display: none; /* Se puede agregar un toggle de menú móvil después */
+            }
+            .rv-nav-container {
+                padding: 0 20px;
+            }
+            .rv-user-greeting span {
+                display: none; /* Ocultar nombre en móviles, dejar solo ícono */
+            }
+        }
+    </style>
 </head>
 
 <body class="dark-theme">
 
-    <header class="navbar-luxury">
-        <div class="nav-container">
+    <!-- NAVBAR -->
+    <header class="rv-navbar">
+        <div class="rv-nav-container">
             <!-- LOGO -->
-            <a href="{% url 'inicio' %}" class="logo-link">
-                <h1 class="logo-text">Reser<span class="gold-text">Va</span> <span class="logo-icon">🍽️</span></h1>
+            <a href="{% url 'inicio' %}" class="rv-logo-link">
+                <h1 class="rv-logo-text">Reser<span class="gold-text">Va</span> <span style="font-size: 20px;">🍽️</span></h1>
             </a>
 
             <!-- MENÚ DE NAVEGACIÓN -->
-            <nav class="nav-menu">
-                <ul class="nav-links">
-                    <li><a href="{% url 'inicio' %}" class="nav-item">Inicio</a></li>
-                    <li><a href="{% url 'ver_carta' %}" class="nav-item">Menú</a></li>
+            <nav class="rv-nav-menu">
+                <ul class="rv-nav-links">
+                    <li><a href="{% url 'inicio' %}" class="rv-nav-item">Inicio</a></li>
+                    <li><a href="{% url 'ver_carta' %}" class="rv-nav-item">Menú</a></li>
 
                     <!-- MENÚS EXCLUSIVOS PARA EL CLIENTE LOGUEADO -->
                     {% if request.session.logueado and request.session.logueado.rol == "cliente" %}
-                        <li><a href="{% url 'mis_reservas' %}" class="nav-item">Mis Reservas</a></li>
-                        <li><a href="{% url 'comentarios:crear_resena' %}" class="nav-item">Reseñar</a></li>
-                        <li><a href="{% url 'perfil' %}" class="nav-item">Mi Perfil</a></li>
+                        <li><a href="{% url 'mis_reservas' %}" class="rv-nav-item">Mis Reservas</a></li>
+                        <li><a href="{% url 'comentarios:crear_resena' %}" class="rv-nav-item">Reseñar</a></li>
+                        <li><a href="{% url 'perfil' %}" class="rv-nav-item">Mi Perfil</a></li>
                     {% endif %}
                 </ul>
             </nav>
 
             <!-- ACCIONES Y USUARIO -->
-            <div class="nav-actions">
+            <div class="rv-nav-actions">
                 <!-- BOTÓN DINÁMICO DE RESERVAR -->
                 {% if request.session.logueado %}
                     {% if request.session.logueado.rol != "admin" %}
-                        <a href="{% url 'crear_reserva' %}" class="btn-reserva-nav">Reservar Mesa</a>
+                        <a href="{% url 'crear_reserva' %}" class="rv-btn-gold-sm">Reservar Mesa</a>
                     {% endif %}
                 {% else %}
-                    <a href="{% url 'iniciar_sesion' %}" class="btn-reserva-nav">Reservar Mesa</a>
+                    <a href="{% url 'iniciar_sesion' %}" class="rv-btn-gold-sm">Reservar Mesa</a>
                 {% endif %}
 
                 <!-- PANEL DE USUARIO / LOGIN -->
                 {% if request.session.logueado %}
-                    <div class="user-badge d-flex align-items-center gap-2">
-                        <a href="{% url 'perfil' %}" class="user-greeting text-decoration-none" title="Ir a Mi Perfil">
-                            <i class="bi bi-person-circle text-warning me-1"></i>
-                            Hola, <strong>{{ request.session.logueado.nombre }}</strong>
+                    <div class="rv-user-badge">
+                        <a href="{% url 'perfil' %}" class="rv-user-greeting" title="Ir a Mi Perfil">
+                            <i class="bi bi-person-circle"></i>
+                            <span>{{ request.session.logueado.nombre }}</span>
                         </a>
-                        <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Salir</a>
+                        <a href="{% url 'cerrar_sesion' %}" class="rv-btn-logout">Salir</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'iniciar_sesion' %}" class="nav-item login-link">Entrar</a>
-                    <a href="{% url 'crear_usuario' %}" class="btn-register-nav">Registro</a>
+                    <a href="{% url 'iniciar_sesion' %}" class="rv-nav-item">Entrar</a>
+                    <a href="{% url 'crear_usuario' %}" class="rv-btn-outline-sm">Registro</a>
                 {% endif %}
             </div>
         </div>
     </header>
 
-    <main class="contenedor" style="padding-top: 90px; min-height: 80vh;">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="rv-main">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="pie-pagina" style="text-align: center; padding: 25px; border-top: 1px solid #2a2f38; background: #0b0c0e; color: #a0a5b1; font-size: 14px;">
-        <p>&copy; 2026 ReservA - Medellín | Todos los derechos reservados.</p>
+    <!-- FOOTER -->
+    <footer class="rv-footer">
+        <p>&copy; 2026 ReserVa - Medellín | Todos los derechos reservados.</p>
     </footer>
 
+    <!-- SWEETALERT2 PARA MENSAJES DE DJANGO -->
     {% if messages %}
     <script>
         {% for message in messages %}
         Swal.fire({
             text: "{{ message }}",
             icon: "{{ message.tags }}",
-            confirmButtonColor: "#d9ac58",
-            background: "#16191e",
-            color: "#ffffff"
+            confirmButtonColor: "#c9a961",
+            background: "#111",
+            color: "#ffffff",
+            customClass: {
+                popup: 'swal2-premium'
+            }
         });
         {% endfor %}
     </script>
     {% endif %}
-</body>
 
+</body>
 </html>

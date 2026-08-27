@@ -192,15 +192,6 @@
         </h3>
 
         <div class="rv-info-grid">
-            <!-- Usuario -->
-            <div class="rv-info-box">
-                <span class="rv-info-label">
-                    <i class="bi bi-at me-1 text-warning"></i>Nombre de Usuario
-                </span>
-                <span class="rv-info-value">
-                    {% if usuario_datos %}{{ usuario_datos.usuario }}{% else %}{{ request.session.logueado.nombre }}{% endif %}
-                </span>
-            </div>
 
             <!-- Estado -->
             <div class="rv-info-box">

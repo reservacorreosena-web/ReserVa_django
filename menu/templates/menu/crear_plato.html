@@ -25,13 +25,14 @@
     <div class="card bg-dark text-light border-secondary shadow-lg mx-auto" style="max-width: 600px; background-color: #181818 !important; border-color: rgba(255, 255, 255, 0.08) !important; border-radius: 12px;">
         <div class="card-body p-4 p-md-5">
 
-            <form action="{% url 'crear_plato' %}" method="POST">
+            <!-- AGREGAMOS enctype="multipart/form-data" AQUí -->
+            <form action="{% url 'crear_plato' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <!-- NOMBRE DEL PLATO -->
                 <div class="mb-4 text-center">
                     <label for="nombre" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Nombre del Plato</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required>
+                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ datos_plato.nombre }}">
                 </div>
 
                 <!-- DESCRIPCIÓN -->
@@ -45,23 +46,29 @@
                     <div class="col-md-6 text-center">
                         <label for="categoria" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Categoría</label>
                         <select id="categoria" name="categoria" class="form-select bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;">
-                            <option value="entrada">Entrada</option>
-                            <option value="fuerte" selected>Plato Fuerte</option>
-                            <option value="bebida">Bebida</option>
-                            <option value="postre">Postre</option>
+                            <option value="entrada" {% if datos_plato.categoria == 'entrada' %}selected{% endif %}>Entrada</option>
+                            <option value="fuerte" {% if datos_plato.categoria == 'fuerte' or not datos_plato.categoria %}selected{% endif %}>Plato Fuerte</option>
+                            <option value="bebida" {% if datos_plato.categoria == 'bebida' %}selected{% endif %}>Bebida</option>
+                            <option value="postre" {% if datos_plato.categoria == 'postre' %}selected{% endif %}>Postre</option>
                         </select>
                     </div>
 
                     <div class="col-md-6 text-center">
                         <label for="precio" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Precio ($)</label>
-                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required>
+                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ datos_plato.precio_raw }}">
                     </div>
+                </div>
+
+                <!-- CAMPO NUEVO PARA SUBIR LA IMAGEN -->
+                <div class="mb-4 text-center">
+                    <label for="imagen" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Foto del Plato</label>
+                    <input type="file" id="imagen" name="imagen" class="form-control bg-dark text-white border-secondary py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" accept="image/*">
                 </div>
 
                 <!-- CHECKBOXES CENTRADOS -->
                 <div class="d-flex flex-column align-items-center gap-2 mb-4">
                     <div class="form-check">
-                        <input type="checkbox" id="destacado" name="destacado" value="true" class="form-check-input bg-dark border-secondary">
+                        <input type="checkbox" id="destacado" name="destacado" value="on" class="form-check-input bg-dark border-secondary">
                         <label for="destacado" class="form-check-label text-light small">
                             ¿Destacar este producto?
                         </label>
@@ -70,7 +77,7 @@
                     <div class="form-check">
                         <input type="checkbox" id="disponible" name="disponible" value="on" class="form-check-input bg-dark border-secondary" checked>
                         <label for="disponible" class="form-check-label text-light small">
-                            Actualmente esta disponible?
+                            Actualmente está disponible?
                         </label>
                     </div>
                 </div>

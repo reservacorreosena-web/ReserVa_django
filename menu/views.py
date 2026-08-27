@@ -27,24 +27,38 @@ def crear_plato(request):
         descripcion = request.POST.get("descripcion")
         precio_raw = request.POST.get("precio")
         categoria = request.POST.get("categoria")
+        #agregamos el campo de imagen
+        imagen = request.FILES.get('imagen')
         disponible = request.POST.get("disponible") == 'on'
         destacado = request.POST.get("destacado") == 'on'
 
+        datos_plato = {
+            "nombre" : nombre,
+            "descripcion" : descripcion,
+            "precio_raw":precio_raw,
+            "categoria":categoria,
+
+        }
+
+        contexto = {
+            "datos_plato" : datos_plato
+        }
+
         if not nombre or not descripcion or not precio_raw or not categoria:
             messages.error(request,"Debes llenar todos los campos")
-            return redirect('ver_carta_admin')
+            return render(request, "menu/crear_plato.html", contexto)
         try:
             precio = int(precio_raw)
             if precio <=0:
                 messages.error(request, "Ingresa un valor valido.")
-                return redirect('ver_carta_admin')
+                return render(request, "menu/crear_plato.html", contexto)
         except ValueError:
             messages.error(request,"Debes ingresar un numero.")
-            return redirect('ver_carta_admin')
+            return render(request, "menu/crear_plato.html", contexto)
 
         if len(nombre)<3:
             messages.error(request, "El nombre debe tener mas de 5 caracteres")
-            return redirect('ver_carta_admin')
+            return render(request, "menu/crear_plato.html", contexto)
 
         Plato.objects.create(
             nombre=nombre,
@@ -52,7 +66,8 @@ def crear_plato(request):
             precio=precio,
             categoria=categoria,
             disponible=disponible,
-            destacado=destacado
+            destacado=destacado,
+            imagen = imagen
         )
         messages.success(request, "El plato ha sido agregado correctamente.")
 

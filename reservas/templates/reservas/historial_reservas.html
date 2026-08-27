@@ -1,86 +1,506 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<!-- Usamos container-fluid con px-4/px-5 para darle máximo ancho sin pegarse a los bordes de la pantalla -->
-<div class="container-fluid px-4 mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark">Historial de Reservas</h2>
+<style>
+    :root {
+        --rv-gold: #c9a961;
+        --rv-gold-light: #d4b772;
+        --rv-dark: #0a0a0a;
+        --rv-card: #111111;
+        --rv-border: #222222;
+        --rv-text: #ffffff;
+        --rv-text-muted: #888888;
+        --rv-success: #22c55e;
+        --rv-danger: #ef4444;
+    }
 
+    .rv-admin-page {
+        padding: 20px 0;
+    }
+
+    .rv-page-header {
+        margin-bottom: 40px;
+    }
+
+    .rv-page-header .rv-eyebrow {
+        color: var(--rv-gold);
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .rv-page-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        color: var(--rv-text);
+        margin: 0 0 8px;
+        font-weight: 400;
+    }
+
+    .rv-page-header p {
+        color: var(--rv-text-muted);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* =========================================
+       MÉTRICAS (KPIs)
+       ========================================= */
+    .rv-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .rv-metric-card {
+        background: var(--rv-card);
+        border: 1px solid var(--rv-border);
+        border-radius: 8px;
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .rv-metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: var(--rv-gold);
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+
+    .rv-metric-card:hover {
+        border-color: var(--rv-gold);
+        transform: translateY(-2px);
+    }
+
+    .rv-metric-card:hover::before {
+        opacity: 1;
+    }
+
+    .rv-metric-card.success::before { background: var(--rv-success); }
+    .rv-metric-card.warning::before { background: var(--rv-gold); }
+    .rv-metric-card.danger::before { background: var(--rv-danger); }
+
+    .rv-metric-label {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--rv-text-muted);
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .rv-metric-value {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        color: var(--rv-text);
+        margin: 0;
+        font-weight: 400;
+    }
+
+    /* =========================================
+       FILTROS
+       ========================================= */
+    .rv-filter-bar {
+        background: var(--rv-card);
+        border: 1px solid var(--rv-border);
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 32px;
+    }
+
+    .rv-filter-form {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .rv-form-label {
+        display: block;
+        color: var(--rv-text-muted);
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .rv-form-input, .rv-form-select {
+        width: 100%;
+        background: var(--rv-dark);
+        border: 1px solid var(--rv-border);
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: var(--rv-text);
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s ease;
+        outline: none;
+        height: 42px;
+        box-sizing: border-box;
+    }
+
+    .rv-form-input:focus, .rv-form-select:focus {
+        border-color: var(--rv-gold);
+        box-shadow: 0 0 0 2px rgba(201, 169, 97, 0.15);
+    }
+
+    .rv-form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        padding-right: 36px;
+    }
+
+    .rv-form-select option {
+        background: var(--rv-dark);
+        color: var(--rv-text);
+    }
+
+    .btn-filter {
+        background: var(--rv-gold);
+        color: var(--rv-dark);
+        border: none;
+        padding: 0 28px;
+        height: 42px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-filter:hover {
+        background: var(--rv-gold-light);
+        transform: translateY(-1px);
+    }
+
+    /* =========================================
+       TABLA DE DATOS
+       ========================================= */
+    .rv-table-container {
+        background: var(--rv-card);
+        border: 1px solid var(--rv-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .rv-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .rv-table thead {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid var(--rv-border);
+    }
+
+    .rv-table th {
+        padding: 16px 24px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--rv-text-muted);
+        font-weight: 600;
+    }
+
+    .rv-table th.text-center { text-align: center; }
+
+    .rv-table tbody tr {
+        border-bottom: 1px solid var(--rv-border);
+        transition: background 0.2s ease;
+    }
+
+    .rv-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .rv-table tbody tr:hover {
+        background: rgba(201, 169, 97, 0.03);
+    }
+
+    .rv-table td {
+        padding: 20px 24px;
+        color: var(--rv-text);
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .rv-table td.text-center { text-align: center; }
+
+    .rv-id {
+        font-family: 'Inter', monospace;
+        color: var(--rv-text-muted);
+        font-size: 13px;
+    }
+
+    .rv-client-name {
+        font-weight: 600;
+        color: var(--rv-text);
+    }
+
+    .rv-table-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .rv-badge-pending {
+        background: rgba(201, 169, 97, 0.1);
+        color: var(--rv-gold);
+        border: 1px solid rgba(201, 169, 97, 0.3);
+    }
+
+    .rv-badge-success {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--rv-success);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .rv-badge-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--rv-danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .rv-badge-neutral {
+        background: rgba(136, 136, 136, 0.1);
+        color: var(--rv-text-muted);
+        border: 1px solid rgba(136, 136, 136, 0.3);
+    }
+
+    .rv-action-group {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .rv-btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        border: 1px solid var(--rv-border);
+        background: transparent;
+        color: var(--rv-text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+    }
+
+    .rv-btn-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .rv-btn-action.confirm:hover {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: var(--rv-success);
+        color: var(--rv-success);
+    }
+
+    .rv-btn-action.cancel:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--rv-danger);
+        color: var(--rv-danger);
+    }
+
+    .rv-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--rv-text-muted);
+    }
+
+    .rv-empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+        display: block;
+    }
+
+    @media (max-width: 992px) {
+        .rv-filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+        .rv-filter-form .btn-filter {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .rv-metrics-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .rv-filter-form {
+            grid-template-columns: 1fr;
+        }
+        .rv-table-container {
+            overflow-x: auto;
+        }
+        .rv-table {
+            min-width: 800px;
+        }
+    }
+</style>
+
+<div class="rv-admin-page">
+    
+    <!-- Encabezado -->
+    <div class="rv-page-header">
+        <span class="rv-eyebrow">Panel de Control</span>
+        <h2>Historial y Gestión de Reservas</h2>
+        <p>Administra el estado de las mesas y da seguimiento al flujo de clientes.</p>
     </div>
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card bg-primary text-white shadow-sm border-0">
-            <div class="card-body text-center py-3">
-                <h6 class="text-uppercase fw-bold mb-1">Total Reservas</h6>
-                <h2 class="mb-0 fw-bold">{{ total_reservas }}</h2>
-            </div>
+
+    <!-- Panel de Métricas -->
+    <div class="rv-metrics-grid">
+        <div class="rv-metric-card">
+            <div class="rv-metric-label">Total Reservas</div>
+            <h2 class="rv-metric-value">{{ total_reservas }}</h2>
+        </div>
+        <div class="rv-metric-card success">
+            <div class="rv-metric-label">Asistió / Completadas</div>
+            <h2 class="rv-metric-value" style="color: var(--rv-success);">{{ asistio|default:0 }}</h2>
+        </div>
+        <div class="rv-metric-card warning">
+            <div class="rv-metric-label">Pendientes</div>
+            <h2 class="rv-metric-value" style="color: var(--rv-gold);">{{ pendientes }}</h2>
+        </div>
+        <div class="rv-metric-card danger">
+            <div class="rv-metric-label">Canceladas</div>
+            <h2 class="rv-metric-value" style="color: var(--rv-danger);">{{ canceladas|default:0 }}</h2>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white shadow-sm border-0">
-            <div class="card-body text-center py-3">
-                <h6 class="text-uppercase fw-bold mb-1">Confirmadas</h6>
-                <h2 class="mb-0 fw-bold">{{ confirmadas }}</h2>
+
+    <!-- Barra de Filtros -->
+    <div class="rv-filter-bar">
+        <form method="GET" class="rv-filter-form">
+            <div>
+                <label class="rv-form-label">Buscar</label>
+                <input type="text" name="buscar" class="rv-form-input" placeholder="Buscar por cliente o ID..." value="{{ request.GET.buscar }}">
             </div>
+            <div>
+                <label class="rv-form-label">Estado</label>
+                <select name="filtro_estado" class="rv-form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente" {% if request.GET.filtro_estado == 'pendiente' %}selected{% endif %}>Pendientes</option>
+                    <option value="asistio" {% if request.GET.filtro_estado == 'asistio' %}selected{% endif %}>Asistió</option>
+                    <option value="cancelada" {% if request.GET.filtro_estado == 'cancelada' %}selected{% endif %}>Canceladas</option>
+                </select>
+            </div>
+            <div>
+                <label class="rv-form-label">Fecha</label>
+                <input type="date" name="filtro_fecha" class="rv-form-input" value="{{ request.GET.filtro_fecha }}">
+            </div>
+            <div>
+                <label class="rv-form-label">&nbsp;</label>
+                <button type="submit" class="btn-filter">
+                    <i class="bi bi-funnel"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla Principal de Gestión -->
+    <div class="rv-table-container">
+        <div class="table-responsive">
+            <table class="rv-table">
+                <thead>
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th>Cliente / Nombre</th>
+                        <th class="text-center">Mesa</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Hora</th>
+                        <th class="text-center">Personas</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Gestión</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservas %}
+                    <tr>
+                        <td class="text-center">
+                            <span class="rv-id">#{{ r.id }}</span>
+                        </td>
+                        <td>
+                            <span class="rv-client-name">{{ r.nombre_cliente }}</span>
+                        </td>
+                        <td class="text-center">
+                            Mesa {{ r.mesa.numero|default:r.mesa }}
+                        </td>
+                        <td class="text-center">{{ r.fecha }}</td>
+                        <td class="text-center">{{ r.hora }}</td>
+                        <td class="text-center">
+                            <span class="rv-table-badge rv-badge-neutral">{{ r.cantidad_personas }} pers.</span>
+                        </td>
+                        <td class="text-center">
+                            {% if r.estado == 'asistio' or r.estado == 'Asistio' %}
+                                <span class="rv-table-badge rv-badge-success">Asistió</span>
+                            {% elif r.estado == 'pendiente' or r.estado == 'Pendiente' %}
+                                <span class="rv-table-badge rv-badge-pending">Pendiente</span>
+                            {% elif r.estado == 'cancelada' or r.estado == 'Cancelada' %}
+                                <span class="rv-table-badge rv-badge-danger">Cancelada</span>
+                            {% else %}
+                                <span class="rv-table-badge rv-badge-neutral">{{ r.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="rv-action-group">
+                                <form action="{% url 'cambiar_estado_reserva' r.id 'asistio' %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="rv-btn-action confirm" title="Confirmar Asistencia">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                                <form action="{% url 'cambiar_estado_reserva' r.id 'cancelada' %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="rv-btn-action cancel" title="Cancelar Reserva">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="rv-empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>No hay reservas registradas en el sistema bajo estos filtros.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-warning text-dark shadow-sm border-0">
-            <div class="card-body text-center py-3">
-                <h6 class="text-uppercase fw-bold mb-1">Pendientes</h6>
-                <h2 class="mb-0 fw-bold">{{ pendientes }}</h2>
-            </div>
-        </div>
-    </div>
-</div>
-    <div class="card shadow-lg border-0 rounded-3">
-        <div class="card-body p-4">
-            <div class="table-responsive">
-                <!-- Agregamos 'fs-5' para agrandar la letra y 'py-3' en el encabezado para darle más altura -->
-                <table class="table table-hover align-middle fs-5 mb-0">
-                    <thead class="table-dark text-center align-middle">
-                        <tr>
-                            <th class="py-3">#</th>
-                            <th class="py-3 text-start">Cliente / Nombre</th>
-                            <th class="py-3">Mesa</th>
-                            <th class="py-3">Fecha</th> 
-                            <th class="py-3">Hora</th>
-                            <th class="py-3">Personas</th>
-                            <th class="py-3">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for r in reservas %}
-                        <tr class="text-center">
-                            <td class="fw-bold py-3">#{{ r.id }}</td>
-                            <td class="text-start py-3 fw-semibold">{{ r.nombre_cliente }}</td>
-                            <td class="py-3">Mesa {{ r.mesa.numero|default:r.mesa }}</td>
-                            <td class="py-3">{{ r.fecha }}</td>
-                            <td class="py-3">{{ r.hora }}</td>
-                            <td class="py-3"><span class="badge bg-light text-dark fs-6 border">{{ r.cantidad_personas }} personas</span></td>
-                            <td class="py-3">
-                                {% if r.estado == 'confirmada' or r.estado == 'Confirmada' %}
-                                    <span class="badge bg-success fs-6 px-3 py-2">Confirmada</span>
-                                {% elif r.estado == 'pendiente' or r.estado == 'Pendiente' %}
-                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">Pendiente</span>
-                                {% elif r.estado == 'cancelada' or r.estado == 'Cancelada' %}
-                                    <span class="badge bg-danger fs-6 px-3 py-2">Cancelada</span>
-                                {% else %}
-                                    <span class="badge bg-secondary fs-6 px-3 py-2">{{ r.estado }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-5 fs-4">
-                                No hay reservas registradas en el sistema.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+
 </div>
 {% endblock %}

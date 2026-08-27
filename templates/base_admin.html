@@ -10,92 +10,328 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base_admin.css' %}">
-    <link rel="stylesheet" href="{% static 'css/contabilidad.css' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        :root {
+            --gold: #c9a961;
+            --gold-light: #d4b772;
+            --dark-bg: #0a0a0a;
+            --card-bg: #111;
+            --border-color: #222;
+            --text-muted: #888;
+            --text-primary: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .rv-sidebar {
+            width: 280px;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 32px 24px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .rv-logo {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rv-logo h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--text-primary);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .rv-logo .gold-text {
+            color: var(--gold);
+        }
+
+        .rv-logo small {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Accordion Styles */
+        .accordion-item {
+            background: transparent;
+            border: none !important;
+            margin-bottom: 8px;
+        }
+
+        .accordion-button {
+            background: transparent;
+            color: var(--text-primary);
+            border: none;
+            padding: 14px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: rgba(201, 169, 97, 0.1);
+            color: var(--gold);
+            box-shadow: none;
+        }
+
+        .accordion-button:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .accordion-button::after {
+            filter: brightness(0) invert(1);
+            opacity: 0.5;
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            filter: brightness(0.8) sepia(1) hue-rotate(10deg) saturate(2);
+        }
+
+        .accordion-body {
+            padding: 8px 0 8px 16px;
+        }
+
+        .sublink-admin {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            margin-bottom: 4px;
+        }
+
+        .sublink-admin:hover {
+            background: rgba(201, 169, 97, 0.1);
+            color: var(--gold);
+        }
+
+        .sublink-admin i {
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .rv-main-wrapper {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navbar */
+        .rv-topbar {
+            height: 70px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rv-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .rv-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .rv-user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .rv-user-name {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-logout:hover {
+            background: #800020;
+            color: #fff;
+            border-color: #800020;
+        }
+
+        /* Main Content Area */
+        .rv-content {
+            padding: 40px 32px;
+            flex-grow: 1;
+        }
+
+        /* Icons */
+        .rv-icon {
+            color: var(--gold);
+            font-size: 18px;
+            width: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .rv-sidebar {
+                transform: translateX(-100%);
+            }
+            .rv-sidebar.active {
+                transform: translateX(0);
+            }
+            .rv-main-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        /* Active link */
+        .style-link-admin.active-dashboard {
+            background: rgba(201, 169, 97, 0.15);
+            color: var(--gold);
+        }
+    </style>
+
+    {% block extra_css %}
+    {% endblock %}
 </head>
 
-<body class="dark-theme" style="background-color: #131313; overflow-x: hidden;">
+<body class="dark-theme">
 
-    <div class="d-flex" style="min-height: 100vh;">
+    <div class="d-flex">
 
-        <!-- Barra Lateral Izquierda -->
-        <div class="p-3 text-white d-flex flex-column" style="width: 280px; background-color: #131313; border-right: 1px solid rgba(255,255,255,0.1); min-height: 100vh;">
-
-            <!-- Logo del Sistema -->
-            <div class="mb-4 text-center text-md-start ps-2">
-                <h3 class="fs-4 fw-bold m-0 text-white">Reser<span class="text-warning">Va</span> <small class="text-warning" style="font-size: 0.5em;">ADMIN</small></h3>
+        <!-- Sidebar -->
+        <div class="rv-sidebar">
+            <div class="rv-logo">
+                <h3>Reser<span class="gold-text">Va</span> <small class="gold-text">Admin</small></h3>
             </div>
-            <hr style="border-color: rgba(255,255,255,0.15);">
 
-            <!-- Contenedor del Menú Desplegable -->
-            <div class="accordion accordion-flush" id="menuAdminLateral" style="--bs-accordion-bg: transparent;">
+            <div class="accordion accordion-flush" id="menuAdminLateral">
 
-                <!-- Opción 1: Dashboard -->
+                <!-- Dashboard -->
                 <div class="mb-2">
-                    <a href="{% url 'inicio' %}" class="btn text-start w-100 fw-bold d-flex align-items-center gap-2 style-link-admin active-dashboard">
-                        <i class="bi bi-speedometer2 text-warning fs-5"></i> Dashboard
+                    <a href="{% url 'inicio' %}" class="style-link-admin active-dashboard d-flex align-items-center gap-2 text-decoration-none">
+                        <i class="bi bi-speedometer2 rv-icon"></i> Dashboard
                     </a>
                 </div>
 
-                <!-- Opción 2: Gestión de Mesas -->
-                <div class="accordion-item mb-2" style="border: none;">
+                <!-- Gestión de Mesas -->
+                <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropMesas">
-                            <i class="bi bi-calendar-event text-warning fs-5"></i> Gestión de Mesas
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropMesas">
+                            <i class="bi bi-calendar-event rv-icon"></i> Gestión de Mesas
                         </button>
                     </h2>
                     <div id="dropMesas" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
-                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
-                            <a href="#" class="sublink-admin"><i class="bi bi-sliders me-2"></i> Configurar Zonas</a>
-                            <a href="{% url 'historial_reservas' %}" class="sublink-admin"><i class="bi bi-clock-history me-2"></i> Historial Reservas</a>
+                        <div class="accordion-body">
+                            <a href="#" class="sublink-admin"><i class="bi bi-sliders"></i> Configurar Zonas</a>
+                            <a href="{% url 'historial_reservas' %}" class="sublink-admin"><i class="bi bi-clock-history"></i> Historial Reservas</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Opción 3: Control de la Carta -->
-                <div class="accordion-item mb-2" style="border: none;">
+                <!-- Control de la Carta -->
+                <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropCarta">
-                            <i class="bi bi-egg-fried text-warning fs-5"></i> Control de la Carta
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropCarta">
+                            <i class="bi bi-egg-fried rv-icon"></i> Control de la Carta
                         </button>
                     </h2>
                     <div id="dropCarta" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
-                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
-                            <a href="#" class="sublink-admin"><i class="bi bi-arrow-repeat me-2"></i> Actualizar Stock</a>
-                            <a href="{% url 'ver_carta_admin' %}" class="sublink-admin"><i class="bi bi-plus-circle me-2"></i> Nuevo Plato / Categoría</a>
-                            <a href="#" class="sublink-admin"><i class="bi bi-tags me-2"></i> Precios y Ofertas</a>
+                        <div class="accordion-body">
+                            <a href="#" class="sublink-admin"><i class="bi bi-arrow-repeat"></i> Actualizar Stock</a>
+                            <a href="{% url 'ver_carta_admin' %}" class="sublink-admin"><i class="bi bi-plus-circle"></i> Nuevo Plato / Categoría</a>
+                            <a href="#" class="sublink-admin"><i class="bi bi-tags"></i> Precios y Ofertas</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Opción 4: Base de Usuarios -->
-                <div class="accordion-item mb-2" style="border: none;">
+                <!-- Base de Usuarios -->
+                <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropUsuarios">
-                            <i class="bi bi-people me-2"></i> Base de Usuarios
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropUsuarios">
+                            <i class="bi bi-people rv-icon"></i> Base de Usuarios
                         </button>
                     </h2>
                     <div id="dropUsuarios" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
-                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
-                            <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul me-2"></i> Listado General</a>
+                        <div class="accordion-body">
+                            <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul"></i> Listado General</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Opción 5: Pequeña Contabilidad -->
-                <div class="accordion-item mb-2" style="border: none;">
+                <!-- Contabilidad -->
+                <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed fw-bold text-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dropContabilidad">
-                            <i class="bi bi-cash-coin text-warning fs-5"></i> Pequeña Contabilidad
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropContabilidad">
+                            <i class="bi bi-cash-coin rv-icon"></i> Pequeña Contabilidad
                         </button>
                     </h2>
                     <div id="dropContabilidad" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
-                        <div class="accordion-body p-0 ps-4 pt-1 flex-column d-flex gap-1">
-                            <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i class="bi bi-graph-up-arrow me-2"></i> Reportes Diarios</a>
-                            <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2 me-2"></i> Control de Gastos</a>
+                        <div class="accordion-body">
+                            <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i class="bi bi-graph-up-arrow"></i> Reportes Diarios</a>
+                            <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2"></i> Control de Gastos</a>
                         </div>
                     </div>
                 </div>
@@ -103,32 +339,32 @@
             </div>
         </div>
 
-        <div class="flex-grow-1 d-flex flex-column" style="background-color: #50060A;">
+        <!-- Main Content -->
+        <div class="rv-main-wrapper">
+            <nav class="rv-topbar">
+                <div class="rv-status">
+                    <span class="rv-status-dot"></span>
+                    <span>Sistema: <strong>ONLINE</strong></span>
+                </div>
 
-            <nav class="navbar navbar-dark bg-dark px-4" style="height: 70px; border-bottom: 2px solid #800020;">
-                <div class="container-fluid p-0 d-flex justify-content-between align-items-center">
-                    <div class="text-white small">
-                        <span class="text-success me-1">●</span> Sistema: <strong>ONLINE</strong>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-warning fw-bold m-0">
-                            🔑 {{ request.session.logueado.nombre }}
-                        </span>
-                        <a href="{% url 'cerrar_sesion' %}" class="btn text-white fw-bold" style="background-color: #800020; border: none;">Cerrar Sesión</a>
-                    </div>
+                <div class="rv-user-section">
+                    <span class="rv-user-name">
+                        <i class="bi bi-key"></i> {{ request.session.logueado.nombre }}
+                    </span>
+                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Cerrar Sesión</a>
                 </div>
             </nav>
 
-            <main class="p-4 flex-grow-1">
+            <main class="rv-content">
                 {% block content %}
                 {% endblock %}
             </main>
-
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {% if messages %}
     <script>
@@ -136,13 +372,12 @@
         Swal.fire({
             text: "{{ message }}",
             icon: "{{ message.tags }}",
-            confirmButtonColor: "#8f7325",
-            background: "#1a1a1a",
+            confirmButtonColor: "#c9a961",
+            background: "#111",
             color: "#ffffff"
         });
         {% endfor %}
     </script>
-    
     {% endif %}
 </body>
 

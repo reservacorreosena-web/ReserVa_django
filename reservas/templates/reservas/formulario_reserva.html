@@ -13,18 +13,18 @@
 
     .rv-back-wrapper {
         max-width: 1200px;
-        margin: 0 auto 40px;
+        margin: 0 auto 60px;
     }
 
-    .rv-login-container {
-        max-width: 520px;
+    .rv-form-container {
+        max-width: 600px;
         margin: 0 auto;
-        padding: 0px 20px;
+        padding: 0px 40px;
     }
 
-    .rv-login-header {
+    .rv-header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 50px;
     }
 
     .rv-eyebrow {
@@ -36,24 +36,19 @@
         margin-bottom: 16px;
     }
 
-    .rv-login-title {
+    .rv-title {
         font-family: 'Playfair Display', serif;
-        font-size: 42px;
+        font-size: 48px;
         color: #fff;
         margin: 0 0 16px;
         font-weight: 400;
         line-height: 1.2;
     }
 
-    .rv-login-subtitle {
+    .rv-subtitle {
         color: #888;
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.6;
-    }
-
-    .rv-login-subtitle em {
-        color: #c9a961;
-        font-style: normal;
     }
 
     .rv-form {
@@ -61,7 +56,7 @@
     }
 
     .rv-form-group {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
 
     .rv-form-label {
@@ -78,7 +73,7 @@
         background: transparent;
         border: 1px solid #333;
         border-radius: 0;
-        padding: 16px 20px;
+        padding: 18px 20px;
         color: #fff;
         font-size: 15px;
         font-family: inherit;
@@ -95,14 +90,9 @@
         color: #555;
     }
 
-    /* Estilo para los select y textarea manteniendo la misma línea */
-    select.rv-input option {
-        background: #141414;
-        color: #fff;
-    }
-
     textarea.rv-input {
         resize: vertical;
+        min-height: 120px;
     }
 
     .btn-gold {
@@ -157,11 +147,11 @@
         .rv-page {
             padding: 0px 20px 60px;
         }
-        .rv-login-container {
-            padding: 0px 10px;
+        .rv-form-container {
+            padding: 0px 20px;
         }
-        .rv-login-title {
-            font-size: 32px;
+        .rv-title {
+            font-size: 36px;
         }
     }
 </style>
@@ -173,61 +163,38 @@
         </a>
     </div>
 
-    <div class="rv-login-container">
-        <div class="rv-login-header">
-            <span class="rv-eyebrow">Experiencia Exclusiva</span>
-            <h1 class="rv-login-title">Reservar Mesa</h1>
-            <p class="rv-login-subtitle">Asegura tu espacio en <em>ReserVa</em> completando los datos</p>
+    <div class="rv-form-container">
+        <div class="rv-header">
+            <span class="rv-eyebrow">Experiencia gastronómica</span>
+            <h1 class="rv-title">Reservar Mesa</h1>
+            <p class="rv-subtitle">Completa los detalles de tu reserva y asegura tu lugar en ReserVa.</p>
         </div>
 
         <form method="POST" action="{% url 'crear_reserva' %}" class="rv-form">
             {% csrf_token %}
 
             <div class="rv-form-group">
-                <label for="nombre" class="rv-form-label">Nombre</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required minlength="3" class="rv-input">
-            </div>
-
-            <div class="rv-form-group">
-                <label for="telefono" class="rv-form-label">Teléfono</label>
-                <input type="number" id="telefono" name="telefono" placeholder="3177373170" required class="rv-input">
-            </div>
-
-            <div class="rv-form-group">
-                <label for="cantidad_personas" class="rv-form-label">Número de Personas</label>
-                <input type="number" id="cantidad_personas" name="cantidad_personas" min="1" placeholder="Ej: 2" required class="rv-input">
-            </div>
-
-            <div class="rv-form-group">
-                <label for="mesa" class="rv-form-label">Mesa</label>
-                <input type="text" id="mesa" name="mesa" placeholder="M1, M2..." required class="rv-input">
+                <label for="cantidad_personas" class="rv-form-label">Número de personas</label>
+                <input type="number" name="cantidad_personas" id="cantidad_personas" min="1" max="20" placeholder="Ej: 4" required value="{{ datos.cantidad_personas }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
                 <label for="fecha" class="rv-form-label">Fecha</label>
-                <input type="date" id="fecha" name="fecha" required class="rv-input">
+                <input type="date" name="fecha" id="fecha" required value="{{ datos.fecha }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
                 <label for="hora" class="rv-form-label">Hora</label>
-                <input type="time" id="hora" name="hora" required class="rv-input">
+                <input type="time" name="hora" id="hora" required value="{{ datos.hora }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
-                <label for="notas" class="rv-form-label">Notas Adicionales</label>
-                <textarea id="notas" name="notas" rows="3" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input"></textarea>
-            </div>
-
-            <div class="rv-form-group">
-                <label for="preordenar" class="rv-form-label">¿Desea preordenar sus platos de una vez?</label>
-                <select name="preordenar" id="preordenar" class="rv-input">
-                    <option value="NO">No, solo reservar la mesa</option>
-                    <option value="SI">Sí, elegir los platos ahora</option>
-                </select>
+                <label for="notas" class="rv-form-label">Notas / Observaciones</label>
+                <textarea name="notas" id="notas" rows="4" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input">{{ datos.notas }}</textarea>
             </div>
 
             <button type="submit" class="btn-gold">
-                <i class="bi bi-check2-circle"></i> Confirmar Reserva
+                <i class="bi bi-calendar-check"></i> Confirmar Reserva
             </button>
         </form>
     </div>

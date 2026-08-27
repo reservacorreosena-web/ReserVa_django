@@ -4,77 +4,308 @@
 {% block title %}Registrar Gasto - ReserVa{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4 text-white">
+<style>
+    :root {
+        --rv-gold: #c9a961;
+        --rv-gold-light: #d4b772;
+        --rv-dark: #0a0a0a;
+        --rv-card: #111111;
+        --rv-border: #222222;
+        --rv-text: #ffffff;
+        --rv-text-muted: #888888;
+    }
 
-    <!-- Encabezado con botón para volver -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    .rv-admin-page {
+        padding: 20px 0;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .rv-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .rv-page-header .rv-eyebrow {
+        color: var(--rv-gold);
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .rv-page-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        color: var(--rv-text);
+        margin: 0 0 8px;
+        font-weight: 400;
+    }
+
+    .rv-page-header p {
+        color: var(--rv-text-muted);
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .btn-dark {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--rv-gold);
+        border: 1px solid var(--rv-gold);
+        padding: 10px 20px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .btn-dark:hover {
+        background: var(--rv-gold);
+        color: var(--rv-dark);
+    }
+
+    .rv-form-container {
+        background: var(--rv-card);
+        border: 1px solid var(--rv-border);
+        border-radius: 12px;
+        padding: 40px;
+    }
+
+    .rv-form-group {
+        margin-bottom: 28px;
+    }
+
+    .rv-form-label {
+        display: block;
+        color: var(--rv-text-muted);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .rv-input {
+        width: 100%;
+        background: var(--rv-dark);
+        border: 1px solid var(--rv-border);
+        border-radius: 6px;
+        padding: 14px 16px;
+        color: var(--rv-text);
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .rv-input:focus {
+        outline: none;
+        border-color: var(--rv-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+    }
+
+    .rv-input::placeholder {
+        color: #555;
+    }
+
+    select.rv-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 18px;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+    select.rv-input option {
+        background: var(--rv-dark);
+        color: var(--rv-text);
+    }
+
+    /* Custom Input Group for Price */
+    .rv-input-group {
+        display: flex;
+        border: 1px solid var(--rv-border);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--rv-dark);
+        transition: all 0.3s ease;
+    }
+
+    .rv-input-group:focus-within {
+        border-color: var(--rv-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+    }
+
+    .rv-input-prefix {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--rv-gold);
+        padding: 14px 16px;
+        font-weight: 600;
+        font-size: 15px;
+        border-right: 1px solid var(--rv-border);
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .rv-input-group .rv-input {
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .rv-input-group .rv-input:focus {
+        box-shadow: none;
+    }
+
+    .rv-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 40px;
+        padding-top: 32px;
+        border-top: 1px solid var(--rv-border);
+    }
+
+    .btn-gold {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--rv-gold);
+        color: var(--rv-dark);
+        border: none;
+        padding: 14px 32px;
+        font-size: 13px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .btn-gold:hover {
+        background: var(--rv-gold-light);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(201, 169, 97, 0.2);
+    }
+
+    .rv-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .rv-admin-page {
+            padding: 20px;
+        }
+        .rv-form-container {
+            padding: 24px;
+        }
+        .rv-form-row {
+            grid-template-columns: 1fr;
+        }
+        .rv-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .rv-form-actions {
+            flex-direction: column-reverse;
+        }
+        .btn-gold, .btn-dark {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="rv-admin-page">
+
+    <!-- Encabezado -->
+    <div class="rv-page-header">
         <div>
-            <h2 class="fw-bold mb-0">Registrar Gasto</h2>
-            <span class="text-secondary small">Añade un nuevo egreso al sistema de contabilidad</span>
+            <span class="rv-eyebrow">Pequeña Contabilidad</span>
+            <h2>Registrar Gasto</h2>
+            <p>Añade un nuevo egreso al sistema de contabilidad</p>
         </div>
-        <a href="{% url 'inicio_contabilidad' %}" class="btn btn-outline-secondary btn-sm text-light">
-            <i class="bi bi-arrow-left me-1"></i> Volver
+        <a href="{% url 'inicio_contabilidad' %}" class="btn-dark">
+            <i class="bi bi-arrow-left"></i> Volver
         </a>
     </div>
 
-    <!-- Formulario en Tarjeta Centrada -->
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card card-form-reserva p-4">
+    <!-- Formulario -->
+    <div class="rv-form-container">
+        <form method="POST" action="{% url 'guardar_gasto' %}">
+            {% csrf_token %}
 
-                <form method="POST" action="{% url 'guardar_gasto' %}">
-                    {% csrf_token %}
-
-                    <!-- Concepto -->
-                    <div class="mb-3">
-                        <label for="concepto" class="form-label fw-semibold text-secondary small text-uppercase">Concepto</label>
-                        <input type="text" id="concepto" name="concepto" class="form-control form-control-dark" placeholder="Ej: Compra de carne premium / Insumos" required>
-                    </div>
-
-                    <div class="row">
-                        <!-- Categoría -->
-                        <div class="col-md-6 mb-3">
-                            <label for="categoria" class="form-label fw-semibold text-secondary small text-uppercase">Categoría</label>
-                            <select id="categoria" name="categoria" class="form-select form-control-dark" required>
-                                <option value="" disabled selected>Seleccionar...</option>
-                                <option value="Insumos">INSUMOS</option>
-                                <option value="Nomina">NÓMINA</option>
-                                <option value="Servicios">SERVICIOS</option>
-                                <option value="Mantenimiento">MANTENIMIENTO</option>
-                                <option value="Otros">OTROS</option>
-                            </select>
-                        </div>
-
-                        <!-- Valor -->
-                        <div class="col-md-6 mb-3">
-                            <label for="valor" class="form-label fw-semibold text-secondary small text-uppercase">Valor ($)</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-dark border-secondary text-warning fw-bold">$</span>
-                                <input type="number" step="0.01" id="valor" name="valor" class="form-control form-control-dark" placeholder="0.00" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Método de Pago -->
-                    <div class="mb-4">
-                        <label for="metodo_pago" class="form-label fw-semibold text-secondary small text-uppercase">Método de Pago</label>
-                        <select id="metodo_pago" name="metodo_pago" class="form-select form-control-dark" required>
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Tarjeta">Tarjeta / Datáfono</option>
-                            <option value="Transferencia">Transferencia</option>
-                        </select>
-                    </div>
-
-                    <!-- Botones de Acción -->
-                    <div class="d-flex justify-content-end gap-2 pt-3 border-top border-secondary border-opacity-25">
-                        <a href="{% url 'inicio_contabilidad' %}" class="btn btn-wine px-4">Cancelar</a>
-                        <button type="submit" class="btn btn-gold px-4">Guardar Gasto</button>
-                    </div>
-
-                </form>
-
+            <!-- Concepto -->
+            <div class="rv-form-group">
+                <label for="concepto" class="rv-form-label">Concepto</label>
+                <input type="text" id="concepto" name="concepto" class="rv-input" placeholder="Ej: Compra de carne premium / Insumos" required value="{{ datos_contabilidad.concepto }}">
             </div>
-        </div>
+
+            <div class="rv-form-row">
+                <!-- Categoría -->
+                <div class="rv-form-group">
+                    <label for="categoria" class="rv-form-label">Categoría</label>
+                    <select id="categoria" name="categoria" class="rv-input" required>
+                        <option value="" disabled {% if not datos_contabilidad.categoria %}selected{% endif %}>Seleccionar...</option>
+                        <option value="Insumos" {% if datos_contabilidad.categoria == 'Insumos' %}selected{% endif %}>INSUMOS</option>
+                        <option value="Nomina" {% if datos_contabilidad.categoria == 'Nomina' %}selected{% endif %}>NÓMINA</option>
+                        <option value="Servicios" {% if datos_contabilidad.categoria == 'Servicios' %}selected{% endif %}>SERVICIOS</option>
+                        <option value="Mantenimiento" {% if datos_contabilidad.categoria == 'Mantenimiento' %}selected{% endif %}>MANTENIMIENTO</option>
+                        <option value="Otros" {% if datos_contabilidad.categoria == 'Otros' %}selected{% endif %}>OTROS</option>
+                    </select>
+                </div>
+
+                <!-- Valor -->
+                <div class="rv-form-group">
+                    <label for="valor" class="rv-form-label">Valor ($)</label>
+                    <div class="rv-input-group">
+                        <span class="rv-input-prefix">$</span>
+                        <input type="number" step="0.01" id="valor" name="valor" class="rv-input" placeholder="0.00" required value="{{ datos_contabilidad.valor }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="rv-form-group">
+                <label for="metodo_pago" class="rv-form-label">Método de Pago</label>
+                <select id="metodo_pago" name="metodo_pago" class="rv-input" required>
+                    <option value="Efectivo" {% if datos_contabilidad.metodo_pago == 'Efectivo' or not datos_contabilidad.metodo_pago %}selected{% endif %}>Efectivo</option>
+                    <option value="Tarjeta" {% if datos_contabilidad.metodo_pago == 'Tarjeta' %}selected{% endif %}>Tarjeta / Datáfono</option>
+                    <option value="Transferencia" {% if datos_contabilidad.metodo_pago == 'Transferencia' %}selected{% endif %}>Transferencia</option>
+                </select>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="rv-form-actions">
+                <a href="{% url 'inicio_contabilidad' %}" class="btn-dark" style="border-color: var(--rv-border); color: var(--rv-text-muted);">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn-gold">
+                    <i class="bi bi-check-lg"></i> Guardar Gasto
+                </button>
+            </div>
+
+        </form>
     </div>
 
 </div>

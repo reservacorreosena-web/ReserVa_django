@@ -13,18 +13,18 @@
 
     .rv-back-wrapper {
         max-width: 1200px;
-        margin: 0 auto 40px;
+        margin: 0 auto 60px;
     }
 
-    .rv-login-container {
-        max-width: 520px;
+    .rv-form-container {
+        max-width: 600px;
         margin: 0 auto;
-        padding: 0px 20px;
+        padding: 0px 40px;
     }
 
-    .rv-login-header {
+    .rv-header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 50px;
     }
 
     .rv-eyebrow {
@@ -36,24 +36,19 @@
         margin-bottom: 16px;
     }
 
-    .rv-login-title {
+    .rv-title {
         font-family: 'Playfair Display', serif;
-        font-size: 42px;
+        font-size: 48px;
         color: #fff;
         margin: 0 0 16px;
         font-weight: 400;
         line-height: 1.2;
     }
 
-    .rv-login-subtitle {
+    .rv-subtitle {
         color: #888;
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.6;
-    }
-
-    .rv-login-subtitle em {
-        color: #c9a961;
-        font-style: normal;
     }
 
     .rv-form {
@@ -61,7 +56,7 @@
     }
 
     .rv-form-group {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
 
     .rv-form-label {
@@ -78,7 +73,7 @@
         background: transparent;
         border: 1px solid #333;
         border-radius: 0;
-        padding: 16px 20px;
+        padding: 18px 20px;
         color: #fff;
         font-size: 15px;
         font-family: inherit;
@@ -97,6 +92,7 @@
 
     textarea.rv-input {
         resize: vertical;
+        min-height: 140px;
     }
 
     .btn-gold {
@@ -151,11 +147,11 @@
         .rv-page {
             padding: 0px 20px 60px;
         }
-        .rv-login-container {
-            padding: 0px 10px;
+        .rv-form-container {
+            padding: 0px 20px;
         }
-        .rv-login-title {
-            font-size: 32px;
+        .rv-title {
+            font-size: 36px;
         }
     }
 </style>
@@ -167,33 +163,33 @@
         </a>
     </div>
 
-    <div class="rv-login-container">
-        <div class="rv-login-header">
-            <span class="rv-eyebrow">Tu Opinión Importa</span>
-            <h1 class="rv-login-title">Cuéntanos tu experiencia</h1>
-            <p class="rv-login-subtitle">Ayúdanos a mejorar evaluando nuestro servicio y platos en <em>ReserVa</em></p>
+    <div class="rv-form-container">
+        <div class="rv-header">
+            <span class="rv-eyebrow">Tu opinión importa</span>
+            <h1 class="rv-title">Cuéntanos tu experiencia</h1>
+            <p class="rv-subtitle">Ayúdanos a seguir mejorando compartiendo tu opinión sobre la comida y el servicio.</p>
         </div>
 
         <form method="POST" class="rv-form">
             {% csrf_token %}
-
+            
             <div class="rv-form-group">
                 <label for="comida" class="rv-form-label">Calificación Comida (1-5)</label>
-                <input type="number" id="comida" name="comida" min="1" max="5" required placeholder="5" class="rv-input">
+                <input type="number" name="comida" id="comida" min="1" max="5" required placeholder="5" value="{{ datos.comida }}" class="rv-input">
             </div>
-
+            
             <div class="rv-form-group">
                 <label for="servicio" class="rv-form-label">Calificación Servicio (1-5)</label>
-                <input type="number" id="servicio" name="servicio" min="1" max="5" required placeholder="5" class="rv-input">
+                <input type="number" name="servicio" id="servicio" min="1" max="5" required placeholder="5" value="{{ datos.servicio }}" class="rv-input">
             </div>
-
+            
             <div class="rv-form-group">
-                <label for="comentario" class="rv-form-label">Tu Comentario</label>
-                <textarea id="comentario" name="comentario" rows="4" required placeholder="¿Qué tal estuvo todo?" class="rv-input"></textarea>
+                <label for="comentario" class="rv-form-label">Tu comentario</label>
+                <textarea name="comentario" id="comentario" rows="5" required placeholder="¿Qué tal estuvo todo?" class="rv-input"></textarea>
             </div>
-
+            
             <button type="submit" class="btn-gold">
-                <i class="bi bi-star-fill"></i> Enviar Reseña
+                <i class="bi bi-send"></i> Enviar reseña
             </button>
         </form>
     </div>

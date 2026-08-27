@@ -16,19 +16,23 @@ from rest_framework import viewsets
 @solo_anonimos
 def inicio_sesion(request):
     if request.method == "POST":
-        # Creamos una variable que atrapa lo que viene en el HTML
-        usuario_html = request.POST.get("usuario").strip().lower()
+        # Usamos .get() y validamos por si llega nulo antes de aplicar .strip()
+        email_raw = request.POST.get("email")
         clave_html = request.POST.get("contraseña")
 
-        try:
-            # Acá hacemos un query para ver si coincide con la BD
-            q = Usuario.objects.get(usuario=usuario_html, contraseña=clave_html)
+        if not email_raw or not clave_html:
+            messages.error(request, "Por favor completa todos los campos.")
+            return redirect('iniciar_sesion')
 
-            # CONTROL DE SEGURIDAD: Validamos si la cuenta está suspendida antes de dejarlo entrar
+        email_html = email_raw.strip().lower()
+
+        try:
+            q = Usuario.objects.get(email=email_html, contraseña=clave_html)
+
             if "[SUSPENDIDO]" in q.nombre:
                 messages.error(request, "Tu cuenta se encuentra suspendida. Comunícate con el administrador.")
-                return redirect('iniciar_sesion')  # O como se llame la URL de tu login
-            # Guardamos la manilla en el maletín (Sesión)
+                return redirect('iniciar_sesion')
+
             request.session["logueado"] = {
                 "id": q.id,
                 "nombre": q.nombre,
@@ -39,7 +43,7 @@ def inicio_sesion(request):
 
         except Usuario.DoesNotExist:
             request.session["logueado"] = None
-            messages.error(request, "Usuario o contraseña incorrectos")
+            messages.error(request, "Correo o contraseña incorrectos")
             return redirect('iniciar_sesion')
 
     return render(request, "login.html")
@@ -51,46 +55,41 @@ def logout(request):
         return redirect('inicio')
     except Exception as e:
         return redirect('inicio')
+
+
 @solo_anonimos
 def crear_usuario(request):
     if request.method == "POST":
-        # Obtenemos los datos del formulario
-        usuario = request.POST.get("usuario").strip().lower()
         nombre = request.POST.get("nombre").strip().title()
-        apellido = request.POST.get("apellido").strip().title()
         email = request.POST.get("email").strip().lower()
         contraseña = request.POST.get("contraseña").strip()
 
-        if not usuario or not nombre or not apellido or not email or not contraseña:
-            messages.error(request,"Debes llenar todos los campos.")
-            return redirect('iniciar_sesion')
-        if len(usuario) <3 or len(nombre)<3:
-            messages.error(request, "El nombre y/o usuario deben tener mas de 3 caracteres")
-            return redirect('iniciar_sesion')
-        if len(contraseña)<8:
-            messages.error(request,"La contraseña debe tener 8 caracteres")
-            return redirect('iniciar_sesion')
+        # Diccionario para conservar lo que escribió el usuario si hay un error
+        datos_form = {'nombre': nombre, 'email': email}
+
+        if len(contraseña) < 8:
+            messages.error(request, "La contraseña debe tener al menos 8 caracteres.")
+            return render(request, "register.html", {'datos_form': datos_form})
+
         if Usuario.objects.filter(email=email).exists():
             messages.error(request, "Este correo ya se encuentra registrado.")
-            return redirect('iniciar_sesion')
+            return render(request, "register.html", {'datos_form': datos_form})
+
         try:
             validate_email(email)
         except ValidationError:
-            messages.error(request,"Ingrese un correo valido.")
-            return redirect('iniciar_sesion')
-
-
+            messages.error(request, "Ingrese un correo válido.")
+            return render(request, "register.html", {'datos_form': datos_form})
 
         Usuario.objects.create(
-            usuario=usuario,
             nombre=nombre,
-            apellido=apellido,
             email=email,
             contraseña=contraseña,
+            rol='cliente'
         )
+        messages.success(request, "¡Cuenta creada con éxito! Ya puedes iniciar sesión.")
         return redirect('iniciar_sesion')
 
-    # Arreglado: Limpiamos el error de sintaxis que se mezcló aquí abajo
     return render(request, "register.html")
 
 @solo_admin

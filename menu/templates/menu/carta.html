@@ -1,108 +1,269 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Nuestra Carta - ReserVa{% endblock %}
+{% block title %}Menú del Restaurante - ReserVa{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/menu.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="rv-landing py-5" style="background-color: #0c0c0c; min-height: 100vh; color: #f5f2eb;">
-
-    <div class="container py-5" style="max-width: 1200px;">
-
-        <!-- Encabezado Editorial de la Carta -->
-        <div class="text-center mb-5 pb-4 border-bottom" style="border-color: rgba(212, 160, 107, 0.2) !important;">
-            <span class="rv-eyebrow" style="letter-spacing: 4px; color: #d4a06b; font-size: 0.85rem; text-transform: uppercase;">Gastronomía de Autor</span>
-            <h1 class="display-3 fw-normal text-white mt-2 mb-3" style="font-family: 'Playfair Display', serif; letter-spacing: 1px;">Nuestra Carta</h1>
-            <p class="text-secondary col-lg-7 mx-auto fs-5" style="font-style: italic; font-weight: 300;">
-                "Una selección culinaria exclusiva, preparada con ingredientes de la más alta calidad para asegurar una noche inolvidable."
-            </p>
-        </div>
-
-        <!-- Grid Dinámico y Escalable (Funciona perfecto con 1, pocos o muchos platos) -->
-        <div class="row g-4">
-            {% for p in plato %}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg rv-menu-card d-flex flex-column" style="background: #141414; border: 1px solid rgba(212, 160, 107, 0.15) !important; border-radius: 12px; overflow: hidden; transition: all 0.3s ease;">
-                    
-                    <!-- Imagen del Plato (Si el modelo la tiene, la muestra; si no, muestra un placeholder elegante o se adapta limpiamente) -->
-                    {% if p.imagen %}
-                    <div class="rv-card-img-wrapper" style="height: 220px; overflow: hidden; position: relative;">
-                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" class="w-100 h-100 object-fit-cover" style="transition: transform 0.5s ease;">
-                        <div style="position: absolute; top: 15px; right: 15px;">
-                            <span class="badge px-3 py-2 shadow" style="background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(5px); color: #d4a06b; border: 1px solid rgba(212, 160, 107, 0.3); font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600;">
-                                ${{ p.precio }}
-                            </span>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="card-body d-flex flex-column p-4 justify-content-between">
-                        <div>
-                            <!-- Categoría y Precio (Si no hay imagen, el precio va en la cabecera) -->
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-uppercase" style="font-size: 0.7rem; letter-spacing: 2px; color: #d4a06b; font-weight: 600;">
-                                    {{ p.categoria|default:"Especialidad" }}
-                                </span>
-                                {% if not p.imagen %}
-                                <span class="fs-4 fw-light text-warning" style="color: #d4a06b !important; font-family: 'Playfair Display', serif;">
-                                    ${{ p.precio }}
-                                </span>
-                                {% endif %}
-                            </div>
-
-                            <!-- Nombre del Plato (Soporta nombres largos de forma limpia) -->
-                            <h3 class="h4 text-white mb-3" style="font-family: 'Playfair Display', serif; font-weight: 500; line-height: 1.3;">
-                                {{ p.nombre }}
-                            </h3>
-
-                            <!-- Descripción (Soporta diferentes longitudes sin romper el diseño) -->
-                            <p class="text-secondary small mb-4 fw-light" style="line-height: 1.6;">
-                                {{ p.descripcion|default:"Preparación exclusiva elaborada al momento por nuestro equipo de cocina." }}
-                            </p>
-                        </div>
-
-                        <!-- Detalle inferior opcional para mantener simetría visual -->
-                        <div class="pt-3 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between">
-                            <span class="text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">
-                                <i class="bi bi-star-fill text-warning me-1" style="color: #d4a06b !important; font-size: 0.7rem;"></i> Alta cocina
-                            </span>
-                            <span class="text-secondary small" style="font-style: italic; font-size: 0.75rem;">ReserVa</span>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <div class="p-5 mx-auto rounded-4 shadow-lg" style="background: #141414; border: 1px dashed rgba(212, 160, 107, 0.3); max-width: 600px;">
-                    <i class="bi bi-journal-x display-4 mb-3" style="color: #d4a06b;"></i>
-                    <h3 class="fw-normal mb-2 text-white" style="font-family: 'Playfair Display', serif;">No hay platillos disponibles</h3>
-                    <p class="text-secondary fs-6">El administrador está actualizando la carta en este momento. Vuelve a consultar pronto.</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-    </div>
-
-</div>
-
-<!-- Estilos profesionales y microinteracciones de alta gama -->
 <style>
-    .rv-menu-card {
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    .rv-menu-page {
+        background: #0a0a0a;
+        padding: 0px 40px 80px;
+        min-height: 100vh;
     }
-    .rv-menu-card:hover {
-        transform: translateY(-6px);
-        border-color: rgba(212, 160, 107, 0.5) !important;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6) !important;
+
+    .rv-menu-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding-top: 20px;
     }
-    .rv-menu-card:hover img {
+
+    .rv-eyebrow {
+        display: block;
+        color: #c9a961;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+
+    .rv-menu-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        color: #fff;
+        margin: 0 0 16px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+    .rv-menu-subtitle {
+        color: #888;
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .rv-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 32px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .rv-plato-card {
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rv-plato-card:hover {
+        transform: translateY(-8px);
+        border-color: #c9a961;
+        box-shadow: 0 20px 40px rgba(201, 169, 97, 0.15);
+    }
+
+    .rv-plato-image-wrapper {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+        background: #1a1a1a;
+    }
+
+    .rv-plato-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .rv-plato-card:hover .rv-plato-image {
         transform: scale(1.05);
     }
+
+    .rv-plato-price {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: #c9a961;
+        color: #0a0a0a;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .rv-plato-category {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #c9a961;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 4px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        backdrop-filter: blur(10px);
+    }
+
+    .rv-plato-no-image {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        color: #555;
+        font-size: 48px;
+    }
+
+    .rv-plato-content {
+        padding: 24px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rv-plato-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        color: #fff;
+        margin: 0 0 12px;
+        font-weight: 400;
+        line-height: 1.3;
+    }
+
+    .rv-plato-description {
+        color: #888;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        flex-grow: 1;
+    }
+
+    .rv-plato-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: transparent;
+        color: #c9a961;
+        border: 1px solid #c9a961;
+        padding: 14px 24px;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .rv-plato-button:hover {
+        background: #c9a961;
+        color: #0a0a0a;
+    }
+
+    .rv-menu-empty {
+        text-align: center;
+        padding: 80px 40px;
+        background: #111;
+        border: 1px solid #222;
+        border-radius: 12px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .rv-menu-empty-icon {
+        font-size: 64px;
+        color: #c9a961;
+        margin-bottom: 20px;
+    }
+
+    .rv-menu-empty-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        color: #fff;
+        margin: 0 0 12px;
+        font-weight: 400;
+    }
+
+    .rv-menu-empty-text {
+        color: #888;
+        font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .rv-menu-page {
+            padding: 0px 20px 60px;
+        }
+        .rv-menu-title {
+            font-size: 36px;
+        }
+        .rv-menu-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .rv-menu-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 </style>
+
+<div class="rv-menu-page">
+    <div class="rv-menu-header">
+        <span class="rv-eyebrow">Gastronomía de Autor</span>
+        <h1 class="rv-menu-title">Menú del Restaurante</h1>
+        <p class="rv-menu-subtitle">Platos preparados con los mejores ingredientes de la ciudad.</p>
+    </div>
+
+    <div class="rv-menu-grid">
+        {% for p in plato %}
+        <div class="rv-plato-card">
+            <div class="rv-plato-image-wrapper">
+                {% if p.imagen %}
+                    <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" class="rv-plato-image">
+                {% else %}
+                    <div class="rv-plato-no-image">
+                        <i class="bi bi-image"></i>
+                    </div>
+                {% endif %}
+                <span class="rv-plato-price">${{ p.precio }}</span>
+                <span class="rv-plato-category">{{ p.categoria|default:"Especialidad" }}</span>
+            </div>
+
+            <div class="rv-plato-content">
+                <h3 class="rv-plato-name">{{ p.nombre }}</h3>
+                <p class="rv-plato-description">{{ p.descripcion|default:"Preparación exclusiva elaborada por nuestro equipo de cocina." }}</p>
+                <a href="#" class="rv-plato-button">
+                    <i class="bi bi-bag-plus"></i> Seleccionar Opciones
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="rv-menu-empty" style="grid-column: 1 / -1;">
+            <div class="rv-menu-empty-icon">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <h3 class="rv-menu-empty-title">No hay platos disponibles</h3>
+            <p class="rv-menu-empty-text">Estamos actualizando nuestra carta. Consulta de nuevo más tarde.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

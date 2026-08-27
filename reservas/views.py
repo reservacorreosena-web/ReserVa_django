@@ -1,134 +1,224 @@
-from django.shortcuts import render,redirect
-from .models import Reserva
-from django.http import HttpResponse
-from usuarios.decorador import verificar,solo_admin
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .serializador import *
-from rest_framework import viewsets
+from django.utils import timezone
+from datetime import datetime
+from .models import Reserva
+from usuarios.models import Usuario
+from usuarios.decorador import verificar, solo_admin
+from django.db.models import Q
+
 
 @verificar
 def crear_reserva(request):
     if request.method == "POST":
-        # Obtenemos los datos del formulario usando los 'name' de los inputs
-        nombre = request.POST.get("nombre").strip().title()
-        telefono = request.POST.get("telefono").strip()
-        cantidad_personas = request.POST.get("cantidad_personas")
-        mesa = request.POST.get("mesa")
-        fecha = request.POST.get("fecha")
-        hora = request.POST.get("hora")
-        notas = request.POST.get("notas")
-        preordenar = request.POST.get("preordenar")
+        # Verifica las credencias del usuario logueado
+        usuario_session = request.session.get('logueado')
+        #le sacamos el ID para buscarlo en la BD y asignarlo como dueño de la reserva
+        usuario_id = usuario_session.get('id')
+        #Hace una consulta en la base de datos usando su ID
+        usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
-        if not nombre or not telefono or not cantidad_personas or not mesa or not fecha or not hora:
-            messages.error(request, "Por favor llene todos los campos")
-            return redirect('crear_reserva')
+        # 2. Capturamos únicamente los datos del nuevo formulario
+        cantidad_personas = request.POST.get("cantidad_personas", "").strip()
+        fecha = request.POST.get("fecha", "").strip()
+        hora = request.POST.get("hora", "").strip()
+        notas = request.POST.get("notas", "").strip()
+        preordenar = request.POST.get("preordenar", "NO")
+        # Creamos un contexto para que lo pasemos si el usuario llega a equivocarse llenando los datos y no los tenga que llenar de 0
+        datos_formulario = {
+            "cantidad_personas" : cantidad_personas,
+            "fecha" : fecha,
+            "hora":hora,
+            "notas":notas
+        }
 
-        if not telefono.isdigit() or len(telefono)<9:
-            messages.error(request,"El telefono debe ser un numero valido.")
-            return redirect('crear_reserva')
-        if len(nombre)<3 or not nombre.replace(" ","").isalpha():  
-            messages.error(request,"El nombre debe tener al menos 3 caracteres y no puede tener numeros")
-            return redirect('crear_reserva')
-        if len(cantidad_personas)>20:
-            messages.warning(request,"Las reservas no pueden superar las 20 personas")
-            return redirect('crear_reserva')
+        # --- VALIDACIONES DE NEGOCIO ---
+        # Validar campos obligatorios
+        if not cantidad_personas or not fecha or not hora:
+            messages.error(request, "Por favor completa la cantidad de personas, fecha y hora.")
+            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+
+        # Validar número de personas
         try:
             personas = int(cantidad_personas)
             if personas <= 0:
-                messages.error(request,"La cantidad de personas debe ser mayor a 0.")
+                messages.error(request, "La cantidad de personas debe ser mayor a 0.")
+                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+            if personas > 20:
+                messages.warning(request, "Las reservas no pueden superar las 20 personas.")
+                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
         except ValueError:
-            messages.error(request, "Ingrese un caracter valido.")
+            messages.error(request, "Ingresa un número válido para las personas.")
+            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
 
-        
-            pass
+        # Validar que la fecha/hora no sea en el pasado
+        try:
+            fecha_reserva = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
+            if fecha_reserva < datetime.now():
+                messages.error(request, "No puedes realizar una reserva para una fecha u hora pasadas.")
+                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+        except ValueError:
+            messages.error(request, "El formato de fecha u hora es inválido.")
+            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+
+
         if preordenar == 'SI':
+            # Guardamos los datos de la reserva en la sesión para completar con la carta
             request.session['datos_reserva_temporal'] = {
-                'nombre': nombre,
-                'telefono': telefono,
-                'cantidad_personas': cantidad_personas,
-                'mesa':mesa,
-                'fecha':fecha,
+                'usuario_id': usuario_id,
+                'cantidad_personas': personas,
+                'fecha': fecha,
                 'hora': hora,
-            
+                'notas': notas
             }
             return redirect('ver_carta')
-        else:
-            nueva_reserva = Reserva(
-            nombre = nombre,
-            telefono = telefono,
-            cantidad_personas= cantidad_personas,
-            mesa=mesa,
+
+        # Crear y guardar la reserva vinculada al usuario
+        nueva_reserva = Reserva.objects.create(
+            usuario=usuario_instancia,
+            cantidad_personas=personas,
             fecha=fecha,
-            hora= hora,
-            )
-        
-            nueva_reserva.save()
-            messages.success(request, "Tu mesa ha sido reservada con éxito.")
-            return redirect('mis_reservas') # O a la página que los mande normalmente
+            hora=hora,
+            notas=notas,
+            estado='pendiente'
+        )
 
-        messages.success(request, '¡Tu mesa ha sido reservada con éxito! Te esperamos.')
-
-
+        messages.success(request, "¡Tu mesa ha sido reservada con éxito!")
         return redirect('mis_reservas')
 
-    # Si no es POST, mostramos el formulario
     return render(request, "reservas/formulario_reserva.html")
+
 
 @verificar
 def mis_reservas(request):
-    r = Reserva.objects.all()
-    contexto = {
-        "reservas": r
-    }
+    usuario_session = request.session.get('logueado')
+    usuario_id = usuario_session.get('id')
 
+    # Filtra por el usuario y excluye las que tengan estado 'cancelada'
+    reservas = Reserva.objects.filter(usuario_id=usuario_id).exclude(estado='cancelada').order_by('-id')
+
+
+    contexto = {
+        "reservas": reservas
+    }
     return render(request, "reservas/mis_reservas.html", contexto)
+
 
 @verificar
 def cancelar_reserva(request, id):
-    r = Reserva.objects.get(pk=id)
-    r.delete()
+    usuario_session = request.session.get('logueado')
+    usuario_id = usuario_session.get('id')
+
+    reserva = get_object_or_404(Reserva, id=id, usuario_id=usuario_id)
+    reserva.estado = 'cancelada'
+    reserva.save()
+
+    messages.info(request, "La reserva ha sido cancelada exitosamente.")
     return redirect('mis_reservas')
+
+
 @verificar
 def actualizar_reserva(request, id):
-    r = Reserva.objects.get(id=id)
-    if request.method =="POST":
-        r.nombre = request.POST.get('nombre').strip()
-        r.fecha = request.POST.get('fecha')
-        r.hora = request.POST.get('hora')
-        r.cantidad_personas = request.POST.get('cantidad_personas')
-        r.telefono = request.POST.get('telefono').strip()
-        r.mesa = request.POST.get('mesa')
-        r.notas = request.POST.get('notas')
-        r.save()
+    usuario_session = request.session.get('logueado')
+    usuario_id = usuario_session.get('id')
+
+    reserva = get_object_or_404(Reserva, id=id, usuario_id=usuario_id)
+
+    if request.method == "POST":
+        cantidad_personas = request.POST.get('cantidad_personas', '').strip()
+        fecha = request.POST.get('fecha', '').strip()
+        hora = request.POST.get('hora', '').strip()
+        notas = request.POST.get('notas', '').strip()
+
+        if not cantidad_personas or not fecha or not hora:
+            messages.error(request, "Todos los campos obligatorios deben estar diligenciados.")
+            return redirect('actualizar_reserva', id=id)
+
+        try:
+            personas = int(cantidad_personas)
+            if personas <= 0 or personas > 20:
+                messages.error(request, "La cantidad de personas debe ser entre 1 y 20.")
+                return redirect('actualizar_reserva', id=id)
+        except ValueError:
+            messages.error(request, "La cantidad de personas no es válida.")
+            return redirect('actualizar_reserva', id=id)
+
+        # Actualizar datos de la reserva
+        reserva.cantidad_personas = personas
+        reserva.fecha = fecha
+        reserva.hora = hora
+        reserva.notas = notas
+        reserva.save()
+
+        messages.success(request, "Reserva actualizada correctamente.")
         return redirect('mis_reservas')
-    else:
-        r = Reserva.objects.get(pk=id)
-        contexto = {
-            "datos" : r
-        }
-        return render(request, "reservas/editar_reserva.html", contexto)
+
+    contexto = {
+        "datos": reserva
+    }
+    return render(request, "reservas/editar_reserva.html", contexto)
+
 
 def confirmacion(request):
     return render(request, "reservas/exito.html")
 
+
 @solo_admin
 def historial_reservas(request):
-    reservas = Reserva.objects.all().order_by('-id')
-    
-   
-    total_reservas = reservas.count()
-    confirmadas = reservas.filter(estado__iexact='confirmada').count()
-    pendientes = reservas.filter(estado__iexact='pendiente').count()
+  # El admin puede consultar el histórico global de todos los usuarios
+  reservas = Reserva.objects.all().order_by('-fecha', '-hora')
 
-    contexto = {
-        'reservas': reservas,
-        'total_reservas': total_reservas,
-        'confirmadas': confirmadas,
-        'pendientes': pendientes,
-    }
-    return render(request, 'reservas/historial_reservas.html', contexto)
+  # Capturamos los campos del formulario GET del HTML
+  busqueda = request.GET.get('buscar')
+  filtro_estado = request.GET.get('filtro_estado')  # <--- Corregido 'filtro_estado'
+  filtro_fecha = request.GET.get('filtro_fecha')
 
 
-class ReservaViewSet(viewsets.ModelViewSet):
-    queryset = Reserva.objects.all()
-    serializer_class = ReservaSerializer
+  if busqueda:
+    reservas = reservas.filter(
+        # __ Es para busquedas avanzadas, salta de tabla en tabla buscando llaves foraneas
+        # icontains; si contiene el texto en mayuscula o minuscula lo pinta
+        # si el id que contiene el input de busqueda... Si contiene usuario, nombre del input de busqueda..
+        # Q es para hacer busquedas combinadas
+        Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
+    )
+
+
+  if filtro_estado:
+    reservas = reservas.filter(estado__iexact=filtro_estado)
+
+
+  if filtro_fecha:
+    reservas = reservas.filter(fecha=filtro_fecha)
+
+  # Métricas para las tarjetas superiores adaptadas a tus estados
+  total_reservas = Reserva.objects.count()
+  asistio = Reserva.objects.filter(estado__iexact='asistio').count()
+  pendientes = Reserva.objects.filter(estado__iexact='pendiente').count()
+  canceladas = Reserva.objects.filter(estado__iexact='cancelada').count()
+
+  contexto = {
+      'reservas': reservas,
+      'total_reservas': total_reservas,
+      'asistio': asistio,
+      'pendientes': pendientes,
+      'canceladas': canceladas,
+  }
+  return render(request, 'reservas/historial_reservas.html', contexto)
+
+
+def cambiar_estado_reserva(request, id, nuevo_estado):
+    #Buscamos la reserva en la base de datos
+    reservas = get_object_or_404(Reserva, id=id)
+    #verificamos los estados validos de la reserva
+    estados_valido = ['asistio', 'pendiente', 'cancelada', 'confirmada']
+    # Validamos si el estado que mandaron por el botón está dentro de los permitidos
+    if nuevo_estado in estados_valido:
+
+        reservas.estado = nuevo_estado #Cambiamos el viejo estado por el nuevo
+        reservas.save() # lo guardamos
+        messages.success(request, f"La reserva #{reservas.id} ha sido actualizada")
+    else:
+        messages.error(request, "Estado no válido.")
+
+    return redirect('historial_reservas')
