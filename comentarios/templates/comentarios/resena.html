@@ -11,10 +11,10 @@
             {% csrf_token %}
             
             <p>Calificación Comida (1-5):</p>
-            <input type="number" name="comida" min="1" max="5" required placeholder="5">
+            <input type="number" name="comida" min="1" max="5" required placeholder="5" value="{{ datos.comida }}">
             
             <p>Calificación Servicio (1-5):</p>
-            <input type="number" name="servicio" min="1" max="5" required placeholder="5">
+            <input type="number" name="servicio" min="1" max="5" required placeholder="5" value="{{ datos.servicio }}">
             
             <p>Tu comentario:</p>
             <textarea name="comentario" rows="4" required placeholder="¿Qué tal estuvo todo?"></textarea>

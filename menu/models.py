@@ -7,6 +7,7 @@ class Plato(models.Model):
     precio = models.IntegerField()
     disponible = models.BooleanField(default=True)
     categoria = models.CharField(max_length=50, default='plato_fuerte')
+    imagen = models.ImageField(upload_to= 'platos/',blank=True, null=True)
     destacado = models.BooleanField(default=False)
 
     def __str__(self):

@@ -115,17 +115,10 @@
                             <!-- Acciones con íconos compactos -->
                             <td class="text-center">
                                 <div class="d-inline-flex gap-2">
-                                    <a href="{% url 'editar_gasto' g.id %}" class="btn btn-sm btn-outline-warning px-2">Editar
-                                
-                                    </a>
-                                    <a href="{% url 'eliminar_gasto' g.id %}" class="btn btn-sm btn-outline-danger btn-eliminar px-2">Eliminar
-                                    </a>
+                                    <a href="{% url 'editar_gasto' g.id %}" class="btn btn-sm btn-outline-warning px-2">Editar</a>
+                                    <a href="{% url 'eliminar_gasto' g.id %}" class="btn btn-sm btn-outline-danger btn-eliminar px-2">Eliminar</a>
                                 </div>
                             </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">No hay gastos registrados.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -144,7 +137,8 @@
     $(document).ready(function() {
         $('#tabla_gastos').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
+                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json",
+                "emptyTable": "No hay gastos registrados."
             },
             "pageLength": 10,
             "ordering": true

@@ -5,6 +5,7 @@ from datetime import datetime
 from .models import Reserva
 from usuarios.models import Usuario
 from usuarios.decorador import verificar, solo_admin
+from django.db.models import Q
 
 
 @verificar
@@ -96,6 +97,7 @@ def mis_reservas(request):
     # Filtra por el usuario y excluye las que tengan estado 'cancelada'
     reservas = Reserva.objects.filter(usuario_id=usuario_id).exclude(estado='cancelada').order_by('-id')
 
+
     contexto = {
         "reservas": reservas
     }
@@ -163,17 +165,60 @@ def confirmacion(request):
 
 @solo_admin
 def historial_reservas(request):
-    # El admin puede consultar el histórico global de todos los usuarios
-    reservas = Reserva.objects.all().order_by('-id')
+  # El admin puede consultar el histórico global de todos los usuarios
+  reservas = Reserva.objects.all().order_by('-fecha', '-hora')
 
-    total_reservas = reservas.count()
-    confirmadas = reservas.filter(estado__iexact='confirmada').count()
-    pendientes = reservas.filter(estado__iexact='pendiente').count()
+  # Capturamos los campos del formulario GET del HTML
+  busqueda = request.GET.get('buscar')
+  filtro_estado = request.GET.get('filtro_estado')  # <--- Corregido 'filtro_estado'
+  filtro_fecha = request.GET.get('filtro_fecha')
 
-    contexto = {
-        'reservas': reservas,
-        'total_reservas': total_reservas,
-        'confirmadas': confirmadas,
-        'pendientes': pendientes,
-    }
-    return render(request, 'reservas/historial_reservas.html', contexto)
+
+  if busqueda:
+    reservas = reservas.filter(
+        # __ Es para busquedas avanzadas, salta de tabla en tabla buscando llaves foraneas
+        # icontains; si contiene el texto en mayuscula o minuscula lo pinta
+        # si el id que contiene el input de busqueda... Si contiene usuario, nombre del input de busqueda..
+        # Q es para hacer busquedas combinadas
+        Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
+    )
+
+
+  if filtro_estado:
+    reservas = reservas.filter(estado__iexact=filtro_estado)
+
+
+  if filtro_fecha:
+    reservas = reservas.filter(fecha=filtro_fecha)
+
+  # Métricas para las tarjetas superiores adaptadas a tus estados
+  total_reservas = Reserva.objects.count()
+  asistio = Reserva.objects.filter(estado__iexact='asistio').count()
+  pendientes = Reserva.objects.filter(estado__iexact='pendiente').count()
+  canceladas = Reserva.objects.filter(estado__iexact='cancelada').count()
+
+  contexto = {
+      'reservas': reservas,
+      'total_reservas': total_reservas,
+      'asistio': asistio,
+      'pendientes': pendientes,
+      'canceladas': canceladas,
+  }
+  return render(request, 'reservas/historial_reservas.html', contexto)
+
+
+def cambiar_estado_reserva(request, id, nuevo_estado):
+    #Buscamos la reserva en la base de datos
+    reservas = get_object_or_404(Reserva, id=id)
+    #verificamos los estados validos de la reserva
+    estados_valido = ['asistio', 'pendiente', 'cancelada', 'confirmada']
+    # Validamos si el estado que mandaron por el botón está dentro de los permitidos
+    if nuevo_estado in estados_valido:
+
+        reservas.estado = nuevo_estado #Cambiamos el viejo estado por el nuevo
+        reservas.save() # lo guardamos
+        messages.success(request, f"La reserva #{reservas.id} ha sido actualizada")
+    else:
+        messages.error(request, "Estado no válido.")
+
+    return redirect('historial_reservas')

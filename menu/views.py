@@ -27,6 +27,8 @@ def crear_plato(request):
         descripcion = request.POST.get("descripcion")
         precio_raw = request.POST.get("precio")
         categoria = request.POST.get("categoria")
+        #agregamos el campo de imagen
+        imagen = request.FILES.get('imagen')
         disponible = request.POST.get("disponible") == 'on'
         destacado = request.POST.get("destacado") == 'on'
 
@@ -64,7 +66,8 @@ def crear_plato(request):
             precio=precio,
             categoria=categoria,
             disponible=disponible,
-            destacado=destacado
+            destacado=destacado,
+            imagen = imagen
         )
         messages.success(request, "El plato ha sido agregado correctamente.")
 

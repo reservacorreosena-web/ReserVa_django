@@ -11,20 +11,20 @@
 <div style="display: flex; justify-content: center; align-items: center; padding: 30px 20px 60px;">
     <div class="reserva-card" style="width: 100%; max-width: 420px;">
         <h2 style="text-align: center; color: #fff; margin-bottom: 8px; font-size: 26px;">Bienvenido de nuevo</h2>
-        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Por favor, introduce tu usuario y contraseña:</p>
+        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Por favor, introduce tu correo y contraseña:</p>
 
         <form action="" method="POST">
             {% csrf_token %}
 
+            <!-- CORREGIDO: Ahora el name es 'email' para que coincida con el views.py -->
             <div class="form-group">
-                <label for="usuario">Usuario:</label>
-                <input type="text" placeholder="Tu nombre de usuario" required name="usuario" id="usuario"/>
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" placeholder="admin@reserva.com" required name="email" id="email"/>
             </div>
 
             <div class="form-group">
                 <label for="contraseña">Contraseña:</label>
-                <input type="password" placeholder="    ••••••••" required name="contraseña" id="contraseña"/>
-            
+                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña"/>
             </div>
 
             <button type="submit" class="btn-gold-block" style="margin-top: 20px; font-size: 16px;">Iniciar Sesión</button>
