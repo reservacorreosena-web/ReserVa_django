@@ -173,6 +173,7 @@
         <form method="POST" class="rv-form">
             {% csrf_token %}
             
+<<<<<<< HEAD
             <div class="rv-form-group">
                 <label for="comida" class="rv-form-label">Calificación Comida (1-5)</label>
                 <input type="number" name="comida" id="comida" min="1" max="5" required placeholder="5" value="{{ datos.comida }}" class="rv-input">
@@ -182,6 +183,13 @@
                 <label for="servicio" class="rv-form-label">Calificación Servicio (1-5)</label>
                 <input type="number" name="servicio" id="servicio" min="1" max="5" required placeholder="5" value="{{ datos.servicio }}" class="rv-input">
             </div>
+=======
+            <p>Calificación Comida (1-5):</p>
+            <input type="number" name="comida" min="1" max="5" required placeholder="5" value="{{ datos.comida }}">
+            
+            <p>Calificación Servicio (1-5):</p>
+            <input type="number" name="servicio" min="1" max="5" required placeholder="5" value="{{ datos.servicio }}">
+>>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
             
             <div class="rv-form-group">
                 <label for="comentario" class="rv-form-label">Tu comentario</label>

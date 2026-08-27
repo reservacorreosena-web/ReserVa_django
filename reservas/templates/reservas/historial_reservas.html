@@ -1,6 +1,7 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
+<<<<<<< HEAD
 <style>
     :root {
         --rv-gold: #c9a961;
@@ -403,6 +404,141 @@
             <div>
                 <label class="rv-form-label">Buscar</label>
                 <input type="text" name="buscar" class="rv-form-input" placeholder="Buscar por cliente o ID..." value="{{ request.GET.buscar }}">
+=======
+<div class="container-fluid px-4 mt-4">
+    <!-- Encabezado -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-light mb-1">Historial y Gestión de Reservas</h2>
+        <p class="text-secondary mb-0">Administra el estado de las mesas y da seguimiento al flujo de clientes.</p>
+    </div>
+
+    <!-- Panel de Métricas -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-3">
+            <div class="card bg-dark text-white shadow-sm border border-secondary rounded-3">
+                <div class="card-body text-center py-3">
+                    <h6 class="text-uppercase fw-bold mb-1 text-secondary">Total Reservas</h6>
+                    <h2 class="mb-0 fw-bold">{{ total_reservas }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white shadow-sm border border-secondary rounded-3">
+                <div class="card-body text-center py-3">
+                    <h6 class="text-uppercase fw-bold mb-1 text-success">Asistió / Completadas</h6>
+                    <h2 class="mb-0 fw-bold">{{ asistio|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white shadow-sm border border-warning rounded-3">
+                <div class="card-body text-center py-3">
+                    <h6 class="text-uppercase fw-bold mb-1 text-warning">Pendientes</h6>
+                    <h2 class="mb-0 fw-bold text-warning">{{ pendientes }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white shadow-sm border border-danger rounded-3">
+                <div class="card-body text-center py-3">
+                    <h6 class="text-uppercase fw-bold mb-1 text-danger">Canceladas</h6>
+                    <h2 class="mb-0 fw-bold">{{ canceladas|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Filtros Rápidos -->
+    <div class="card shadow-sm border-0 mb-4 rounded-3 bg-dark border-secondary">
+        <div class="card-body py-3">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" name="buscar" class="form-control bg-secondary text-light border-0" placeholder="Buscar por cliente o ID..." value="{{ request.GET.buscar }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="filtro_estado" class="form-select bg-secondary text-light border-0">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente" {% if request.GET.filtro_estado == 'pendiente' %}selected{% endif %}>Pendientes</option>
+                        <option value="asistio" {% if request.GET.filtro_estado == 'asistio' %}selected{% endif %}>Asistió</option>
+                        <option value="cancelada" {% if request.GET.filtro_estado == 'cancelada' %}selected{% endif %}>Canceladas</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="filtro_fecha" class="form-control bg-secondary text-light border-0" value="{{ request.GET.filtro_fecha }}">
+                </div>
+                <div class="col-md-2 text-md-end">
+                    <button type="submit" class="btn btn-warning w-100 fw-bold shadow-sm">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla Principal de Gestión -->
+    <div class="card shadow-lg border-0 rounded-3 bg-dark border-secondary">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle text-center fs-5 mb-0">
+                    <thead class="table-secondary text-dark">
+                        <tr>
+                            <th class="py-3">#</th>
+                            <th class="py-3 text-start">Cliente / Nombre</th>
+                            <th class="py-3">Mesa</th>
+                            <th class="py-3">Fecha</th>
+                            <th class="py-3">Hora</th>
+                            <th class="py-3">Personas</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3">Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reservas %}
+                        <tr>
+                            <td class="fw-bold py-3">#{{ r.id }}</td>
+                            <td class="text-start py-3 fw-semibold">{{ r.nombre_cliente }}</td>
+                            <td class="py-3">Mesa {{ r.mesa.numero|default:r.mesa }}</td>
+                            <td class="py-3">{{ r.fecha }}</td>
+                            <td class="py-3">{{ r.hora }}</td>
+                            <td class="py-3">
+                                <span class="badge bg-secondary border border-secondary">{{ r.cantidad_personas }} pers.</span>
+                            </td>
+                            <td class="py-3">
+                                {% if r.estado == 'asistio' or r.estado == 'Asistio' %}
+                                    <span class="badge bg-success fs-6 px-3 py-2">Asistió</span>
+                                {% elif r.estado == 'pendiente' or r.estado == 'Pendiente' %}
+                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">Pendiente</span>
+                                {% elif r.estado == 'cancelada' or r.estado == 'Cancelada' %}
+                                    <span class="badge bg-danger fs-6 px-3 py-2">Cancelada</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6 px-3 py-2">{{ r.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <form action="{% url 'cambiar_estado_reserva' r.id 'asistio' %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-check"></i> Confirmar
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'cambiar_estado_reserva' r.id 'cancelada' %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-muted py-5 fs-4">
+                                No hay reservas registradas en el sistema bajo estos filtros.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+>>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
             </div>
             <div>
                 <label class="rv-form-label">Estado</label>

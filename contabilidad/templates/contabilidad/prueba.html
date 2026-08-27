@@ -408,6 +408,7 @@
                                 <span class="rv-badge rv-badge-cash">
                                     <i class="bi bi-cash"></i> {{ g.metodo_pago }}
                                 </span>
+<<<<<<< HEAD
                             {% else %}
                                 <span class="rv-badge rv-badge-card">
                                     <i class="bi bi-credit-card"></i> {{ g.metodo_pago }}
@@ -425,6 +426,35 @@
                             </div>
                         </td>
                     </tr>
+=======
+                            </td>
+
+                            <td class="fw-bold text-warning">${{ g.valor }}</td>
+                            <td class="text-secondary">{{ g.fecha }}</td>
+                            <td class="text-secondary">{{ g.hora }}</td>
+
+                            <!-- Badge Método de Pago -->
+                            <td>
+                                {% if g.metodo_pago == "Efectivo" %}
+                                    <span class="badge" style="background-color: rgba(25, 135, 84, 0.15); color: #75b798; border: 1px solid rgba(25, 135, 84, 0.3);">
+                                        <i class="bi bi-cash me-1"></i> {{ g.metodo_pago }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge" style="background-color: rgba(13, 202, 240, 0.15); color: #6edff6; border: 1px solid rgba(13, 202, 240, 0.3);">
+                                        <i class="bi bi-credit-card me-1"></i> {{ g.metodo_pago }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Acciones con íconos compactos -->
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{% url 'editar_gasto' g.id %}" class="btn btn-sm btn-outline-warning px-2">Editar</a>
+                                    <a href="{% url 'eliminar_gasto' g.id %}" class="btn btn-sm btn-outline-danger btn-eliminar px-2">Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+>>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
                     {% endfor %}
                 </tbody>
             </table>
@@ -443,7 +473,11 @@
         $('#tabla_gastos').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json",
+<<<<<<< HEAD
                 "emptyTable": "No hay gastos registrados en este período."
+=======
+                "emptyTable": "No hay gastos registrados."
+>>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
             },
             "pageLength": 10,
             "ordering": true,

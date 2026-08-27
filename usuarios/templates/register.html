@@ -216,6 +216,7 @@
         <form action="" method="POST" class="rv-form">
             {% csrf_token %}
 
+<<<<<<< HEAD
             <div class="rv-form-group">
                 <label for="nombre" class="rv-form-label">Nombre Completo</label>
                 <input type="text" placeholder="Ej. Bryan Penagos" required name="nombre" id="nombre" minlength="3" class="rv-input">
@@ -234,6 +235,25 @@
             <button type="submit" class="btn-gold">
                 <i class="bi bi-person-plus"></i> Registrarme
             </button>
+=======
+            <!-- Nombre Completo en un solo campo (Más rápido para el usuario) -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" placeholder="Ej. Bryan Penagos" required name="nombre" id="nombre" minlength="3"/>
+            </div>
+
+            <!-- Correo Electrónico (Servirá también para iniciar sesión) -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" placeholder="correo@ejemplo.com" required name="email" id="email"/>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="contraseña">Contraseña:</label>
+                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" minlength="8"/>
+            </div>
+>>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
 
             <div class="rv-register-footer">
                 <p>¿Ya tienes una cuenta?</p>
