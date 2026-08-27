@@ -133,7 +133,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-<<<<<<< HEAD
+
 
 
 REST_FRAMEWORK = {
@@ -152,8 +152,3 @@ REST_FRAMEWORK = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-=======
-#Le decimos donde se van a guardar las imagenes
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
->>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)

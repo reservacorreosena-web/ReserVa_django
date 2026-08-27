@@ -5,7 +5,7 @@ from django.contrib import messages
 from usuarios.decorador import verificar
 
 
-<<<<<<< HEAD
+
 
 from .serializador import *
 from rest_framework import viewsets
@@ -19,8 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 @verificar
 
 
-=======
->>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
+
 def crear_resena(request):
     # Atrapamos los datos basicos del formulario
     if request.method == "POST":

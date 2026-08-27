@@ -1,43 +1,220 @@
-/* Nuevos estilos para limpiar el HTML de Login y Registro */
-.back-button-link {
-    display: inline-block;
-    margin-bottom: 20px;
+.rv-page {
+    min-height: 100vh;
+    background: #0a0a0a;
+    padding: 0px 40px 80px;
+}
+
+.rv-back-wrapper {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+}
+
+.rv-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
     text-decoration: none;
-    color: #ffffff;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.rv-back-link:hover {
+    color: #c9a961;
+}
+
+.rv-form-container,
+.rv-login-container,
+.rv-register-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0px 40px;
+}
+
+.rv-login-container {
+    max-width: 420px;
+}
+
+.rv-register-container {
+    max-width: 480px;
+}
+
+.rv-header,
+.rv-login-header,
+.rv-register-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.rv-eyebrow {
+    display: block;
+    color: #c9a961;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.rv-title,
+.rv-login-title,
+.rv-register-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: #fff;
+    margin: 0 0 16px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.rv-subtitle,
+.rv-login-subtitle,
+.rv-register-subtitle {
+    color: #888;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.rv-login-subtitle em,
+.rv-register-subtitle em {
+    color: #c9a961;
+    font-style: normal;
+}
+
+.rv-form {
+    background: transparent;
+}
+
+.rv-form-group {
+    margin-bottom: 28px;
+}
+
+.rv-form-label {
+    display: block;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.rv-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 0;
+    padding: 18px 20px;
+    color: #fff;
     font-size: 15px;
-    font-weight: bold;
-    transition: 0.3s;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
-.back-button-link:hover {
-    color: #d4af37;
+.rv-input:focus {
+    outline: none;
+    border-color: #c9a961;
 }
 
-.form-subtitle {
-    text-align: center;
-    color: #aaa;
-    margin-bottom: 25px;
-    font-size: 14px;
+.rv-input::placeholder {
+    color: #555;
 }
 
-.form-footer-link {
-    text-align: center;
-    margin-top: 25px;
+textarea.rv-input {
+    resize: vertical;
+    min-height: 140px;
 }
 
-.form-footer-link p {
-    display: inline;
-    color: #aaa;
-}
-
-.form-footer-link a {
-    color: #d4af37;
+.btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #c9a961;
+    color: #0a0a0a;
+    border: none;
+    padding: 18px 32px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: bold;
-    margin-left: 5px;
-    transition: 0.3s;
+    width: 100%;
+    margin-top: 16px;
 }
 
-.form-footer-link a:hover {
+.btn-gold:hover {
+    background: #d4b772;
+    transform: translateY(-2px);
+}
+
+.btn-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: transparent;
+    color: #c9a961;
+    border: 1px solid #c9a961;
+    padding: 14px 28px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.btn-dark:hover {
+    background: #c9a961;
+    color: #0a0a0a;
+}
+
+.rv-login-footer,
+.rv-register-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid #222;
+}
+
+.rv-login-footer p,
+.rv-register-footer p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.rv-link {
+    color: #c9a961;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.rv-link:hover {
+    color: #d4b772;
     text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .rv-page {
+        padding: 0px 20px 60px;
+    }
+    .rv-form-container,
+    .rv-login-container,
+    .rv-register-container {
+        padding: 0px 20px;
+    }
+    .rv-title,
+    .rv-login-title,
+    .rv-register-title {
+        font-size: 36px;
+    }
 }

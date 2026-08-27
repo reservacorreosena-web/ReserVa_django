@@ -1,301 +1,245 @@
-/* ==========================================================================
-   Estilos Exclusivos para el Panel Base de Administración - ReserVa
-   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
 
-/* Borde inferior morado/vinotinto para identificar la barra del jefe */
-.navbar-admin {
-    border-bottom: 2px solid #800020 !important;
+:root {
+    --gold: #c9a961;
+    --gold-light: #d4b772;
+    --dark-bg: #0a0a0a;
+    --card-bg: #111;
+    --border-color: #222;
+    --text-muted: #888;
+    --text-primary: #fff;
 }
 
-/* El texto pequeño que dice ADMIN al lado del logo */
-.navbar-admin .logo h1 small {
-    font-size: 0.5em; 
-    color: #ffc107; 
-    vertical-align: middle;
-    margin-left: 5px;
-    font-family: monospace;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Nombre del administrador en dorado ejecutivos */
-.admin-name-tag {
-    color: #ffc107; 
-    font-weight: bold; 
-    margin-right: 15px;
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
 }
 
-/* Ajuste por si quieren cambiar el color del botón de salir del admin */
-.navbar-admin .btn-registro {
-    background-color: #800020 !important;
-    transition: background 0.3s ease;
+/* Sidebar Styles */
+.rv-sidebar {
+    width: 280px;
+    min-height: 100vh;
+    background: var(--dark-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 32px 24px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
 
-.navbar-admin .btn-registro:hover {
-    background-color: #a00028 !important;
+.rv-logo {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-
-.admin-landing-container {
-    padding-top: 20px;
+.rv-logo h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 400;
 }
 
-/* Sección Hero Operativa (Fondo oscuro degradado y borde sutil) */
-.hero-admin-panel {
-    background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%) !important;
-    border: 1px solid #222222 !important;
+.rv-logo .gold-text {
+    color: var(--gold);
 }
 
-/* Separación superior para las tarjetas de control */
-.features-admin-section {
-    margin-top: 40px;
+.rv-logo small {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-/* Los iconos grandes dentro de cada tarjeta */
-.admin-card-icon {
-    font-size: 2em;
-    text-align: center;
-    margin-bottom: 10px;
+/* Accordion Styles */
+.accordion-item {
+    background: transparent;
+    border: none !important;
+    margin-bottom: 8px;
 }
 
-/* Enlaces o textos informativos abajo de las descripciones */
-.admin-card-footer {
-    margin-top: 15px;
-}
-
-/* Estilo para los botones o links deshabilitados (Próximamente) */
-.btn-disabled-admin {
-    color: #666666 !important;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    cursor: not-allowed;
-}
-
-/* Bordes superiores de colores para diferenciar los módulos */
-.border-reservas {
-    border-top: 4px solid #800020 !important; /* Morado/Vinotinto */
-}
-
-.border-carta {
-    border-top: 4px solid #ffc107 !important;  /* Dorado */
-}
-
-.border-usuarios {
-    border-top: 4px solid #0056b3 !important;  /* Azul */
-}
-
-/* ==========================================================================
-   SOLUCIÓN ESTRUCTURA LATERAL COMPLETA (SIN CHOQUES DE CLASES)
-   ========================================================================== */
-
-/* Reseteamos el body del panel para que no cree barras de scroll raras */
-body.body-panel-admin {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100vh !important;
-    width: 100vw !important;
-    overflow: hidden !important;
-}
-
-/* Fuerza el alineamiento lado a lado: Menú a la izq, contenido a la der */
-.layout-principal {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: #50060A !important; /* Tu color vinotinto de fondo */
-}
-
-/* CAJA NEGRA DEL MENÚ LATERAL */
-.sidebar-lateral-nueva {
-    width: 260px !important;
-    min-width: 260px !important;
-    max-width: 260px !important;
-    background-color: #131313 !important; /* Gris oscuro/charcoal */
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 25px 15px !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-    box-sizing: border-box !important;
-}
-
-.logo-sidebar h1 {
-    font-size: 22px !important;
-    font-weight: bold !important;
-    margin-bottom: 30px !important;
-    color: #ffffff !important;
-}
-.logo-sidebar h1 span { color: #ffc107 !important; }
-.logo-sidebar h1 small { font-size: 0.5em !important; color: #ffc107 !important; }
-
-/* LISTA DE ENLACES DEL SIDEBAR */
-.menu-sidebar-lista {
-    list-style: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-.menu-sidebar-lista a {
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
-    color: #A0A0A0 !important;
-    text-decoration: none !important;
-    padding: 12px 15px !important;
-    border-radius: 8px !important;
-    font-size: 15px !important;
-    transition: all 0.3s ease !important;
-}
-
-.menu-sidebar-lista a:hover, .menu-sidebar-lista li.active a {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    color: #ffffff !important;
-}
-
-.menu-sidebar-lista li.active a {
-    border-left: 4px solid #ffc107 !important; /* El borde dorado activo */
-    background-color: rgba(255, 255, 255, 0.04) !important;
-}
-
-.emoji-icon { font-size: 1.2rem !important; }
-
-/* SECCIÓN DERECHA DE LA PÁGINA */
-.contenido-derecha-layout {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100vh !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-}
-
-/* NAVBAR SUPERIOR MODERNA RE-ESTILIZADA */
-.header-superior-nuevo {
-    height: 70px !important;
-    background-color: rgba(0, 0, 0, 0.2) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 0 40px !important;
-    border-bottom: 2px solid #800020 !important; /* Tu borde de jefe original */
-    box-sizing: border-box !important;
-}
-
-.estado-sistema {
-    font-size: 14px !important;
-    color: #ffffff !important;
-    background: rgba(0, 0, 0, 0.3) !important;
-    padding: 6px 14px !important;
-    border-radius: 20px !important;
-}
-
-.nav-links-nuevos {
-    list-style: none !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 20px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* ZONA CENTRAL DE TARJETAS CON SCROLL */
-.zona-tarjetas-dinamica {
-    flex: 1 !important;
-    padding: 40px !important;
-    overflow-y: auto !important; /* Permite scroll vertical en tarjetas */
-    box-sizing: border-box !important;
-}
-
-/* NUEVA GRILLA EN 3 COLUMNAS */
-.cards-grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 30px !important;
-    margin-top: 35px !important;
-}
-
-.card {
-    background-color: #181818 !important;
-    border-radius: 16px !important;
-    padding: 30px !important;
-    text-align: center !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 15px !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
-    transition: transform 0.3s ease !important;
-}
-.card:hover { transform: translateY(-5px) !important; }
-.data-highlight { font-size: 22px; font-weight: bold; color: #ffffff; }
-
-.card-btn {
-    background-color: #800020 !important;
-    color: #ffffff !important;
-    text-decoration: none !important;
-    padding: 10px 25px !important;
-    border-radius: 6px !important;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-block !important;
-}
-.card-btn:hover { background-color: #a00028 !important; }
-.card-btn-blue { background-color: #0056b3 !important; }
-.card-btn-blue:hover { background-color: #004494 !important; }
-
-/* Estilo general de los botones del acordeón */
 .accordion-button {
-    padding: 12px 15px !important;
-    color: rgba(255,255,255,0.7) !important;
-    font-size: 0.95rem;
-    border-radius: 8px !important;
-    transition: 0.2s all ease-in-out;
-}
-
-/* Estado al pasar el mouse por encima de una opción principal */
-.accordion-button:not(.collapsed), .accordion-button:hover {
-    background-color: #800020 !important; /* El color vinotinto premium */
-    color: #ffffff !important;
-    box-shadow: none !important;
-}
-
-/* Quitar el icono de flecha azul predeterminado de Bootstrap */
-.accordion-button::after {
-    filter: invert(1) brightness(0.8); /* Vuelve la flechita blanca/grisácea */
-}
-
-/* Enlace directo a Dashboard */
-.style-link-admin {
-    padding: 12px 15px;
-    font-size: 0.95rem;
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     border-radius: 8px;
-}
-.active-dashboard {
-    background-color: #ffc107 !important; /* Amarillo/oro para destacar el inicio */
-    color: #111 !important;
-}
-.active-dashboard i {
-    color: #111 !important;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Sub-enlaces de las opciones desplegadas */
+.accordion-button:not(.collapsed) {
+    background: rgba(201, 169, 97, 0.1);
+    color: var(--gold);
+    box-shadow: none;
+}
+
+.accordion-button:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.accordion-button::after {
+    filter: brightness(0) invert(1);
+    opacity: 0.5;
+}
+
+.accordion-button:not(.collapsed)::after {
+    filter: brightness(0.8) sepia(1) hue-rotate(10deg) saturate(2);
+}
+
+.accordion-body {
+    padding: 8px 0 8px 16px;
+}
+
 .sublink-admin {
-    display: block;
-    padding: 8px 12px;
-    font-size: 0.88rem;
-    color: rgba(255,255,255,0.55);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    color: var(--text-muted);
     text-decoration: none;
+    font-size: 12px;
     border-radius: 6px;
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    margin-bottom: 4px;
 }
 
 .sublink-admin:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: #ffc107; /* Texto se ilumina en dorado al pasar el mouse */
-    padding-left: 18px; /* Pequeño efecto de deslizamiento */
+    background: rgba(201, 169, 97, 0.1);
+    color: var(--gold);
+}
+
+.sublink-admin i {
+    font-size: 14px;
+}
+
+/* Main Content */
+.rv-main-wrapper {
+    margin-left: 280px;
+    min-height: 100vh;
+    background: var(--dark-bg);
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 280px);
+}
+
+/* Top Navbar */
+.rv-topbar {
+    height: 70px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rv-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.rv-status-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.rv-user-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rv-user-name {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-logout {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 8px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-logout:hover {
+    background: #800020;
+    color: #fff;
+    border-color: #800020;
+}
+
+/* Main Content Area */
+.rv-content {
+    padding: 40px 32px;
+    flex-grow: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Icons */
+.rv-icon {
+    color: var(--gold);
+    font-size: 18px;
+    width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .rv-sidebar {
+        transform: translateX(-100%);
+    }
+    .rv-sidebar.active {
+        transform: translateX(0);
+    }
+    .rv-main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Active link */
+.style-link-admin.active-dashboard {
+    background: rgba(201, 169, 97, 0.15);
+    color: var(--gold);
 }

@@ -5,7 +5,7 @@
 /* Contenedor general de la tabla */
 .tabla-container {
     background-color: #1a1a1a;
-    border: 1px solid rgba(128, 0, 32, 0.3);
+    border: 1px solid rgba(201, 169, 97, 0.3);
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -26,7 +26,7 @@ table.dataTable thead th {
     padding: 12px 16px !important;
 }
 
-/* Filas y Hover Vino Tinto */
+/* Filas y Hover Dorado / Contenido */
 table.dataTable tbody tr {
     background-color: transparent !important;
     border-bottom: 1px solid #242424 !important;
@@ -34,7 +34,7 @@ table.dataTable tbody tr {
 }
 
 table.dataTable tbody tr:hover {
-    background-color: rgba(128, 0, 32, 0.15) !important;
+    background-color: rgba(201, 169, 97, 0.08) !important;
 }
 
 table.dataTable tbody td {
@@ -54,7 +54,7 @@ table.dataTable tbody td {
 }
 
 .dataTables_wrapper .dataTables_filter input:focus {
-    border-color: #FFC107 !important;
+    border-color: #c9a961 !important;
 }
 
 .dataTables_wrapper .dataTables_length select {
@@ -80,9 +80,9 @@ table.dataTable tbody td {
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.page-item.active .page-link {
-    background-color: #FFC107 !important;
-    border-color: #FFC107 !important;
-    color: #000 !important;
+    background-color: #c9a961 !important;
+    border-color: #c9a961 !important;
+    color: #0a0a0a !important;
     font-weight: bold;
 }
 
@@ -95,8 +95,8 @@ table.dataTable tbody td {
 #tabla_gastos tbody,
 #tabla_gastos tbody tr,
 #tabla_gastos tbody td {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
+    background-color: #111111 !important;
+    color: #ffffff !important;
 }
 
 /* Forzar color del texto en el concepto para que no quede invisible */
@@ -106,19 +106,19 @@ table.dataTable tbody td {
 
 /* Filas alternadas (striped) por si DataTables las aplica a la fuerza */
 #tabla_gastos.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
+    background-color: #111111 !important;
+    color: #ffffff !important;
 }
 
-/* Hover elegante vino tinto cuando pasas el cursor */
+/* Hover elegante dorado cuando pasas el cursor */
 #tabla_gastos tbody tr:hover,
 #tabla_gastos tbody tr:hover > td {
-    background-color: rgba(128, 0, 32, 0.25) !important;
+    background-color: rgba(201, 169, 97, 0.05) !important;
 }
 
 /* Bordes entre filas oscuros */
 #tabla_gastos tbody td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid #222222 !important;
 }
 
 
@@ -128,25 +128,25 @@ table.dataTable tbody td {
 
 /* Tarjeta contenedora centrada */
 .card-form-reserva {
-    background-color: #1c1c1c;
-    border: 1px solid rgba(128, 0, 32, 0.4);
-    border-radius: 14px;
+    background-color: #111111;
+    border: 1px solid #222222;
+    border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* Inputs y Selects oscuros */
 .form-control-dark {
-    background-color: #121212 !important;
-    border: 1px solid #333333 !important;
+    background-color: #0a0a0a !important;
+    border: 1px solid #222222 !important;
     color: #ffffff !important;
-    border-radius: 8px;
-    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    padding: 14px 16px;
 }
 
 .form-control-dark:focus {
-    border-color: #FFC107 !important; /* Anillo dorado */
-    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.2) !important;
-    background-color: #121212 !important;
+    border-color: #c9a961 !important; /* Anillo dorado ReserVa */
+    box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1) !important;
+    background-color: #0a0a0a !important;
     color: #ffffff !important;
 }
 

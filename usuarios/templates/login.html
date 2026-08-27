@@ -3,209 +3,11 @@
 
 {% block title %}Inicia Sesión - ReserVa{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
 {% block content %}
-<style>
-    .rv-page {
-        min-height: 100vh;
-        background: #0a0a0a;
-        padding: 0px 40px 80px;
-    }
-
-<<<<<<< HEAD
-    .rv-back-wrapper {
-        max-width: 1200px;
-        margin: 0 auto 60px;
-    }
-=======
-<div style="display: flex; justify-content: center; align-items: center; padding: 30px 20px 60px;">
-    <div class="reserva-card" style="width: 100%; max-width: 420px;">
-        <h2 style="text-align: center; color: #fff; margin-bottom: 8px; font-size: 26px;">Bienvenido de nuevo</h2>
-        <p style="text-align: center; color: #a0a5b1; font-size: 14px; margin-bottom: 25px;">Por favor, introduce tu correo y contraseña:</p>
->>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
-
-    .rv-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        color: #888;
-        text-decoration: none;
-        font-size: 13px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: color 0.3s ease;
-    }
-
-    .rv-back-link:hover {
-        color: #c9a961;
-    }
-
-    .rv-login-container {
-        max-width: 420px;
-        margin: 0 auto;
-        padding: 0px 40px;
-    }
-
-    .rv-login-header {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .rv-eyebrow {
-        display: block;
-        color: #c9a961;
-        font-size: 12px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 16px;
-    }
-
-    .rv-login-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 48px;
-        color: #fff;
-        margin: 0 0 16px;
-        font-weight: 400;
-        line-height: 1.2;
-    }
-
-    .rv-login-subtitle {
-        color: #888;
-        font-size: 16px;
-        line-height: 1.6;
-    }
-
-    .rv-login-subtitle em {
-        color: #c9a961;
-        font-style: normal;
-    }
-
-    .rv-form {
-        background: transparent;
-    }
-
-    .rv-form-group {
-        margin-bottom: 28px;
-    }
-
-    .rv-form-label {
-        display: block;
-        color: #888;
-        font-size: 12px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-    }
-
-    .rv-input {
-        width: 100%;
-        background: transparent;
-        border: 1px solid #333;
-        border-radius: 0;
-        padding: 18px 20px;
-        color: #fff;
-        font-size: 15px;
-        font-family: inherit;
-        transition: border-color 0.3s ease;
-        box-sizing: border-box;
-    }
-
-    .rv-input:focus {
-        outline: none;
-        border-color: #c9a961;
-    }
-
-    .rv-input::placeholder {
-        color: #555;
-    }
-
-    .btn-gold {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: #c9a961;
-        color: #0a0a0a;
-        border: none;
-        padding: 18px 32px;
-        font-size: 13px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        text-decoration: none;
-        width: 100%;
-        margin-top: 16px;
-    }
-
-    .btn-gold:hover {
-        background: #d4b772;
-        transform: translateY(-2px);
-    }
-
-    .btn-dark {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: transparent;
-        color: #c9a961;
-        border: 1px solid #c9a961;
-        padding: 14px 28px;
-        font-size: 13px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-    .btn-dark:hover {
-        background: #c9a961;
-        color: #0a0a0a;
-    }
-
-    .rv-login-footer {
-        text-align: center;
-        margin-top: 40px;
-        padding-top: 32px;
-        border-top: 1px solid #222;
-    }
-
-    .rv-login-footer p {
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-
-    .rv-link {
-        color: #c9a961;
-        text-decoration: none;
-        font-size: 14px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: color 0.3s ease;
-    }
-
-    .rv-link:hover {
-        color: #d4b772;
-        text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-        .rv-page {
-            padding: 0px 20px 60px;
-        }
-        .rv-login-container {
-            padding: 0px 20px;
-        }
-        .rv-login-title {
-            font-size: 36px;
-        }
-    }
-</style>
-
 <div class="rv-page">
     <div class="rv-back-wrapper">
         <a href="{% url 'inicio' %}" class="btn-dark">
@@ -223,7 +25,6 @@
         <form action="" method="POST" class="rv-form">
             {% csrf_token %}
 
-<<<<<<< HEAD
             <div class="rv-form-group">
                 <label for="email" class="rv-form-label">Correo Electrónico</label>
                 <input type="email" placeholder="admin@reserva.com" required name="email" id="email" class="rv-input">
@@ -232,17 +33,6 @@
             <div class="rv-form-group">
                 <label for="contraseña" class="rv-form-label">Contraseña</label>
                 <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" class="rv-input">
-=======
-            <!-- CORREGIDO: Ahora el name es 'email' para que coincida con el views.py -->
-            <div class="form-group">
-                <label for="email">Correo Electrónico:</label>
-                <input type="email" placeholder="admin@reserva.com" required name="email" id="email"/>
-            </div>
-
-            <div class="form-group">
-                <label for="contraseña">Contraseña:</label>
-                <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña"/>
->>>>>>> 1781963 (se agregan estados de reserva, imagenes a la carta y se actualiza login y register)
             </div>
 
             <button type="submit" class="btn-gold">
