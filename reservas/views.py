@@ -6,64 +6,63 @@ from .models import Reserva
 from usuarios.models import Usuario
 from usuarios.decorador import verificar, solo_admin
 from django.db.models import Q
+from .utils import enviar_correo_reserva
 
 
 @verificar
 def crear_reserva(request):
     if request.method == "POST":
-        # Verifica las credencias del usuario logueado
+        # 1. Verifica las credenciales del usuario logueado con seguridad
         usuario_session = request.session.get('logueado')
-        #le sacamos el ID para buscarlo en la BD y asignarlo como dueño de la reserva
-        usuario_id = usuario_session.get('id')
-        #Hace una consulta en la base de datos usando su ID
+        if not usuario_session:
+            messages.error(request, "Debes iniciar sesión para realizar una reserva.")
+            return redirect('login')
+
+        usuario_id = usuario_session.get('id') if isinstance(usuario_session, dict) else usuario_session
         usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
-        # 2. Capturamos únicamente los datos del nuevo formulario
+        # 2. Captura de datos del formulario
         cantidad_personas = request.POST.get("cantidad_personas", "").strip()
         fecha = request.POST.get("fecha", "").strip()
         hora = request.POST.get("hora", "").strip()
         notas = request.POST.get("notas", "").strip()
         preordenar = request.POST.get("preordenar", "NO")
-        # Creamos un contexto para que lo pasemos si el usuario llega a equivocarse llenando los datos y no los tenga que llenar de 0
+        
         datos_formulario = {
-            "cantidad_personas" : cantidad_personas,
-            "fecha" : fecha,
-            "hora":hora,
-            "notas":notas
+            "cantidad_personas": cantidad_personas,
+            "fecha": fecha,
+            "hora": hora,
+            "notas": notas
         }
 
         # --- VALIDACIONES DE NEGOCIO ---
-        # Validar campos obligatorios
         if not cantidad_personas or not fecha or not hora:
             messages.error(request, "Por favor completa la cantidad de personas, fecha y hora.")
-            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+            return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
 
-        # Validar número de personas
         try:
             personas = int(cantidad_personas)
             if personas <= 0:
                 messages.error(request, "La cantidad de personas debe ser mayor a 0.")
-                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+                return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
             if personas > 20:
                 messages.warning(request, "Las reservas no pueden superar las 20 personas.")
-                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+                return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
         except ValueError:
             messages.error(request, "Ingresa un número válido para las personas.")
-            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+            return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
 
-        # Validar que la fecha/hora no sea en el pasado
         try:
-            fecha_reserva = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
-            if fecha_reserva < datetime.now():
+            fecha_reserva_dt = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
+            if fecha_reserva_dt < datetime.now():
                 messages.error(request, "No puedes realizar una reserva para una fecha u hora pasadas.")
-                return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+                return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
         except ValueError:
             messages.error(request, "El formato de fecha u hora es inválido.")
-            return render(request, 'reservas/formulario_reserva.html', {"datos":datos_formulario})
+            return render(request, 'reservas/formulario_reserva.html', {"datos": datos_formulario})
 
-
+        # Redirección a carta si decide preordenar
         if preordenar == 'SI':
-            # Guardamos los datos de la reserva en la sesión para completar con la carta
             request.session['datos_reserva_temporal'] = {
                 'usuario_id': usuario_id,
                 'cantidad_personas': personas,
@@ -73,15 +72,21 @@ def crear_reserva(request):
             }
             return redirect('ver_carta')
 
-        # Crear y guardar la reserva vinculada al usuario
+        # 3. Crear y guardar la reserva vinculada a la instancia de Usuario
         nueva_reserva = Reserva.objects.create(
             usuario=usuario_instancia,
             cantidad_personas=personas,
-            fecha=fecha,
-            hora=hora,
+            fecha=fecha_reserva_dt.date(),
+            hora=fecha_reserva_dt.time(),
             notas=notas,
             estado='pendiente'
         )
+
+        # 4. Enviar correo de confirmación
+        try:
+            enviar_correo_reserva(nueva_reserva)
+        except Exception as e:
+            print(f"Error al enviar el correo de confirmación: {e}")
 
         messages.success(request, "¡Tu mesa ha sido reservada con éxito!")
         return redirect('mis_reservas')

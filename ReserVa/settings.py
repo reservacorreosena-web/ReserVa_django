@@ -152,3 +152,12 @@ REST_FRAMEWORK = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Configuración de correo en settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'reservacorreosena@gmail.com'          # El correo del restaurante o tuyo
+EMAIL_HOST_PASSWORD = 'szghjirajjcwbjju '     # Contraseña de aplicación de Google
+DEFAULT_FROM_EMAIL = 'ReserVa Medellín <reservacorreosena@gmail.com>'
+
