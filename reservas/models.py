@@ -1,26 +1,30 @@
 from django.db import models
 from usuarios.models import Usuario
 
+class Zona(models.Model):
+    nombre = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.nombre
 
-class Reserva(models.Model):
-    ESTADOS_RESERVA = [
-        ('pendiente', 'Pendiente'),
-        ('asistio', 'Asistió'),
-        ('cancelada', 'Cancelada'),
-    ]
-
-    #Guarda la clave foranea, relaciona cada reserva con el usuario, guarda una columna llamada 'usuario_id'
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-
-    fecha = models.DateField()
-    hora = models.TimeField()
-    cantidad_personas = models.PositiveIntegerField()
-
-    # Campo temporal de mesa (mientras implementamos el mapa)
-    mesa = models.CharField(max_length=50, blank=True, null=True, default="Por asignar")
-
-    notas = models.TextField(blank=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS_RESERVA, default='pendiente')
+class Mesa(models.Model):
+    numero = models.IntegerField(unique=True)
+    zona = models.ForeignKey(Zona, on_delete=models.CASCADE)
+    capacidad = models.IntegerField()
+    posicion_x = models.IntegerField(default=0)
+    posicion_y = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Reserva #{self.id} - {self.usuario.nombre} ({self.fecha})"
+        return f"Mesa {self.numero} (Cap: {self.capacidad})"
+
+class Reserva(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE, null=True, blank=True)
+    cantidad_personas = models.IntegerField()
+    fecha = models.DateField()
+    hora = models.TimeField()
+    notas = models.TextField(blank=True, null=True)
+    estado = models.CharField(max_length=20, default='pendiente')
+    
+    def __str__(self):
+        return f"Reserva {self.usuario.nombre} - Mesa {self.mesa.numero if self.mesa else 'Sin asignar'}"
