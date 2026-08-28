@@ -132,3 +132,57 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
+def editar_perfil(request):
+    # Verificamos que el usuario esté logueado en la sesión
+    usuario_sesion = request.session.get("logueado")
+    if not usuario_sesion:
+        messages.error(request, "Debes iniciar sesión para editar tu perfil.")
+        return redirect('iniciar_sesion')
+
+    # Buscamos al usuario en la base de datos usando el ID de la sesión
+    usuario = get_object_or_404(Usuario, id=usuario_sesion["id"])
+
+    if request.method == "POST":
+        # Capturamos los datos enviados por el formulario
+        nuevo_nombre = request.POST.get("nombre", "").strip().title()
+        nuevo_email = request.POST.get("email", "").strip().lower()
+        nueva_contraseña = request.POST.get("contraseña", "").strip()
+
+        # Validar campos obligatorios
+        if not nuevo_nombre or not nuevo_email:
+            messages.error(request, "El nombre y el correo son obligatorios.")
+            return render(request, "editar_perfil.html", {"usuario": usuario})
+
+        # Validar que el correo no esté registrado por otra cuenta distinta
+        if Usuario.objects.filter(email=nuevo_email).exclude(id=usuario.id).exists():
+            messages.error(request, "Este correo ya está registrado por otra cuenta.")
+            return render(request, "editar_perfil.html", {"usuario": usuario})
+
+        # Validar formato de correo electrónico
+        try:
+            validate_email(nuevo_email)
+        except ValidationError:
+            messages.error(request, "Ingrese un correo electrónico válido.")
+            return render(request, "editar_perfil.html", {"usuario": usuario})
+
+        # Asignar los nuevos valores básicos
+        usuario.nombre = nuevo_nombre
+        usuario.email = nuevo_email
+
+        # Validación y actualización de la contraseña (opcional)
+        if nueva_contraseña:
+            if len(nueva_contraseña) < 8:
+                messages.error(request, "La nueva contraseña debe tener al menos 8 caracteres.")
+                return render(request, "editar_perfil.html", {"usuario": usuario})
+            usuario.contraseña = nueva_contraseña
+
+        # Guardar cambios en la base de datos
+        usuario.save()
+
+        # Actualizar el nombre en la sesión actual para que refleje el cambio arriba en el navbar/perfil
+        request.session["logueado"]["nombre"] = usuario.nombre
+
+        messages.success(request, "¡Tus datos han sido actualizados con éxito!")
+        return redirect('editar_perfil')
+
+    return render(request, "editar_perfil.html", {"usuario": usuario})
