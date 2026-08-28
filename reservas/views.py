@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime
-from .models import Reserva
+from .models import Reserva, Mesa, Zona
 from usuarios.models import Usuario
 from usuarios.decorador import verificar, solo_admin
 from django.db.models import Q
@@ -72,26 +72,71 @@ def crear_reserva(request):
             }
             return redirect('ver_carta')
 
-        # 3. Crear y guardar la reserva vinculada a la instancia de Usuario
+        # Guardamos los datos temporales y lo mandamos a el mapa de seleccionar mesas
+        request.session['datos_reserva_temporal'] = {
+            'usuario_id': usuario_id,
+            'cantidad_personas': personas,
+            'fecha': fecha,
+            'hora': hora,
+            'notas': notas
+        }
+        return redirect('seleccionar_mesa_mapa')
+
+    return render(request, "reservas/formulario_reserva.html")
+
+
+@verificar
+def seleccionar_mesa_mapa(request):
+    datos_temp = request.session.get('datos_reserva_temporal')
+    if not datos_temp:
+        messages.error(request, "Primero debes completar los datos de tu reserva.")
+        return redirect('crear_reserva')
+
+    fecha = datos_temp['fecha']
+    hora = datos_temp['hora']
+    personas_requeridas = datos_temp['cantidad_personas']
+
+    mesas_ocupadas_ids = Reserva.objects.filter(
+        fecha=fecha,
+        hora=hora,
+        estado='pendiente'
+    ).values_list('mesa_id', flat=True)
+
+    todas_las_mesas = Mesa.objects.all()
+
+    if request.method == "POST":
+        mesa_id = request.POST.get("mesa_id")
+        mesa_seleccionada = get_object_or_404(Mesa, id=mesa_id)
+
+        usuario_session = request.session.get('logueado')
+        usuario_id = usuario_session.get('id') if isinstance(usuario_session, dict) else usuario_session
+        usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
+
         nueva_reserva = Reserva.objects.create(
             usuario=usuario_instancia,
-            cantidad_personas=personas,
-            fecha=fecha_reserva_dt.date(),
-            hora=fecha_reserva_dt.time(),
-            notas=notas,
+            mesa=mesa_seleccionada,
+            cantidad_personas=personas_requeridas,
+            fecha=fecha,
+            hora=hora,
+            notas=datos_temp.get('notas', ''),
             estado='pendiente'
         )
 
-        # 4. Enviar correo de confirmación
         try:
             enviar_correo_reserva(nueva_reserva)
         except Exception as e:
             print(f"Error al enviar el correo de confirmación: {e}")
 
-        messages.success(request, "¡Tu mesa ha sido reservada con éxito!")
+        del request.session['datos_reserva_temporal']
+        messages.success(request, f"¡Mesa #{mesa_seleccionada.numero} reservada con éxito!")
         return redirect('mis_reservas')
 
-    return render(request, "reservas/formulario_reserva.html")
+    contexto = {
+        "mesas": todas_las_mesas,
+        "mesas_ocupadas_ids": list(mesas_ocupadas_ids),
+        "datos": datos_temp
+    }
+    return render(request, "reservas/mapa_mesas.html", contexto)
 
 
 @verificar
@@ -175,16 +220,12 @@ def historial_reservas(request):
 
   # Capturamos los campos del formulario GET del HTML
   busqueda = request.GET.get('buscar')
-  filtro_estado = request.GET.get('filtro_estado')  # <--- Corregido 'filtro_estado'
+  filtro_estado = request.GET.get('filtro_estado')  
   filtro_fecha = request.GET.get('filtro_fecha')
 
 
   if busqueda:
     reservas = reservas.filter(
-        # __ Es para busquedas avanzadas, salta de tabla en tabla buscando llaves foraneas
-        # icontains; si contiene el texto en mayuscula o minuscula lo pinta
-        # si el id que contiene el input de busqueda... Si contiene usuario, nombre del input de busqueda..
-        # Q es para hacer busquedas combinadas
         Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
     )
 
@@ -213,15 +254,11 @@ def historial_reservas(request):
 
 
 def cambiar_estado_reserva(request, id, nuevo_estado):
-    #Buscamos la reserva en la base de datos
     reservas = get_object_or_404(Reserva, id=id)
-    #verificamos los estados validos de la reserva
     estados_valido = ['asistio', 'pendiente', 'cancelada', 'confirmada']
-    # Validamos si el estado que mandaron por el botón está dentro de los permitidos
     if nuevo_estado in estados_valido:
-
-        reservas.estado = nuevo_estado #Cambiamos el viejo estado por el nuevo
-        reservas.save() # lo guardamos
+        reservas.estado = nuevo_estado
+        reservas.save()
         messages.success(request, f"La reserva #{reservas.id} ha sido actualizada")
     else:
         messages.error(request, "Estado no válido.")
