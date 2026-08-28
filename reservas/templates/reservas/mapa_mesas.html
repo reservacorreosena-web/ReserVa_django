@@ -3,29 +3,52 @@
 {% block title %}Seleccionar Mesa | ReserVa{% endblock %}
 
 {% block content %}
-<div class="mi-formulario" style="max-width: 800px;">
-    <h2>Selecciona tu Mesa</h2>
-    <p style="color: #aaa; font-size: 14px;">
-        Fecha: {{ datos.fecha }} | Hora: {{ datos.hora }} | Personas: {{ datos.cantidad_personas }}
-    </p>
-    <hr style="margin-bottom: 20px;">
+<div style="max-width: 900px; margin: 40px auto; padding: 20px; background: #121212; border-radius: 12px; border: 1px solid #2a2a2a; color: white;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+        <div>
+            <h2 style="margin: 0; color: #c9a961; font-size: 24px;">Selecciona tu Mesa</h2>
+            <p style="color: #888; font-size: 13px; margin: 5px 0 0 0;">
+                Fecha: <strong style="color: #fff;">{{ datos.fecha }}</strong> | 
+                Hora: <strong style="color: #fff;">{{ datos.hora }}</strong> | 
+                Personas: <strong style="color: #fff;">{{ datos.cantidad_personas }}</strong>
+            </p>
+        </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+        <!-- Leyenda de estados -->
+        <div style="display: flex; gap: 15px; font-size: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 12px; height: 12px; background: #c9a961; border-radius: 50%;"></span> Disponible
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 12px; height: 12px; background: #333; border: 1px solid #555; border-radius: 50%;"></span> No disponible
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #222; margin-bottom: 25px;">
+
+    <!-- Contenedor del mapa de mesas en Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;">
         {% for mesa in mesas %}
             {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
                 <!-- Mesa No Disponible / Bloqueada -->
-                <div style="background: #222; border: 1px solid #444; color: #666; padding: 15px; text-align: center; border-radius: 6px; opacity: 0.5; cursor: not-allowed;">
-                    <strong>Mesa #{{ mesa.numero }}</strong>
-                    <p style="font-size: 11px; margin-top: 5px;">No disponible<br>Cap: {{ mesa.capacidad }}</p>
+                <div style="background: #181818; border: 1px solid #2a2a2a; color: #555; padding: 20px; text-align: center; border-radius: 8px; opacity: 0.4; cursor: not-allowed; transition: all 0.2s ease;">
+                    <div style="font-size: 22px; margin-bottom: 5px;">🪑</div>
+                    <strong style="font-size: 15px; color: #666;">Mesa #{{ mesa.numero }}</strong>
+                    <p style="font-size: 11px; margin: 5px 0 0 0;">No disponible<br>Capacidad: {{ mesa.capacidad }}</p>
                 </div>
             {% else %}
-                <!-- Mesa Disponible -->
-                <form method="POST">
+                <!-- Mesa Disponible (Formulario interactivo) -->
+                <form method="POST" style="margin: 0;">
                     {% csrf_token %}
                     <input type="hidden" name="mesa_id" value="{{ mesa.id }}">
-                    <button type="submit" style="width: 100%; background: #161616; border: 1px solid #c9a961; color: white; padding: 15px; text-align: center; border-radius: 6px; cursor: pointer;">
-                        <strong>Mesa #{{ mesa.numero }}</strong>
-                        <p style="font-size: 11px; color: #c9a961; margin-top: 5px;">Disponible<br>Cap: {{ mesa.capacidad }}</p>
+                    <button type="submit" style="width: 100%; background: #1a1a1a; border: 1px solid #c9a961; color: white; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"
+                            onmouseover="this.style.background='#c9a961'; this.style.color='#121212';" 
+                            onmouseout="this.style.background='#1a1a1a'; this.style.color='white';">
+                        <div style="font-size: 22px; margin-bottom: 5px;">🪑</div>
+                        <strong style="font-size: 15px;">Mesa #{{ mesa.numero }}</strong>
+                        <p style="font-size: 11px; margin: 5px 0 0 0; opacity: 0.8;">Disponible<br>Capacidad: {{ mesa.capacidad }}</p>
                     </button>
                 </form>
             {% endif %}
