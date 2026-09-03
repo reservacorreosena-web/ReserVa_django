@@ -270,77 +270,98 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Mesa, Reserva, Plato, ConsumoMesa
 
+
 def admin_mapa_mesas(request):
-    # Capturamos fecha y hora del filtro (por defecto la actual)
     fecha = request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
     hora = request.GET.get('hora', timezone.now().strftime('%H:%M'))
 
-    # Traemos las mesas ordenadas por zona y número
     todas_las_mesas = Mesa.objects.all().order_by('zona', 'numero')
 
-    # Buscamos reservas activas para ese horario
     reservas_en_horario = Reserva.objects.filter(
         fecha=fecha,
         hora=hora,
         estado__in=['pendiente', 'confirmada', 'asistio']
     ).select_related('usuario', 'mesa')
-
-    # Mapeamos qué mesa tiene qué reserva
     mapa_reservas = {r.mesa_id: r for r in reservas_en_horario}
 
-    # Calculamos el consumo actual no pagado por mesa
-    consumos_activos = ConsumoMesa.objects.filter(pagado=False).select_related('plato')
-    mapa_consumos = {}
-    for c in consumos_activos:
-        if c.mesa_id not in mapa_consumos:
-            mapa_consumos[c.mesa_id] = []
-        mapa_consumos[c.mesa_id].append(c)
-
-    # Menú disponible para las comandas
-    platos_menu = Plato.objects.filter(disponible=True)
+    # Verificamos cuáles mesas tienen consumos activos (para marcarlas visualmente)
+    mesas_con_consumo = set(ConsumoMesa.objects.filter(pagado=False).values_list('mesa_id', flat=True))
 
     contexto = {
         'mesas': todas_las_mesas,
         'mapa_reservas': mapa_reservas,
-        'mapa_consumos': mapa_consumos,
-        'platos_menu': platos_menu,
+        'mesas_con_consumo': mesas_con_consumo,
         'fecha': fecha,
         'hora': hora,
     }
     return render(request, 'reservas/admin_mapa.html', contexto)
 
-def admin_agregar_consumo(request, mesa_id):
+
+def admin_detalle_mesa(request, mesa_id):
+    mesa = get_object_or_404(Mesa, id=mesa_id)
+
+    # Consumos actuales de la mesa (el "carrito" activo)
+    consumos = ConsumoMesa.objects.filter(mesa=mesa, pagado=False).select_related('plato')
+    total_cuenta = sum(c.subtotal() for c in consumos)
+
+    # Buscador de platos en la carta
+    query = request.GET.get('q', '')
+    platos = Plato.objects.filter(disponible=True)
+    if query:
+        platos = platos.filter(nombre__icontains=query)
+
+    contexto = {
+        'mesa': mesa,
+        'consumos': consumos,
+        'total_cuenta': total_cuenta,
+        'platos': platos,
+        'query': query,
+    }
+    return render(request, 'reservas/admin_detalle_mesa.html', contexto)
+
+
+def admin_agregar_al_carrito(request, mesa_id, plato_id):
     if request.method == 'POST':
-        plato_id = request.POST.get('plato_id')
+        mesa = get_object_or_404(Mesa, id=mesa_id)
+        plato = get_object_or_404(Plato, id=plato_id)
         cantidad = int(request.POST.get('cantidad', 1))
 
-        plato = get_object_or_404(Plato, id=plato_id)
+        # Buscamos si ya existe este plato en la comanda actual de la mesa para sumarlo
+        consumo_existente = ConsumoMesa.objects.filter(mesa=mesa, plato=plato, pagado=False).first()
 
-        # Buscamos si la mesa tiene una reserva activa hoy
-        reserva_activa = Reserva.objects.filter(
-            mesa_id=mesa_id,
-            fecha=timezone.now().date(),
-            estado__in=['pendiente', 'confirmada', 'asistio']
-        ).first()
+        if consumo_existente:
+            consumo_existente.cantidad += cantidad
+            consumo_existente.save()
+        else:
+            reserva_activa = Reserva.objects.filter(
+                mesa=mesa,
+                fecha=timezone.now().date(),
+                estado__in=['pendiente', 'confirmada', 'asistio']
+            ).first()
 
-        ConsumoMesa.objects.create(
-            mesa_id=mesa_id,
-            reserva=reserva_activa,
-            plato=plato,
-            cantidad=cantidad,
-            precio_unitario=plato.precio
-        )
-    return redirect('admin_mapa_mesas')
+            ConsumoMesa.objects.create(
+                mesa=mesa,
+                reserva=reserva_activa,
+                plato=plato,
+                cantidad=cantidad,
+                precio_unitario=plato.precio
+            )
 
-def admin_cerrar_mesa(request, mesa_id):
-    # Marcamos los consumos pendientes como pagados (para control de caja)
+    return redirect('admin_detalle_mesa', mesa_id=mesa_id)
+
+
+def admin_eliminar_item_carrito(request, consumo_id):
+    consumo = get_object_or_404(ConsumoMesa, id=consumo_id)
+    mesa_id = consumo.mesa.id
+    consumo.delete()
+    return redirect('admin_detalle_mesa', mesa_id=mesa_id)
+
+
+def admin_cobrar_mesa(request, mesa_id):
     ConsumoMesa.objects.filter(mesa_id=mesa_id, pagado=False).update(pagado=True)
-
-    # Finalizamos la reserva asociada de hoy si existe
     Reserva.objects.filter(
         mesa_id=mesa_id,
         fecha=timezone.now().date(),
         estado__in=['pendiente', 'confirmada', 'asistio']
     ).update(estado='completada')
-
     return redirect('admin_mapa_mesas')
