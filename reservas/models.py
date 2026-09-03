@@ -18,13 +18,17 @@ class Mesa(models.Model):
         return f"Mesa {self.numero} (Cap: {self.capacidad})"
 
 class Plato(models.Model):
-    nombre = models.CharField(max_length=150)
-    descripcion = models.TextField(blank=True, null=True)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(default="Sin descripción")
+    precio = models.IntegerField()
+    categoria = models.CharField(max_length=50, blank=True, null=True)
+    imagen = models.ImageField(upload_to='platos/', blank=True, null=True)
     disponible = models.BooleanField(default=True)
+    destacado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio}"
+        return self.nombre
+
 
 class Reserva(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)

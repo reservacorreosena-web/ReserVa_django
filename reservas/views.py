@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime
-from .models import Reserva, Mesa, Zona
+from .models import Reserva, Mesa, Zona, Plato, ConsumoMesa
 from usuarios.models import Usuario
 from usuarios.decorador import verificar, solo_admin
 from django.db.models import Q
@@ -96,16 +96,29 @@ def seleccionar_mesa_mapa(request):
     hora = datos_temp['hora']
     personas_requeridas = datos_temp['cantidad_personas']
 
-    mesas_ocupadas_ids = Reserva.objects.filter(
+    # 1. Mesas ocupadas por otras reservas en esa fecha y hora
+    mesas_por_reserva_ids = Reserva.objects.filter(
         fecha=fecha,
         hora=hora,
-        estado='pendiente'
+        estado__in=['pendiente', 'confirmada', 'asistio']
     ).values_list('mesa_id', flat=True)
+
+    # 2. Mesas que tienen un consumo activo en este preciso momento (en el POS / presenciales)
+    mesas_con_consumo_ids = ConsumoMesa.objects.filter(pagado=False).values_list('mesa_id', flat=True)
+
+    # 3. Unimos ambos grupos para bloquearlas en el mapa de reservas
+    mesas_ocupadas_ids = set(list(mesas_por_reserva_ids) + list(mesas_con_consumo_ids))
 
     todas_las_mesas = Mesa.objects.all()
 
     if request.method == "POST":
         mesa_id = request.POST.get("mesa_id")
+        
+        # Validación extra por seguridad por si intentan forzar una mesa ocupada
+        if int(mesa_id) in mesas_ocupadas_ids:
+            messages.error(request, "Lo sentimos, esta mesa acaba de ser ocupada o tiene un consumo activo.")
+            return redirect('seleccionar_mesa_mapa')
+
         mesa_seleccionada = get_object_or_404(Mesa, id=mesa_id)
 
         usuario_session = request.session.get('logueado')
@@ -144,9 +157,7 @@ def mis_reservas(request):
     usuario_session = request.session.get('logueado')
     usuario_id = usuario_session.get('id')
 
-    # Filtra por el usuario y excluye las que tengan estado 'cancelada'
     reservas = Reserva.objects.filter(usuario_id=usuario_id).exclude(estado='cancelada').order_by('-id')
-
 
     contexto = {
         "reservas": reservas
@@ -193,7 +204,6 @@ def actualizar_reserva(request, id):
             messages.error(request, "La cantidad de personas no es válida.")
             return redirect('actualizar_reserva', id=id)
 
-        # Actualizar datos de la reserva
         reserva.cantidad_personas = personas
         reserva.fecha = fecha
         reserva.hora = hora
@@ -215,42 +225,36 @@ def confirmacion(request):
 
 @solo_admin
 def historial_reservas(request):
-  # El admin puede consultar el histórico global de todos los usuarios
-  reservas = Reserva.objects.all().order_by('-fecha', '-hora')
+    reservas = Reserva.objects.all().order_by('-fecha', '-hora')
 
-  # Capturamos los campos del formulario GET del HTML
-  busqueda = request.GET.get('buscar')
-  filtro_estado = request.GET.get('filtro_estado')  
-  filtro_fecha = request.GET.get('filtro_fecha')
+    busqueda = request.GET.get('buscar')
+    filtro_estado = request.GET.get('filtro_estado')  
+    filtro_fecha = request.GET.get('filtro_fecha')
 
+    if busqueda:
+        reservas = reservas.filter(
+            Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
+        )
 
-  if busqueda:
-    reservas = reservas.filter(
-        Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
-    )
+    if filtro_estado:
+        reservas = reservas.filter(estado__iexact=filtro_estado)
 
+    if filtro_fecha:
+        reservas = reservas.filter(fecha=filtro_fecha)
 
-  if filtro_estado:
-    reservas = reservas.filter(estado__iexact=filtro_estado)
+    total_reservas = Reserva.objects.count()
+    asistio = Reserva.objects.filter(estado__iexact='asistio').count()
+    pendientes = Reserva.objects.filter(estado__iexact='pendiente').count()
+    canceladas = Reserva.objects.filter(estado__iexact='cancelada').count()
 
-
-  if filtro_fecha:
-    reservas = reservas.filter(fecha=filtro_fecha)
-
-  # Métricas para las tarjetas superiores adaptadas a tus estados
-  total_reservas = Reserva.objects.count()
-  asistio = Reserva.objects.filter(estado__iexact='asistio').count()
-  pendientes = Reserva.objects.filter(estado__iexact='pendiente').count()
-  canceladas = Reserva.objects.filter(estado__iexact='cancelada').count()
-
-  contexto = {
-      'reservas': reservas,
-      'total_reservas': total_reservas,
-      'asistio': asistio,
-      'pendientes': pendientes,
-      'canceladas': canceladas,
-  }
-  return render(request, 'reservas/historial_reservas.html', contexto)
+    contexto = {
+        'reservas': reservas,
+        'total_reservas': total_reservas,
+        'asistio': asistio,
+        'pendientes': pendientes,
+        'canceladas': canceladas,
+    }
+    return render(request, 'reservas/historial_reservas.html', contexto)
 
 
 def cambiar_estado_reserva(request, id, nuevo_estado):
@@ -266,10 +270,7 @@ def cambiar_estado_reserva(request, id, nuevo_estado):
     return redirect('historial_reservas')
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-from .models import Mesa, Reserva, Plato, ConsumoMesa
-
+# --- MÓDULO POS / ADMIN VENTAS ---
 
 def admin_mapa_mesas(request):
     fecha = request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
@@ -284,7 +285,6 @@ def admin_mapa_mesas(request):
     ).select_related('usuario', 'mesa')
     mapa_reservas = {r.mesa_id: r for r in reservas_en_horario}
 
-    # Verificamos cuáles mesas tienen consumos activos (para marcarlas visualmente)
     mesas_con_consumo = set(ConsumoMesa.objects.filter(pagado=False).values_list('mesa_id', flat=True))
 
     contexto = {
@@ -300,12 +300,10 @@ def admin_mapa_mesas(request):
 def admin_detalle_mesa(request, mesa_id):
     mesa = get_object_or_404(Mesa, id=mesa_id)
 
-    # Consumos actuales de la mesa (el "carrito" activo)
     consumos = ConsumoMesa.objects.filter(mesa=mesa, pagado=False).select_related('plato')
     total_cuenta = sum(c.subtotal() for c in consumos)
 
-    # Buscador de platos en la carta
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
     platos = Plato.objects.filter(disponible=True)
     if query:
         platos = platos.filter(nombre__icontains=query)
@@ -326,7 +324,6 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
         plato = get_object_or_404(Plato, id=plato_id)
         cantidad = int(request.POST.get('cantidad', 1))
 
-        # Buscamos si ya existe este plato en la comanda actual de la mesa para sumarlo
         consumo_existente = ConsumoMesa.objects.filter(mesa=mesa, plato=plato, pagado=False).first()
 
         if consumo_existente:
@@ -365,3 +362,15 @@ def admin_cobrar_mesa(request, mesa_id):
         estado__in=['pendiente', 'confirmada', 'asistio']
     ).update(estado='completada')
     return redirect('admin_mapa_mesas')
+
+
+def admin_enviar_pedido(request, mesa_id):
+    mesa = get_object_or_404(Mesa, id=mesa_id)
+    consumos_nuevos = ConsumoMesa.objects.filter(mesa=mesa, pagado=False)
+    
+    if consumos_nuevos.exists():
+        messages.success(request, f"¡Pedido enviado a cocina para la Mesa #{mesa.numero}!")
+    else:
+        messages.warning(request, "No hay platos agregados en la comanda actual.")
+        
+    return redirect('admin_detalle_mesa', mesa_id=mesa_id)
