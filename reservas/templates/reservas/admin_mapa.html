@@ -1,71 +1,34 @@
-{% extends 'base_admin.html' %}
+{% extends 'base.html' %}
 {% load custom_filters %}
 
 {% block content %}
 <div style="max-width: 1200px; margin: 30px auto; padding: 20px; background: #121212; color: white; border-radius: 10px;">
-    <h2>Panel de Administración - Gestión de Mesas y Comandas</h2>
+    <h2>Seleccione una Mesa para Gestionar</h2>
 
-    <!-- Filtro de Fecha y Hora -->
     <form method="GET" style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
         <label>Fecha:</label>
         <input type="date" name="fecha" value="{{ fecha }}" style="background:#222; color:#fff; padding:6px; border:1px solid #444;">
         <label>Hora:</label>
         <input type="time" name="hora" value="{{ hora }}" style="background:#222; color:#fff; padding:6px; border:1px solid #444;">
-        <button type="submit" style="background:#c9a961; border:none; padding:8px 15px; font-weight:bold; cursor:pointer; color:#121212;">Filtrar Horario</button>
+        <button type="submit" style="background:#c9a961; border:none; padding:8px 15px; font-weight:bold; cursor:pointer; color:#121212;">Filtrar</button>
     </form>
 
-    <!-- Grid de las Mesas -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
         {% for mesa in mesas %}
-            <div style="background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <h3 style="margin:0 0 5px 0; color: #c9a961;">Mesa #{{ mesa.numero }}</h3>
-                    <p style="font-size: 11px; color: #888; margin:0 0 10px 0;">Zona: {{ mesa.zona.nombre }} | Cap: {{ mesa.capacidad }} pers.</p>
+            <a href="{% url 'admin_detalle_mesa' mesa.id %}" style="text-decoration: none;">
+                <div style="background: #1a1a1a; border: 2px solid {% if mesa.id in mesas_con_consumo %}#c9a961{% elif mesa.id in mapa_reservas %}#ff6b6b{% else %}#333{% endif %}; padding: 20px; border-radius: 10px; text-align: center; transition: 0.2s;">
+                    <h3 style="margin: 0 0 5px 0; color: #fff;">Mesa #{{ mesa.numero }}</h3>
+                    <p style="font-size: 11px; color: #888; margin: 0 0 10px 0;">{{ mesa.zona.nombre }}</p>
 
-                    <!-- Estado de Ocupación -->
-                    {% if mesa.id in mapa_reservas %}
-                        {% with res=mapa_reservas|get_item:mesa.id %}
-                            <p style="color: #ff6b6b; font-size: 12px; margin: 0 0 8px 0;"><strong>Ocupada</strong> por {{ res.usuario.nombre }}</p>
-                        {% endwith %}
+                    {% if mesa.id in mesas_con_consumo %}
+                        <span style="background: rgba(201,169,97,0.2); color: #c9a961; padding: 3px 8px; font-size: 10px; border-radius: 4px; font-weight: bold;">En Consumo</span>
+                    {% elif mesa.id in mapa_reservas %}
+                        <span style="background: rgba(255,107,107,0.2); color: #ff6b6b; padding: 3px 8px; font-size: 10px; border-radius: 4px; font-weight: bold;">Reservada</span>
                     {% else %}
-                        <p style="color: #51cf66; font-size: 12px; margin: 0 0 8px 0;"><strong>Disponible</strong></p>
-                    {% endif %}
-
-                    <!-- Lista de Consumos Activos -->
-                    <div style="background: #111; padding: 8px; border-radius: 5px; font-size: 12px; margin-bottom: 10px; max-height: 110px; overflow-y: auto;">
-                        <strong style="color: #ccc;">Consumos:</strong>
-                        <ul style="margin: 4px 0 0 15px; padding:0; color:#aaa;">
-                            {% for consumo in mapa_consumos|get_item:mesa.id %}
-                                <li>{{ consumo.cantidad }}x {{ consumo.plato.nombre }} (${{ consumo.subtotal }})</li>
-                            {% empty %}
-                                <li style="color: #555;">Sin pedidos aún</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-
-                <div>
-                    <!-- Formulario para Comandar del Menú -->
-                    <form action="{% url 'admin_agregar_consumo' mesa.id %}" method="POST" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px;">
-                        {% csrf_token %}
-                        <select name="plato_id" required style="background:#222; border:1px solid #444; color:#fff; padding:4px; font-size:11px;">
-                            <option value="">-- Seleccionar Plato/Bebida --</option>
-                            {% for plato in platos_menu %}
-                                <option value="{{ plato.id }}">{{ plato.nombre }} (${{ plato.precio }})</option>
-                            {% endfor %}
-                        </select>
-                        <div style="display: flex; gap: 5px;">
-                            <input type="number" name="cantidad" value="1" min="1" style="width: 50px; background:#222; border:1px solid #444; color:#fff; padding:4px; font-size:11px;" placeholder="Cant">
-                            <button type="submit" style="flex:1; background:#444; color:#fff; border:none; padding:5px; font-size:11px; font-weight:bold; cursor:pointer;">+ Comandar</button>
-                        </div>
-                    </form>
-
-                    <!-- Botón para Cerrar la Mesa -->
-                    {% if mapa_consumos|get_item:mesa.id %}
-                        <a href="{% url 'admin_cerrar_mesa' mesa.id %}" style="display: block; text-align: center; background: #c9a961; color: #121212; padding: 6px; border-radius: 4px; font-size: 11px; font-weight: bold; text-decoration: none;">Cerrar Mesa y Cobrar</a>
+                        <span style="background: rgba(81,207,102,0.2); color: #51cf66; padding: 3px 8px; font-size: 10px; border-radius: 4px; font-weight: bold;">Libre</span>
                     {% endif %}
                 </div>
-            </div>
+            </a>
         {% endfor %}
     </div>
 </div>
