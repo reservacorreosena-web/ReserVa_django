@@ -72,6 +72,8 @@
         font-size: 10px;
         border-radius: 4px;
         font-weight: bold;
+        display: inline-block;
+        margin-bottom: 4px;
     }
     .badge-reservada {
         background: rgba(255, 107, 107, 0.2);
@@ -88,6 +90,17 @@
         font-size: 10px;
         border-radius: 4px;
         font-weight: bold;
+    }
+    /* Estilo para el monto del consumo actual */
+    .monto-consumo {
+        font-size: 12px;
+        color: #c9a961;
+        font-weight: bold;
+        margin-top: 4px;
+        background: #222;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
     }
 </style>
 
@@ -111,6 +124,10 @@
 
                     {% if mesa.id in mesas_con_consumo %}
                         <span class="badge-consumo">En Consumo</span>
+                        <!-- Aquí se muestra el total del consumo actual -->
+                        <div>
+                            <span class="monto-consumo">${{ totales_consumo|get_item:mesa.id }}</span>
+                        </div>
                     {% elif mesa.id in mapa_reservas %}
                         <span class="badge-reservada">Reservada</span>
                     {% else %}
