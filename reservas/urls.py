@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/vender/item/<int:consumo_id>/eliminar/', views.admin_eliminar_item_carrito,
          name='admin_eliminar_item_carrito'),
     path('admin/vender/mesa/<int:mesa_id>/cobrar/', views.admin_cobrar_mesa, name='admin_cobrar_mesa'),
+    path('admin/vender/mesa/<int:mesa_id>/enviar-pedido/', views.admin_enviar_pedido, name='admin_enviar_pedido'),
 ]
