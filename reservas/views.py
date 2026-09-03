@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime
-from .models import Reserva, Mesa, Zona
+from .models import Reserva, Mesa, Zona, Plato, ConsumoMesa
 from usuarios.models import Usuario
 from usuarios.decorador import verificar, solo_admin
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from .utils import enviar_correo_reserva
+import json
 
 
 @verificar
@@ -147,7 +148,6 @@ def mis_reservas(request):
     # Filtra por el usuario y excluye las que tengan estado 'cancelada'
     reservas = Reserva.objects.filter(usuario_id=usuario_id).exclude(estado='cancelada').order_by('-id')
 
-
     contexto = {
         "reservas": reservas
     }
@@ -223,16 +223,13 @@ def historial_reservas(request):
   filtro_estado = request.GET.get('filtro_estado')  
   filtro_fecha = request.GET.get('filtro_fecha')
 
-
   if busqueda:
     reservas = reservas.filter(
         Q(id__icontains=busqueda) | Q(usuario__nombre__icontains=busqueda)
     )
 
-
   if filtro_estado:
     reservas = reservas.filter(estado__iexact=filtro_estado)
-
 
   if filtro_fecha:
     reservas = reservas.filter(fecha=filtro_fecha)
@@ -264,11 +261,6 @@ def cambiar_estado_reserva(request, id, nuevo_estado):
         messages.error(request, "Estado no válido.")
 
     return redirect('historial_reservas')
-
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-from .models import Mesa, Reserva, Plato, ConsumoMesa
 
 
 def admin_mapa_mesas(request):
@@ -365,3 +357,69 @@ def admin_cobrar_mesa(request, mesa_id):
         estado__in=['pendiente', 'confirmada', 'asistio']
     ).update(estado='completada')
     return redirect('admin_mapa_mesas')
+
+
+@solo_admin
+def inicio_admin(request):
+    # Obtener la fecha de hoy del sistema
+    hoy = timezone.now().date()
+    
+    # Filtrar las reservas de hoy para calcular las métricas del dashboard
+    reservas_hoy_qs = Reserva.objects.filter(fecha=hoy)
+    
+    # --- MÉTRICA NUEVA: Ventas / Dinero en comandas de hoy ---
+    comandas_hoy = ConsumoMesa.objects.filter(mesa__reserva__fecha=hoy)
+    ventas_totales_hoy = sum(c.subtotal() for c in comandas_hoy)
+
+    # --- DATOS PARA GRÁFICO 1: Dona de Estados de Reservas de Hoy ---
+    estados_conteo = reservas_hoy_qs.values('estado').annotate(total=Count('id'))
+    estados_nombres = [item['estado'].capitalize() for item in estados_conteo]
+    estados_valores = [item['total'] for item in estados_conteo]
+    
+    if not estados_nombres:
+        estados_nombres = ['Sin reservas hoy']
+        estados_valores = [0]
+
+    # --- DATOS PARA GRÁFICO 2: Top Platos Más Solicitados ---
+    top_platos = (
+        ConsumoMesa.objects.values('plato__nombre')
+        .annotate(total_cantidad=Sum('cantidad'))
+        .order_by('-total_cantidad')[:5]
+    )
+    platos_labels = [p['plato__nombre'] if p['plato__nombre'] else 'Sin nombre' for p in top_platos]
+    platos_data = [p['total_cantidad'] for p in top_platos]
+
+    if not platos_labels:
+        platos_labels = ['Sin datos aún']
+        platos_data = [0]
+
+    # --- DATOS PARA GRÁFICO 3 (NUEVO): Reservas por Zona del Restaurante ---
+    reservas_por_zona = (
+        reservas_hoy_qs.values('mesa__zona__nombre')
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+    zonas_labels = [z['mesa__zona__nombre'] if z['mesa__zona__nombre'] else 'General' for z in reservas_por_zona]
+    zonas_data = [z['total'] for z in reservas_por_zona]
+
+    if not zonas_labels:
+        zonas_labels = ['Sin asignar']
+        zonas_data = [0]
+
+    contexto = {
+        'reservas_hoy': reservas_hoy_qs.count(),
+        'pendientes_hoy': reservas_hoy_qs.filter(estado__iexact='pendiente').count(),
+        'confirmadas_hoy': reservas_hoy_qs.filter(estado__iexact='confirmada').count(),
+        'ventas_totales_hoy': ventas_totales_hoy,
+        'total_platos': Plato.objects.count(),
+        'total_usuarios': Usuario.objects.count(),
+        # Serialización segura a JSON para Chart.js
+        'estados_nombres': json.dumps(estados_nombres),
+        'estados_valores': json.dumps(estados_valores),
+        'platos_labels': json.dumps(platos_labels),
+        'platos_data': json.dumps(platos_data),
+        'zonas_labels': json.dumps(zonas_labels),
+        'zonas_data': json.dumps(zonas_data),
+    }
+    
+    return render(request, 'landing/inicio_admin.html', contexto)
