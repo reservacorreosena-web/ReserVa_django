@@ -1,5 +1,5 @@
 /* =========================================================================
-   ReserVa — Landing editorial radical
+   ReserVa — Landing editorial radical LANDING USUARIOS NORMAAAL
    Dirección: hero inmersivo, narrativa por bloques, sin layout estándar
    Paleta: espresso #121110, cobre oxidado #c47d4e, crema envejecido #f4eee0
    ========================================================================= */
@@ -670,3 +670,216 @@
         animation: none;
     }
 }
+
+
+/* ========================================================
+   ESTILOS BENTO GRID DEFINITIVOS PARA EL DASHBOARD ADMIN
+   ======================================================== */
+
+.rv-admin-page {
+    background: #0a0a0a;
+    min-height: 100vh;
+    padding: 10px 15px 60px 15px;
+    color: #f5f2eb;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.rv-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 15px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 15px;
+}
+
+.rv-eyebrow {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #c9a961;
+    font-weight: 600;
+}
+
+.rv-admin-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: #ffffff;
+    margin: 0;
+}
+
+.rv-admin-welcome {
+    font-size: 13px;
+    color: #888;
+}
+
+.rv-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.rv-kpi-card {
+    background: #141414;
+    border: 1px solid rgba(201, 169, 97, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.rv-metric-label {
+    font-size: 13px;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rv-metric-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+}
+
+.rv-kpi-sub {
+    color: #666;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.text-gold { color: #c9a961 !important; }
+.text-orange-custom { color: #fd7e14 !important; }
+.text-cyan { color: #0dcaf0 !important; }
+
+.rv-span-half {
+    grid-column: span 2;
+}
+
+.rv-span-full {
+    grid-column: span 4;
+}
+
+.rv-chart-card {
+    background: #141414;
+    border: 1px solid rgba(201, 169, 97, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.rv-chart-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 10px;
+}
+
+.rv-chart-container-medium {
+    width: 100%;
+    height: 250px;
+    position: relative;
+}
+
+.rv-chart-container-large {
+    width: 100%;
+    height: 270px;
+    position: relative;
+}
+
+.rv-module-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.rv-module-card:hover {
+    border-color: rgba(201, 169, 97, 0.4);
+    transform: translateY(-2px);
+}
+
+.rv-module-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rv-module-icon {
+    font-size: 24px;
+    color: #c9a961;
+    background: rgba(201, 169, 97, 0.08);
+    min-width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid rgba(201, 169, 97, 0.2);
+}
+
+.rv-module-info h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 2px 0;
+}
+
+.rv-module-info p {
+    color: #888;
+    font-size: 12px;
+    margin: 0;
+}
+
+.btn-gold-action {
+    background: transparent;
+    color: #c9a961;
+    border: 1px solid #c9a961;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.btn-gold-action:hover {
+    background: #c9a961;
+    color: #000;
+}
+
+/* Responsividad para móviles y tablets */
+@media (max-width: 992px) {
+    .rv-bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .rv-span-half, .rv-span-full {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 576px) {
+    .rv-bento-grid {
+        grid-template-columns: 1fr;
+    }
+    .rv-span-half, .rv-span-full {
+        grid-column: span 1;
+    }
+}
+
+
