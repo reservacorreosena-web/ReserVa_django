@@ -15,9 +15,14 @@
         <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">← Volver</a>
     </div>
 
-    {% if error %}
-        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-danger text-center fw-bold mb-4" style="max-width: 600px; margin: 0 auto;">
-            ⚠️ {{ error }}
+    <!-- MENSAJES DE ERROR / ALERTAS DE DJANGO -->
+    {% if messages %}
+        <div class="mb-4" style="max-width: 600px; margin: 0 auto;">
+            {% for message in messages %}
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-danger text-center fw-bold mb-2">
+                    ⚠️ {{ message }}
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
 
@@ -25,7 +30,7 @@
     <div class="card bg-dark text-light border-secondary shadow-lg mx-auto" style="max-width: 600px; background-color: #181818 !important; border-color: rgba(255, 255, 255, 0.08) !important; border-radius: 12px;">
         <div class="card-body p-4 p-md-5">
 
-            <!-- AGREGAMOS enctype="multipart/form-data" AQUí -->
+            <!-- FORMULARIO CON MULTIPART PARA IMÁGENES -->
             <form action="{% url 'crear_plato' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -35,10 +40,10 @@
                     <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ datos_plato.nombre }}">
                 </div>
 
-                <!-- DESCRIPCIÓN -->
+                <!-- DESCRIPCIÓN CORREGIDA (Incluye variable para no perder datos si hay error) -->
                 <div class="mb-4 text-center">
                     <label for="descripcion" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30"></textarea>
+                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30" required>{{ datos_plato.descripcion }}</textarea>
                 </div>
 
                 <!-- FILA DOBLE: CATEGORÍA Y PRECIO -->
@@ -59,7 +64,7 @@
                     </div>
                 </div>
 
-                <!-- CAMPO NUEVO PARA SUBIR LA IMAGEN -->
+                <!-- CAMPO PARA SUBIR LA IMAGEN -->
                 <div class="mb-4 text-center">
                     <label for="imagen" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Foto del Plato</label>
                     <input type="file" id="imagen" name="imagen" class="form-control bg-dark text-white border-secondary py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" accept="image/*">

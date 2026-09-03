@@ -1,0 +1,552 @@
+/* ==========================================
+   ESTILOS COMPARTIDOS / MAPA DE MESAS
+   ================================---------- */
+.mapa-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #121212;
+    color: white;
+    border-radius: 10px;
+}
+
+.mapa-form {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.mapa-input {
+    background: #222;
+    color: #fff;
+    padding: 6px;
+    border: 1px solid #444;
+}
+
+.mapa-btn {
+    background: #c9a961;
+    border: none;
+    padding: 8px 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #121212;
+}
+
+.mapa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.mapa-card-link {
+    text-decoration: none;
+}
+
+.mapa-card {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.2s;
+    border: 2px solid #333;
+}
+
+.mapa-card.consumo {
+    border-color: #c9a961;
+}
+
+.mapa-card.reservada {
+    border-color: #ff6b6b;
+}
+
+.mapa-card.libre {
+    border-color: #333;
+}
+
+.mapa-card h3 {
+    margin: 0 0 5px 0;
+    color: #fff;
+}
+
+.mapa-card p {
+    font-size: 11px;
+    color: #888;
+    margin: 0 0 10px 0;
+}
+
+.badge-consumo {
+    background: rgba(201, 169, 97, 0.2);
+    color: #c9a961;
+    padding: 3px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.badge-reservada {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    padding: 3px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.badge-libre {
+    background: rgba(81, 207, 102, 0.2);
+    color: #51cf66;
+    padding: 3px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+
+/* ==========================================
+   ESTILOS PARA DETALLE DE MESA (COMANDA)
+   ================================---------- */
+.detalle-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #121212;
+    color: white;
+    border-radius: 10px;
+}
+
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.detalle-header h2 {
+    margin: 0;
+    color: #c9a961;
+}
+
+.detalle-header p {
+    margin: 5px 0 0 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.btn-volver {
+    background: #333;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+}
+
+.detalle-section-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.detalle-form-buscar {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.detalle-input-buscar {
+    width: 100%;
+    padding: 8px;
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.detalle-btn-buscar {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    padding: 8px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.platos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.plato-item {
+    background: #1a1a1a;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #333;
+}
+
+.plato-precio {
+    color: #c9a961;
+    font-size: 13px;
+}
+
+.plato-form-add {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin: 0;
+}
+
+.plato-input-cant {
+    width: 45px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.plato-btn-add {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comanda-box {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.comanda-titulo {
+    font-size: 16px;
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.comanda-items-lista {
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.comanda-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    border-bottom: 1px dashed #333;
+    padding-bottom: 8px;
+}
+
+.comanda-subtotal {
+    color: #888;
+    font-size: 11px;
+}
+
+.comanda-eliminar {
+    color: #ff6b6b;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.comanda-footer {
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.comanda-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.comanda-total-precio {
+    color: #c9a961;
+}
+
+.btn-enviar-pedido {
+    display: block;
+    text-align: center;
+    background: #339af0;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.btn-cerrar-cuenta {
+    display: block;
+    text-align: center;
+    background: #ff6b6b;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-disabled {
+    width: 100%;
+    background: #333;
+    color: #666;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: not-allowed;
+    margin-bottom: 10px;
+}
+
+/* ==========================================
+   ESTILOS: DETALLE DE MESA (COMANDA)
+   ================================---------- */
+.detalle-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #121212;
+    color: white;
+    border-radius: 10px;
+}
+
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.detalle-header h2 {
+    margin: 0;
+    color: #c9a961;
+}
+
+.detalle-header p {
+    margin: 5px 0 0 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.btn-volver {
+    background: #333;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+}
+
+.detalle-section-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.detalle-form-buscar {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.detalle-input-buscar {
+    width: 100%;
+    padding: 8px;
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.detalle-btn-buscar {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    padding: 8px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.platos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.plato-item {
+    background: #1a1a1a;
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #333;
+}
+
+.plato-precio {
+    color: #c9a961;
+    font-size: 13px;
+}
+
+.plato-form-add {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin: 0;
+}
+
+.plato-input-cant {
+    width: 45px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.plato-btn-add {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    padding: 5px 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comanda-box {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.comanda-titulo {
+    font-size: 16px;
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.comanda-items-lista {
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.comanda-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    border-bottom: 1px dashed #333;
+    padding-bottom: 8px;
+}
+
+.comanda-subtotal {
+    color: #888;
+    font-size: 11px;
+}
+
+.comanda-eliminar {
+    color: #ff6b6b;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.comanda-footer {
+    border-top: 1px solid #333;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.comanda-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.comanda-total-precio {
+    color: #c9a961;
+}
+
+.btn-enviar-pedido {
+    display: block;
+    text-align: center;
+    background: #339af0;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.btn-cerrar-cuenta {
+    display: block;
+    text-align: center;
+    background: #ff6b6b;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-disabled {
+    width: 100%;
+    background: #333;
+    color: #666;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: not-allowed;
+    margin-bottom: 10px;
+}
