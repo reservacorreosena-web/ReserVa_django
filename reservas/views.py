@@ -272,6 +272,7 @@ def cambiar_estado_reserva(request, id, nuevo_estado):
 
 # --- MÓDULO POS / ADMIN VENTAS ---
 
+@solo_admin  # O @verificar, dependiendo de cómo protejas esta vista en tu proyecto
 def admin_mapa_mesas(request):
     fecha = request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
     hora = request.GET.get('hora', timezone.now().strftime('%H:%M'))
@@ -285,12 +286,23 @@ def admin_mapa_mesas(request):
     ).select_related('usuario', 'mesa')
     mapa_reservas = {r.mesa_id: r for r in reservas_en_horario}
 
-    mesas_con_consumo = set(ConsumoMesa.objects.filter(pagado=False).values_list('mesa_id', flat=True))
+    # NUEVO: Calculamos el total de consumo activo por cada mesa
+    consumos_activos = ConsumoMesa.objects.filter(pagado=False)
+    
+    # Creamos un diccionario { mesa_id: total_cuenta }
+    totales_consumo = {}
+    mesas_con_consumo = set()
+    
+    for consumo in consumos_activos:
+        mesas_con_consumo.add(consumo.mesa_id)
+        # Si la mesa ya tiene un total sumado, le acumulamos el subtotal, sino lo iniciamos
+        totales_consumo[consumo.mesa_id] = totales_consumo.get(consumo.mesa_id, 0) + consumo.subtotal()
 
     contexto = {
         'mesas': todas_las_mesas,
         'mapa_reservas': mapa_reservas,
         'mesas_con_consumo': mesas_con_consumo,
+        'totales_consumo': totales_consumo, # <--- Pasamos este diccionario al template
         'fecha': fecha,
         'hora': hora,
     }
