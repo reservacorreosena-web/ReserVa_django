@@ -1,35 +1,40 @@
 {% extends 'base_admin.html' %}
+{% load static %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 20px auto; padding: 20px; background: #121212; color: white; border-radius: 10px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+<link rel="stylesheet" href="{% static 'css/mapa_mesas.css' %}">
+
+<div class="detalle-container">
+    <div class="detalle-header">
         <div>
-            <h2 style="margin: 0; color: #c9a961;">Gestión de Mesa #{{ mesa.numero }}</h2>
-            <p style="margin: 5px 0 0 0; color: #888; font-size: 13px;">Zona: {{ mesa.zona.nombre }} | Capacidad: {{ mesa.capacidad }} personas</p>
+            <h2>Gestión de Mesa #{{ mesa.numero }}</h2>
+            <p>Zona: {{ mesa.zona.nombre }} | Capacidad: {{ mesa.capacidad }} personas</p>
         </div>
-        <a href="{% url 'admin_mapa_mesas' %}" style="background: #333; color: #fff; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 13px;">← Volver al Mapa</a>
+        <a href="{% url 'admin_mapa_mesas' %}" class="btn-volver">← Volver al Mapa</a>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 400px; gap: 20px;">
+    <div class="detalle-grid">
 
         <!-- Columna Izquierda: Buscador y Carta de Platos -->
         <div>
-            <h3 style="font-size: 16px; margin-bottom: 10px;">Menú / Catálogo</h3>
-            <form method="GET" style="margin-bottom: 15px;">
-                <input type="text" name="q" value="{{ query }}" placeholder="Buscar plato o bebida..." style="width: 100%; padding: 8px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px;">
+            <h3 class="detalle-section-title">Menú / Catálogo</h3>
+            
+            <form method="GET" action="{% url 'admin_detalle_mesa' mesa.id %}" class="detalle-form-buscar">
+                <input type="text" name="q" value="{{ query }}" placeholder="Buscar plato o bebida..." class="detalle-input-buscar">
+                <button type="submit" class="detalle-btn-buscar">Buscar</button>
             </form>
 
-            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto;">
+            <div class="platos-lista">
                 {% for plato in platos %}
-                    <div style="background: #1a1a1a; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333;">
+                    <div class="plato-item">
                         <div>
                             <strong style="font-size: 14px;">{{ plato.nombre }}</strong>
-                            <div style="color: #c9a961; font-size: 13px;">${{ plato.precio }}</div>
-                        </div>
-                        <form action="{% url 'admin_agregar_al_carrito' mesa.id plato.id %}" method="POST" style="display: flex; gap: 5px; align-items: center;">
+                            <div class="plato-precio">${{ plato.precio }}</div>
+                        </div>      
+                        <form action="{% url 'admin_agregar_al_carrito' mesa.id plato.id %}" method="POST" class="plato-form-add">
                             {% csrf_token %}
-                            <input type="number" name="cantidad" value="1" min="1" style="width: 45px; background: #222; color: #fff; border: 1px solid #444; text-align: center; padding: 4px; border-radius: 4px;">
-                            <button type="submit" style="background: #c9a961; color: #121212; border: none; padding: 5px 10px; font-weight: bold; border-radius: 4px; cursor: pointer;">+</button>
+                            <input type="number" name="cantidad" value="1" min="1" class="plato-input-cant">
+                            <button type="submit" class="plato-btn-add">+</button>
                         </form>
                     </div>
                 {% empty %}
@@ -39,18 +44,18 @@
         </div>
 
         <!-- Columna Derecha: Carrito / Comanda Activa -->
-        <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="comanda-box">
             <div>
-                <h3 style="font-size: 16px; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px;">Comanda Actual</h3>
+                <h3 class="comanda-titulo">Comanda Actual</h3>
 
-                <div style="max-height: 350px; overflow-y: auto; margin-top: 10px;">
+                <div class="comanda-items-lista">
                     {% for item in consumos %}
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; border-bottom: 1px dashed #333; padding-bottom: 8px;">
+                        <div class="comanda-item">
                             <div>
                                 <span>{{ item.cantidad }}x {{ item.plato.nombre }}</span>
-                                <div style="color: #888; font-size: 11px;">Subtotal: ${{ item.subtotal }}</div>
+                                <div class="comanda-subtotal">Subtotal: ${{ item.subtotal }}</div>
                             </div>
-                            <a href="{% url 'admin_eliminar_item_carrito' item.id %}" style="color: #ff6b6b; text-decoration: none; font-size: 14px;" title="Eliminar">🗑️</a>
+                            <a href="{% url 'admin_eliminar_item_carrito' item.id %}" class="comanda-eliminar" title="Eliminar">🗑️</a>
                         </div>
                     {% empty %}
                         <p style="color: #777; text-align: center; margin-top: 40px;">La mesa no tiene consumos registrados.</p>
@@ -58,16 +63,18 @@
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-bottom: 15px;">
+            <div class="comanda-footer">
+                <div class="comanda-total-row">
                     <span>Total a Pagar:</span>
-                    <span style="color: #c9a961;">${{ total_cuenta }}</span>
+                    <span class="comanda-total-precio">${{ total_cuenta }}</span>
                 </div>
 
                 {% if consumos %}
-                    <a href="{% url 'admin_cobrar_mesa' mesa.id %}" style="display: block; text-align: center; background: #51cf66; color: #121212; padding: 10px; border-radius: 5px; font-weight: bold; text-decoration: none;">Cerrar Cuenta y Cobrar</a>
+                    <a href="{% url 'admin_enviar_pedido' mesa.id %}" class="btn-enviar-pedido">Enviar Pedido</a>
+                    <a href="{% url 'admin_cobrar_mesa' mesa.id %}" class="btn-cerrar-cuenta" onclick="return confirm('¿Estás seguro de cobrar y cerrar la mesa definitivamente?');">Cerrar Cuenta y Cobrar</a>
                 {% else %}
-                    <button disabled style="width: 100%; background: #333; color: #666; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: not-allowed;">Cerrar Cuenta y Cobrar</button>
+                    <button disabled class="btn-disabled" style="margin-bottom: 10px;">Enviar Pedido</button>
+                    <button disabled class="btn-disabled">Cerrar Cuenta y Cobrar</button>
                 {% endif %}
             </div>
         </div>
