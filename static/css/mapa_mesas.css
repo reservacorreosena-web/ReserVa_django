@@ -1,552 +1,523 @@
 /* ==========================================
-   ESTILOS COMPARTIDOS / MAPA DE MESAS
+   MAPA ARQUITECTÓNICO INTERACTIVO Y PANEL LATERAL
    ================================---------- */
-.mapa-container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    background: #121212;
-    color: white;
-    border-radius: 10px;
-}
 
-.mapa-form {
-    margin: 20px 0;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.mapa-input {
-    background: #222;
-    color: #fff;
-    padding: 6px;
-    border: 1px solid #444;
-}
-
-.mapa-btn {
-    background: #c9a961;
-    border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #121212;
-}
-
-.mapa-grid {
+.rv-map-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+    grid-template-columns: 1fr 360px;
+    gap: 30px;
+    align-items: start;
 }
 
-.mapa-card-link {
-    text-decoration: none;
+@media (max-width: 992px) {
+    .rv-map-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-.mapa-card {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    transition: 0.2s;
+/* Contenedor del Plano / Zonas Estilo Arquitectónico */
+.rv-floor-plan {
+    background: #141414;
+    border: 2px dashed rgba(201, 169, 97, 0.25);
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+
+.rv-zone-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Distribución en grilla ordenada para las mesas de cada zona */
+.rv-zone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    justify-items: center;
+}
+
+/* Formas Geométricas Reales de las Mesas */
+.rv-table {
+    background: #1c1c1c;
     border: 2px solid #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
 }
 
-.mapa-card.consumo {
+/* 1. Mesa Redonda */
+.rv-table.redonda {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+/* 2. Mesa Cuadrada */
+.rv-table.cuadrada {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+}
+
+/* 3. Mesa Rectangular / Grande */
+.rv-table.rectangular {
+    width: 130px;
+    height: 80px;
+    border-radius: 10px;
+}
+
+/* Estados de las Mesas */
+.rv-table.disponible {
     border-color: #c9a961;
 }
 
-.mapa-card.reservada {
-    border-color: #ff6b6b;
+.rv-table.disponible:hover {
+    transform: translateY(-4px);
+    background: rgba(201, 169, 97, 0.08);
+    box-shadow: 0 8px 20px rgba(201, 169, 97, 0.15);
+    border-color: #fd7e14;
 }
 
-.mapa-card.libre {
-    border-color: #333;
+/* Mesa Seleccionada (Acento elegante del proyecto) */
+.rv-table.seleccionada {
+    background: rgba(253, 126, 20, 0.18) !important;
+    border-color: #fd7e14 !important;
+    box-shadow: 0 0 20px rgba(253, 126, 20, 0.35) !important;
+    transform: scale(1.05);
 }
 
-.mapa-card h3 {
-    margin: 0 0 5px 0;
+.rv-table.ocupada {
+    background: #111;
+    border-color: #222;
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Textos internos de la mesa */
+.rv-table-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
     color: #fff;
 }
 
-.mapa-card p {
-    font-size: 11px;
+.rv-table-cap {
+    font-size: 10px;
     color: #888;
-    margin: 0 0 10px 0;
+    margin-top: 2px;
 }
 
-.badge-consumo {
-    background: rgba(201, 169, 97, 0.2);
+/* Tooltip limpio */
+.rv-table.disponible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -32px;
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    border: 1px solid #333;
+    z-index: 10;
+}
+
+.rv-table.disponible:hover::after {
+    opacity: 1;
+}
+
+/* Panel Lateral Dinámico */
+.rv-side-panel {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 25px;
+    position: sticky;
+    top: 20px;
+}
+
+.panel-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.panel-content h3 {
     color: #c9a961;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 10px;
 }
 
-.badge-reservada {
-    background: rgba(255, 107, 107, 0.2);
-    color: #ff6b6b;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
+.panel-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #aaa;
 }
 
-.badge-libre {
-    background: rgba(81, 207, 102, 0.2);
-    color: #51cf66;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
+.panel-row strong {
+    color: #fff;
+}
+
+/* Botón de Confirmación con la línea de colores del proyecto */
+.btn-confirmar-reserva {
+    background: linear-gradient(135deg, #c9a961 0%, #b08d44 100%);
+    color: #121212;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-confirmar-reserva:hover {
+    background: linear-gradient(135deg, #d4b56c, #c9a961);
+    box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
+    color: #000;
 }
 
 
-/* ==========================================
-   ESTILOS PARA DETALLE DE MESA (COMANDA)
-   ================================---------- */
+/* Contenedor Principal */
 .detalle-container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 30px auto;
+    padding: 25px;
     background: #121212;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
     color: white;
-    border-radius: 10px;
 }
 
+/* Cabecera */
 .detalle-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 20px;
 }
 
 .detalle-header h2 {
     margin: 0;
     color: #c9a961;
+    font-size: 26px;
+    font-family: 'Playfair Display', serif;
 }
 
 .detalle-header p {
-    margin: 5px 0 0 0;
     color: #888;
     font-size: 13px;
+    margin: 5px 0 0 0;
 }
 
 .btn-volver {
-    background: #333;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a1a1a;
+    color: #c9a961;
+    border: 1px solid #c9a961;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
     text-decoration: none;
-    font-size: 13px;
+    transition: all 0.3s ease;
 }
 
+.btn-volver:hover {
+    background: #c9a961;
+    color: #121212;
+}
+
+/* Estructura en Grid */
 .detalle-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* Tarjetas contenedoras de columnas */
+.detalle-grid > div {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .detalle-section-title {
-    font-size: 16px;
-    margin-bottom: 10px;
+    color: #fff;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
 }
 
+/* Buscador */
 .detalle-form-buscar {
-    margin-bottom: 15px;
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .detalle-input-buscar {
-    width: 100%;
-    padding: 8px;
-    background: #222;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 5px;
+    flex: 1;
+    background: #121212;
+    border: 1px solid #333;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 13px;
 }
 
 .detalle-btn-buscar {
     background: #c9a961;
     color: #121212;
     border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    border-radius: 5px;
+    padding: 0 16px;
+    font-weight: 600;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 13px;
+    transition: opacity 0.2s;
 }
 
+.detalle-btn-buscar:hover {
+    opacity: 0.9;
+}
+
+/* Lista de Platos */
 .platos-lista {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
+    gap: 10px;
+    max-height: 400px;
     overflow-y: auto;
+    padding-right: 5px;
 }
 
 .plato-item {
-    background: #1a1a1a;
-    padding: 12px;
-    border-radius: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid #333;
-}
-
-.plato-precio {
-    color: #c9a961;
-    font-size: 13px;
-}
-
-.plato-form-add {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin: 0;
-}
-
-.plato-input-cant {
-    width: 45px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-}
-
-.plato-btn-add {
-    background: #c9a961;
-    color: #121212;
-    border: none;
-    padding: 5px 10px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.comanda-box {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.comanda-titulo {
-    font-size: 16px;
-    margin-top: 0;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
-}
-
-.comanda-items-lista {
-    max-height: 350px;
-    overflow-y: auto;
-    margin-top: 10px;
-}
-
-.comanda-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: 13px;
-    border-bottom: 1px dashed #333;
-    padding-bottom: 8px;
-}
-
-.comanda-subtotal {
-    color: #888;
-    font-size: 11px;
-}
-
-.comanda-eliminar {
-    color: #ff6b6b;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.comanda-footer {
-    border-top: 1px solid #333;
-    padding-top: 15px;
-    margin-top: 15px;
-}
-
-.comanda-total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.comanda-total-precio {
-    color: #c9a961;
-}
-
-.btn-enviar-pedido {
-    display: block;
-    text-align: center;
-    background: #339af0;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-    margin-bottom: 10px;
-}
-
-.btn-cerrar-cuenta {
-    display: block;
-    text-align: center;
-    background: #ff6b6b;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.btn-disabled {
-    width: 100%;
-    background: #333;
-    color: #666;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: not-allowed;
-    margin-bottom: 10px;
-}
-
-/* ==========================================
-   ESTILOS: DETALLE DE MESA (COMANDA)
-   ================================---------- */
-.detalle-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
     background: #121212;
-    color: white;
-    border-radius: 10px;
-}
-
-.detalle-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-}
-
-.detalle-header h2 {
-    margin: 0;
-    color: #c9a961;
-}
-
-.detalle-header p {
-    margin: 5px 0 0 0;
-    color: #888;
-    font-size: 13px;
-}
-
-.btn-volver {
-    background: #333;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.detalle-grid {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 20px;
-}
-
-.detalle-section-title {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.detalle-form-buscar {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 8px;
-}
-
-.detalle-input-buscar {
-    width: 100%;
-    padding: 8px;
-    background: #222;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 5px;
-}
-
-.detalle-btn-buscar {
-    background: #c9a961;
-    color: #121212;
-    border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.platos-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.plato-item {
-    background: #1a1a1a;
+    border: 1px solid #222;
     padding: 12px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #333;
+    border-radius: 8px;
 }
 
 .plato-precio {
+    font-size: 12px;
     color: #c9a961;
-    font-size: 13px;
+    font-weight: 600;
+    margin-top: 2px;
 }
 
 .plato-form-add {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     align-items: center;
     margin: 0;
 }
 
 .plato-input-cant {
     width: 45px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: white;
     text-align: center;
-    padding: 4px;
+    padding: 6px;
     border-radius: 4px;
+    outline: none;
+    font-size: 12px;
 }
 
 .plato-btn-add {
     background: #c9a961;
     color: #121212;
     border: none;
-    padding: 5px 10px;
+    width: 30px;
+    height: 30px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
 }
 
+.plato-btn-add:hover {
+    opacity: 0.9;
+}
+
+/* Columna de Comanda */
 .comanda-box {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #333;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .comanda-titulo {
-    font-size: 16px;
+    color: #fff;
+    font-size: 18px;
     margin-top: 0;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
 }
 
 .comanda-items-lista {
-    max-height: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 330px;
     overflow-y: auto;
-    margin-top: 10px;
+    padding-right: 5px;
+    margin-bottom: 15px;
 }
 
 .comanda-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    background: #121212;
+    border: 1px solid #222;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.comanda-item span {
     font-size: 13px;
-    border-bottom: 1px dashed #333;
-    padding-bottom: 8px;
+    color: #fff;
+    font-weight: 500;
 }
 
 .comanda-subtotal {
-    color: #888;
     font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.comanda-subtotal strong {
+    color: #c9a961;
 }
 
 .comanda-eliminar {
-    color: #ff6b6b;
+    color: #ff5555;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 15px;
+    padding: 5px;
+    transition: transform 0.2s;
 }
 
+.comanda-eliminar:hover {
+    transform: scale(1.1);
+}
+
+/* Footer de Comanda */
 .comanda-footer {
-    border-top: 1px solid #333;
+    border-top: 1px solid #2a2a2a;
     padding-top: 15px;
-    margin-top: 15px;
 }
 
 .comanda-total-row {
     display: flex;
     justify-content: space-between;
-    font-size: 16px;
-    font-weight: bold;
+    align-items: center;
     margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.comanda-total-row span:first-child {
+    color: #aaa;
 }
 
 .comanda-total-precio {
     color: #c9a961;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .btn-enviar-pedido {
     display: block;
     text-align: center;
-    background: #339af0;
-    color: #fff;
+    background: #222;
+    color: #c9a961;
+    border: 1px solid #c9a961;
     padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     text-decoration: none;
-    margin-bottom: 10px;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+}
+
+.btn-enviar-pedido:hover {
+    background: #c9a961;
+    color: #121212;
 }
 
 .btn-cerrar-cuenta {
     display: block;
     text-align: center;
-    background: #ff6b6b;
-    color: #fff;
+    background: #c9a961;
+    color: #121212;
     padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.btn-cerrar-cuenta:hover {
+    opacity: 0.9;
 }
 
 .btn-disabled {
+    display: block;
     width: 100%;
-    background: #333;
-    color: #666;
-    border: none;
+    text-align: center;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #555;
     padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: not-allowed;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }

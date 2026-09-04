@@ -1,65 +1,186 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Seleccionar Mesa | ReserVa{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mapa_mesas.css' %}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 900px; margin: 40px auto; padding: 20px; background: #121212; border-radius: 12px; border: 1px solid #2a2a2a; color: white;">
-    <div class="rv-back-wrapper" style="margin-bottom: 20px;">
-        <a href="javascript:history.back()" style="display: inline-flex; align-items: center; gap: 8px; background: #1a1a1a; color: #c9a961; border: 1px solid #c9a961; padding: 8px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; text-decoration: none; transition: all 0.3s ease;"
-           onmouseover="this.style.background='#c9a961'; this.style.color='#121212';" 
-           onmouseout="this.style.background='#1a1a1a'; this.style.color='#c9a961';">
-            <i class="bi bi-arrow-left"></i> Volver
-        </a>
-    </div>
+<div class="mapa-container">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+    <!-- Encabezado -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
         <div>
-            <h2 style="margin: 0; color: #c9a961; font-size: 24px;">Selecciona tu Mesa</h2>
+            <h2 style="margin: 0; color: #c9a961; font-size: 24px; font-family: 'Playfair Display', serif;">Mapa Arquitectónico del Restaurante</h2>
             <p style="color: #888; font-size: 13px; margin: 5px 0 0 0;">
                 Fecha: <strong style="color: #fff;">{{ datos.fecha }}</strong> | 
                 Hora: <strong style="color: #fff;">{{ datos.hora }}</strong> | 
-                Personas: <strong style="color: #fff;">{{ datos.cantidad_personas }}</strong>
+                Requeridas: <strong style="color: #fff;">{{ datos.cantidad_personas }} personas</strong>
             </p>
         </div>
 
-        <!-- Leyenda de estados -->
-        <div style="display: flex; gap: 15px; font-size: 12px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 12px; height: 12px; background: #c9a961; border-radius: 50%;"></span> Disponible
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 12px; height: 12px; background: #333; border: 1px solid #555; border-radius: 50%;"></span> No disponible
-            </div>
+        <!-- Leyenda -->
+        <div style="display: flex; gap: 15px; font-size: 12px; background: #181818; padding: 8px 15px; border-radius: 6px; border: 1px solid #2a2a2a;">
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #c9a961; border-radius: 50%;"></span> Disponible</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #fd7e14; border-radius: 50%;"></span> Seleccionada</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #444; border-radius: 50%;"></span> Ocupada</div>
         </div>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #222; margin-bottom: 25px;">
+    <!-- Layout Principal: Plano Izquierda + Panel Lateral Derecha -->
+    <div class="rv-map-layout">
+        
+        <!-- COLUMNA IZQUIERDA: EL MAPA VISUAL ORGANIZADO -->
+        <div class="rv-floor-plan">
+            
+            <div style="text-align: center; color: #555; font-size: 11px; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase;">
+                <i class="bi bi-compass"></i> Zona de Ingreso / Recepción Principal
+            </div>
 
-    <!-- Contenedor del mapa de mesas en Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;">
-        {% for mesa in mesas %}
-            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
-                <!-- Mesa No Disponible / Bloqueada -->
-                <div style="background: #181818; border: 1px solid #2a2a2a; color: #555; padding: 20px; text-align: center; border-radius: 8px; opacity: 0.4; cursor: not-allowed; transition: all 0.2s ease;">
-                    <div style="font-size: 22px; margin-bottom: 5px;">🪑</div>
-                    <strong style="font-size: 15px; color: #666;">Mesa #{{ mesa.numero }}</strong>
-                    <p style="font-size: 11px; margin: 5px 0 0 0;">No disponible<br>Capacidad: {{ mesa.capacidad }}</p>
+            <!-- ZONA VENTANA -->
+            <div class="rv-zone-title"><i class="bi bi-window"></i> Zona Ventana (Vista Panorámica)</div>
+            <div class="rv-zone-grid">
+                {% for mesa in mesas %}
+                    {% if "ventana" in mesa.zona|lower or forloop.counter <= 3 %}
+                        <!-- Asignación dinámica de formas si el modelo no la trae explícita -->
+                        {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:2|yesno:"redonda,cuadrada" %}
+                            {% if forloop.counter|divisibleby:3 %}{% with forma_estilo="rectangular" %}{% endwith %}{% endif %}
+                            
+                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% else %}
+                                <div class="rv-table {{ forma_estilo }} disponible" 
+                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Ventana" }}', '{{ forma_estilo }}')">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- ZONA CENTRAL -->
+            <div class="rv-zone-title"><i class="bi bi-grid"></i> Zona Central</div>
+            <div class="rv-zone-grid">
+                {% for mesa in mesas %}
+                    {% if "central" in mesa.zona|lower or forloop.counter > 3 and forloop.counter <= 7 %}
+                        {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:3|yesno:"rectangular,cuadrada" %}
+                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% else %}
+                                <div class="rv-table {{ forma_estilo }} disponible" 
+                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Central" }}', '{{ forma_estilo }}')">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- ZONA VIP / PRIVADA -->
+            <div class="rv-zone-title"><i class="bi bi-stars"></i> Zona VIP / Privada</div>
+            <div class="rv-zone-grid">
+                {% for mesa in mesas %}
+                    {% if "vip" in mesa.zona|lower or "terraza" in mesa.zona|lower or forloop.counter > 7 %}
+                        {% with forma_estilo=mesa.forma|default:"redonda" %}
+                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% else %}
+                                <div class="rv-table {{ forma_estilo }} disponible" 
+                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"VIP" }}', '{{ forma_estilo }}')">
+                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: PANEL LATERAL DINÁMICO -->
+        <div class="rv-side-panel">
+            <form method="POST" id="formMapaMesas">
+                {% csrf_token %}
+                <input type="hidden" name="mesa_id" id="inputMesaSeleccionada">
+
+                <div id="panelPlaceholder" class="panel-placeholder">
+                    <i class="bi bi-hand-index" style="font-size: 32px; color: #444; display: block; margin-bottom: 10px;"></i>
+                    <p style="font-size: 13px; margin: 0;">Haz clic en una mesa disponible del plano para ver sus detalles y confirmar tu reserva.</p>
                 </div>
-            {% else %}
-                <!-- Mesa Disponible (Formulario interactivo) -->
-                <form method="POST" style="margin: 0;">
-                    {% csrf_token %}
-                    <input type="hidden" name="mesa_id" value="{{ mesa.id }}">
-                    <button type="submit" style="width: 100%; background: #1a1a1a; border: 1px solid #c9a961; color: white; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2);"
-                            onmouseover="this.style.background='#c9a961'; this.style.color='#121212';" 
-                            onmouseout="this.style.background='#1a1a1a'; this.style.color='white';">
-                        <div style="font-size: 22px; margin-bottom: 5px;">🪑</div>
-                        <strong style="font-size: 15px;">Mesa #{{ mesa.numero }}</strong>
-                        <p style="font-size: 11px; margin: 5px 0 0 0; opacity: 0.8;">Disponible<br>Capacidad: {{ mesa.capacidad }}</p>
-                    </button>
-                </form>
-            {% endif %}
-        {% endfor %}
+
+                <div id="panelContent" class="panel-content" style="display: none;">
+                    <h3 id="panelTituloMesa">MESA --</h3>
+                    
+                    <div class="panel-row">
+                        <span>Capacidad:</span>
+                        <strong id="panelCapacidad">--</strong>
+                    </div>
+                    <div class="panel-row">
+                        <span>Zona:</span>
+                        <strong id="panelZona">--</strong>
+                    </div>
+                    <div class="panel-row">
+                        <span>Forma:</span>
+                        <strong id="panelForma" style="text-transform: capitalize;">--</strong>
+                    </div>
+                    <div class="panel-row">
+                        <span>Estado:</span>
+                        <strong style="color: #51cf66;">🟢 Disponible</strong>
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <button type="submit" class="btn-confirmar-reserva" style="width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 8px; cursor: pointer;">
+                            Confirmar Reserva <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
+
+<!-- Script de Interactividad Dinámica sin recargar -->
+<script>
+    function seleccionarMesaPlano(elemento, id, numero, capacidad, zona, forma) {
+        if (elemento.classList.contains('ocupada')) return;
+
+        // Limpiar selecciones anteriores
+        document.querySelectorAll('.rv-table').forEach(t => {
+            t.classList.remove('seleccionada');
+        });
+
+        // Seleccionar mesa actual
+        elemento.classList.add('seleccionada');
+        document.getElementById('inputMesaSeleccionada').value = id;
+
+        // Actualizar panel lateral
+        document.getElementById('panelPlaceholder').style.display = 'none';
+        document.getElementById('panelContent').style.display = 'block';
+
+        document.getElementById('panelTituloMesa').innerText = `MESA #${numero} ✓`;
+        document.getElementById('panelCapacidad').innerText = `${capacidad} personas`;
+        document.getElementById('panelZona').innerText = zona;
+        document.getElementById('panelForma').innerText = forma;
+    }
+</script>
 {% endblock %}
