@@ -17,7 +17,7 @@
 
     .rv-menu-header {
         text-align: center;
-        margin-bottom: 60px;
+        margin-bottom: 40px;
         padding-top: 20px;
     }
 
@@ -45,6 +45,41 @@
         line-height: 1.6;
         max-width: 600px;
         margin: 0 auto;
+    }
+
+    /* Estilos para los botones de categoría */
+    .rv-filter-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 50px;
+    }
+
+    .rv-filter-btn {
+        background: #111;
+        color: #888;
+        border: 1px solid #222;
+        padding: 10px 22px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .rv-filter-btn:hover {
+        color: #fff;
+        border-color: #444;
+    }
+
+    .rv-filter-btn.active {
+        background: #c9a961;
+        color: #0a0a0a;
+        border-color: #c9a961;
     }
 
     .rv-menu-grid {
@@ -232,6 +267,16 @@
         <p class="rv-menu-subtitle">Platos preparados con los mejores ingredientes de la ciudad.</p>
     </div>
 
+    <!-- Botones de Filtrado por Categoría -->
+    <div class="rv-filter-container">
+        <a href="?categoria=todos" class="rv-filter-btn {% if categoria_actual == 'todos' or not categoria_actual %}active{% endif %}">Todos</a>
+        <a href="?categoria=entradas" class="rv-filter-btn {% if categoria_actual == 'entradas' %}active{% endif %}">Entradas</a>
+        <a href="?categoria=platos_fuertes" class="rv-filter-btn {% if categoria_actual == 'platos_fuertes' %}active{% endif %}">Platos Fuertes</a>
+        <a href="?categoria=bebidas" class="rv-filter-btn {% if categoria_actual == 'bebidas' %}active{% endif %}">Bebidas</a>
+        <a href="?categoria=postres" class="rv-filter-btn {% if categoria_actual == 'postres' %}active{% endif %}">Postres</a>
+        <a href="?categoria=otros" class="rv-filter-btn {% if categoria_actual == 'otros' %}active{% endif %}">Otros</a>
+    </div>
+
     <div class="rv-menu-grid">
         {% for p in plato %}
         <div class="rv-plato-card">
@@ -244,7 +289,7 @@
                     </div>
                 {% endif %}
                 <span class="rv-plato-price">${{ p.precio }}</span>
-                <span class="rv-plato-category">{{ p.categoria|default:"Especialidad" }}</span>
+                <span class="rv-plato-category">{{ p.get_categoria_display|default:"Especialidad" }}</span>
             </div>
 
             <div class="rv-plato-content">
@@ -260,8 +305,8 @@
             <div class="rv-menu-empty-icon">
                 <i class="bi bi-journal-x"></i>
             </div>
-            <h3 class="rv-menu-empty-title">No hay platos disponibles</h3>
-            <p class="rv-menu-empty-text">Estamos actualizando nuestra carta. Consulta de nuevo más tarde.</p>
+            <h3 class="rv-menu-empty-title">No hay elementos disponibles</h3>
+            <p class="rv-menu-empty-text">No se encontraron productos en esta categoría por el momento.</p>
         </div>
         {% endfor %}
     </div>
