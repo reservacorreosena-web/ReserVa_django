@@ -17,7 +17,7 @@
     }
 
     .rv-form-container {
-        max-width: 600px;
+        max-width: 700px;
         margin: 0 auto;
         padding: 0px 40px;
     }
@@ -93,6 +93,39 @@
     textarea.rv-input {
         resize: vertical;
         min-height: 120px;
+    }
+
+    /* Estilo para la sección de platos preordenados */
+    .rv-platos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+        max-height: 280px;
+        overflow-y: auto;
+        padding-right: 5px;
+        border: 1px solid #222;
+        padding: 15px;
+        background: #111;
+    }
+
+    .rv-plato-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: #161616;
+        border: 1px solid #262626;
+        padding: 12px;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+    }
+
+    .rv-plato-item:hover {
+        border-color: #c9a961;
+    }
+
+    .rv-plato-checkbox {
+        margin-top: 3px;
+        accent-color: #c9a961;
     }
 
     .btn-gold {
@@ -193,10 +226,28 @@
                 <textarea name="notas" id="notas" rows="4" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input">{{ datos.notas }}</textarea>
             </div>
 
+            <!-- Sección de Preselección de Platos -->
+            <div class="rv-form-group">
+                <label class="rv-form-label">Preseleccionar Platos (Opcional)</label>
+                <div class="rv-platos-grid">
+                    {% for plato in platos %}
+                    <label class="rv-plato-item">
+                        <input type="checkbox" name="platos[]" value="{{ plato.id }}" class="rv-plato-checkbox">
+                        <div>
+                            <strong style="font-size: 13px; color: #fff; display: block;">{{ plato.nombre }}</strong>
+                            <span style="font-size: 12px; color: #c9a961; font-weight: 600;">${{ plato.precio }}</span>
+                        </div>
+                    </label>
+                    {% empty %}
+                    <p style="color: #666; font-size: 13px; grid-column: 1 / -1; text-align: center; padding: 15px 0;">No hay platos disponibles en este momento.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
             <button type="submit" class="btn-gold">
-                <i class="bi bi-calendar-check"></i> Confirmar Reserva
+                <i class="bi bi-calendar-check"></i> Continuar a Selección de Mesa
             </button>
         </form>
     </div>
 </div>
-{% endblock %}
+{% endblock %}  
