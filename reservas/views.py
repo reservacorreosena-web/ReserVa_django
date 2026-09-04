@@ -515,3 +515,7 @@ def admin_enviar_pedido(request, mesa_id):
     # Aquí puedes agregar la lógica necesaria para procesar o confirmar el envío del pedido
     messages.success(request, f"Pedido de la mesa #{mesa.numero} enviado correctamente.")
     return redirect('admin_detalle_mesa', mesa_id=mesa_id)
+
+
+def prueba(request):
+    pass
