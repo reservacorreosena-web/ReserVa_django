@@ -12,8 +12,10 @@ from .utils import enviar_correo_reserva
 
 @verificar
 def crear_reserva(request):
+  # Preparamos los platos disponibles para pasarlos siempre al template
+  platos_disponibles = Plato.objects.filter(disponible=True)
+
   if request.method == "POST":
-    # 1. Verifica las credenciales del usuario logueado con seguridad
     usuario_session = request.session.get("logueado")
     if not usuario_session:
       messages.error(request, "Debes iniciar sesión para realizar una reserva.")
@@ -26,12 +28,12 @@ def crear_reserva(request):
     )
     usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
-    # 2. Captura de datos del formulario
     cantidad_personas = request.POST.get("cantidad_personas", "").strip()
     fecha = request.POST.get("fecha", "").strip()
     hora = request.POST.get("hora", "").strip()
     notas = request.POST.get("notas", "").strip()
     preordenar = request.POST.get("preordenar", "NO")
+    platos_ids = request.POST.getlist("platos[]")
 
     datos_formulario = {
         "cantidad_personas": cantidad_personas,
@@ -48,7 +50,7 @@ def crear_reserva(request):
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
+          {"datos": datos_formulario, "platos": platos_disponibles},
       )
 
     try:
@@ -58,7 +60,7 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
+            {"datos": datos_formulario, "platos": platos_disponibles},
         )
       if personas > 20:
         messages.warning(
@@ -67,14 +69,14 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
+            {"datos": datos_formulario, "platos": platos_disponibles},
         )
     except ValueError:
       messages.error(request, "Ingresa un número válido para las personas.")
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
+          {"datos": datos_formulario, "platos": platos_disponibles},
       )
 
     try:
@@ -87,38 +89,36 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
+            {"datos": datos_formulario, "platos": platos_disponibles},
         )
     except ValueError:
       messages.error(request, "El formato de fecha u hora es inválido.")
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
+          {"datos": datos_formulario, "platos": platos_disponibles},
       )
 
-    # Redirección a carta si decide preordenar
-    if preordenar == "SI":
-      request.session["datos_reserva_temporal"] = {
-          "usuario_id": usuario_id,
-          "cantidad_personas": personas,
-          "fecha": fecha,
-          "hora": hora,
-          "notas": notas,
-      }
-      return redirect("ver_carta")
-
-    # Guardamos los datos temporales y lo mandamos a el mapa de seleccionar mesas
     request.session["datos_reserva_temporal"] = {
         "usuario_id": usuario_id,
         "cantidad_personas": personas,
         "fecha": fecha,
         "hora": hora,
         "notas": notas,
+        "platos_ids": platos_ids,
     }
+
+    if preordenar == "SI":
+      return redirect("ver_carta")
+
     return redirect("seleccionar_mesa_mapa")
 
-  return render(request, "reservas/formulario_reserva.html")
+  # Petición GET inicial
+  return render(
+      request,
+      "reservas/formulario_reserva.html",
+      {"platos": platos_disponibles},
+  )
 
 
 @verificar
@@ -171,6 +171,7 @@ def seleccionar_mesa_mapa(request):
     )
     usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
+    # Creamos la reserva
     nueva_reserva = Reserva.objects.create(
         usuario=usuario_instancia,
         mesa=mesa_seleccionada,
@@ -181,14 +182,30 @@ def seleccionar_mesa_mapa(request):
         estado="pendiente",
     )
 
+    # --- REGISTRAR PLATOS PRESELECCIONADOS ---
+    platos_ids = datos_temp.get("platos_ids", [])
+    for plato_id in platos_ids:
+      plato_obj = Plato.objects.filter(id=plato_id).first()
+      if plato_obj:
+        ConsumoMesa.objects.create(
+            mesa=mesa_seleccionada,
+            reserva=nueva_reserva,
+            plato=plato_obj,
+            cantidad=1,
+            precio_unitario=plato_obj.precio,
+            pagado=False
+        )
+
     try:
       enviar_correo_reserva(nueva_reserva)
     except Exception as e:
       print(f"Error al enviar el correo de confirmación: {e}")
 
+    # Limpiamos la sesión temporal
     del request.session["datos_reserva_temporal"]
+    
     messages.success(
-        request, f"¡Mesa #{mesa_seleccionada.numero} reservada con éxito!"
+        request, f"¡Mesa #{mesa_seleccionada.numero} reservada con éxito con tus platos preordenados!"
     )
     return redirect("mis_reservas")
 
