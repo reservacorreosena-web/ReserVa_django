@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Ruta del panel de administración (conecta el enlace {% url 'inicio' %} de tu menú lateral)
+    path('admin/inicio/', views.inicio_admin, name='inicio'),
+
+    # Rutas de reservas para clientes
     path('crear_reserva/', views.crear_reserva, name='crear_reserva'),
     path('mis_reservas/', views.mis_reservas, name='mis_reservas'),
     path('cancelar_reserva/<int:id>/', views.cancelar_reserva, name='cancelar'),

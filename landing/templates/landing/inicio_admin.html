@@ -3,228 +3,11 @@
 
 {% block title %}Dashboard Ejecutivo | ReserVa{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing_admin.css' %}">
+{% endblock %}
+
 {% block content %}
-<style>
-    .rv-admin-page {
-        background: #0a0a0a;
-        min-height: 100vh;
-        padding: 0px 40px 80px;
-        color: #f5f2eb;
-    }
-
-    /* Encabezado Principal Estilo Editorial */
-    .rv-admin-header {
-        max-width: 1200px;
-        margin: 0 auto 40px;
-        border-bottom: 1px solid rgba(201, 169, 97, 0.2);
-        padding-bottom: 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .rv-eyebrow {
-        display: block;
-        color: #c9a961;
-        font-size: 12px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-    }
-
-    .rv-admin-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 40px;
-        color: #fff;
-        margin: 0;
-        font-weight: 400;
-    }
-
-    .rv-admin-welcome {
-        color: #888;
-        font-size: 14px;
-        max-width: 450px;
-        text-align: right;
-        line-height: 1.5;
-    }
-
-    /* Layout Principal Asimétrico */
-    .rv-admin-layout {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 30px;
-    }
-
-    /* Columna Izquierda: Panel de Métricas Rápidas */
-    .rv-metrics-panel {
-        background: #141414;
-        border: 1px solid rgba(201, 169, 97, 0.2);
-        border-radius: 10px;
-        padding: 30px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        height: fit-content;
-    }
-
-    .rv-metric-item {
-        border-bottom: 1px solid #222;
-        padding-bottom: 18px;
-    }
-
-    .rv-metric-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .rv-metric-label {
-        color: #777;
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        display: block;
-        margin-bottom: 6px;
-    }
-
-    .rv-metric-value {
-        font-family: 'Playfair Display', serif;
-        font-size: 32px;
-        font-weight: 500;
-        color: #fff;
-        margin: 0;
-    }
-
-    /* Columna Derecha: Módulos de Gestión Interactivos */
-    .rv-modules-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .rv-module-row {
-        background: #141414;
-        border: 1px solid #222;
-        border-radius: 10px;
-        padding: 28px 32px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        transition: all 0.3s ease;
-    }
-
-    .rv-module-row:hover {
-        border-color: rgba(201, 169, 97, 0.4);
-        transform: translateX(4px);
-    }
-
-    .rv-module-info {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-    }
-
-    .rv-module-icon {
-        font-size: 32px;
-        color: #c9a961;
-        background: rgba(201, 169, 97, 0.08);
-        width: 64px;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        border: 1px solid rgba(201, 169, 97, 0.2);
-    }
-
-    .rv-module-details h4 {
-        font-family: 'Playfair Display', serif;
-        font-size: 20px;
-        color: #fff;
-        margin: 0 0 6px 0;
-        font-weight: 500;
-    }
-
-    .rv-module-details p {
-        color: #888;
-        font-size: 13px;
-        margin: 0;
-        line-height: 1.4;
-    }
-
-    /* Botones de Acción Exclusivos */
-    .btn-gold-action {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        background: #c9a961;
-        color: #0a0a0a;
-        border: none;
-        padding: 12px 24px;
-        font-size: 12px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-        border-radius: 0;
-    }
-
-    .btn-gold-action:hover {
-        background: #d4b772;
-        color: #0a0a0a;
-    }
-
-    .btn-disabled-action {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        background: transparent;
-        color: #666;
-        border: 1px solid #333;
-        padding: 12px 24px;
-        font-size: 12px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        cursor: not-allowed;
-        white-space: nowrap;
-        border-radius: 0;
-    }
-
-    @media (max-width: 992px) {
-        .rv-admin-layout {
-            grid-template-columns: 1fr;
-        }
-        .rv-admin-welcome {
-            text-align: left;
-        }
-        .rv-module-row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .btn-gold-action, .btn-disabled-action {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .rv-admin-page {
-            padding: 0px 20px 60px;
-        }
-        .rv-admin-title {
-            font-size: 30px;
-        }
-    }
-</style>
-
 <div class="rv-admin-page container-fluid p-0">
 
     <!-- Encabezado Estilo Editorial -->
@@ -260,14 +43,53 @@
                 <p class="rv-metric-value text-success">{{ confirmadas_hoy }}</p>
             </div>
 
+            <!-- Métrica adicional basada en tu views.py (Ventas de hoy) -->
             <div class="rv-metric-item">
-                <span class="rv-metric-label"><i class="bi bi-egg-fried me-1 text-info"></i> Platos en Carta</span>
-                <p class="rv-metric-value" style="color: #0dcaf0;">{{ total_platos }}</p>
+                <span class="rv-metric-label"><i class="bi bi-cash-stack me-1 text-info"></i> Ventas Hoy</span>
+                <p class="rv-metric-value" style="color: #0dcaf0;">${{ ventas_totales_hoy|floatformat:0 }}</p>
+            </div>
+
+            <div class="rv-metric-item">
+                <span class="rv-metric-label"><i class="bi bi-egg-fried me-1 text-secondary"></i> Platos en Carta</span>
+                <p class="rv-metric-value text-white">{{ total_platos }}</p>
             </div>
         </div>
 
-        <!-- Columna Derecha: Módulos de Gestión en Filas Profesionales -->
+        <!-- Columna Derecha: Estadísticas y Módulos de Gestión -->
         <div class="rv-modules-container">
+
+            <!-- Fila de Estadísticas / Gráficas Operativas Dinámicas -->
+            <div class="rv-stats-grid-row">
+                <!-- Gráfica 1: Estados de Reservas de Hoy (Dona) -->
+                <div class="rv-chart-card">
+                    <div class="rv-chart-header">
+                        <i class="bi bi-pie-chart text-warning"></i> Estados de Reservas Hoy
+                    </div>
+                    <div class="rv-chart-container-medium" style="position: relative; height: 220px; width: 100%;">
+                        <canvas id="chartEstadosReservas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 2: Top Platos Más Solicitados (Barras) -->
+                <div class="rv-chart-card">
+                    <div class="rv-chart-header">
+                        <i class="bi bi-bar-chart-line text-info"></i> Platos Más Solicitados
+                    </div>
+                    <div class="rv-chart-container-medium" style="position: relative; height: 220px; width: 100%;">
+                        <canvas id="chartPlatosSolicitados"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila Extra para la 3era Gráfica de Zonas (Opcional pero activa con tu views) -->
+            <div class="rv-chart-card mb-4">
+                <div class="rv-chart-header">
+                    <i class="bi bi-map text-success"></i> Distribución de Reservas por Zona
+                </div>
+                <div class="rv-chart-container-medium" style="position: relative; height: 200px; width: 100%;">
+                    <canvas id="chartZonasReservas"></canvas>
+                </div>
+            </div>
 
             <!-- Módulo 1: Gestión de Mesas -->
             <div class="rv-module-row">
@@ -321,4 +143,84 @@
 
     </div>
 </div>
+
+<!-- Script de Chart.js vinculado directamente al Backend (views.py) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // 1. Gráfica de Estados de Reservas Hoy (Doughnut)
+        const ctxEstados = document.getElementById('chartEstadosReservas').getContext('2d');
+        new Chart(ctxEstados, {
+            type: 'doughnut',
+            data: {
+                labels: {{ estados_nombres|safe }},
+                datasets: [{
+                    data: {{ estados_valores|safe }},
+                    backgroundColor: ['#c9a961', '#fd7e14', '#198754', '#0dcaf0', '#dc3545'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#aaa', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // 2. Gráfica de Top Platos Más Solicitados (Bar)
+        const ctxPlatos = document.getElementById('chartPlatosSolicitados').getContext('2d');
+        new Chart(ctxPlatos, {
+            type: 'bar',
+            data: {
+                labels: {{ platos_labels|safe }},
+                datasets: [{
+                    label: 'Cantidad pedida',
+                    data: {{ platos_data|safe }},
+                    backgroundColor: '#0dcaf0',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#888' }, grid: { display: false } },
+                    y: { ticks: { color: '#888', precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+
+        // 3. Gráfica de Reservas por Zona (Pie / Pastel)
+        const ctxZonas = document.getElementById('chartZonasReservas').getContext('2d');
+        new Chart(ctxZonas, {
+            type: 'pie',
+            data: {
+                labels: {{ zonas_labels|safe }},
+                datasets: [{
+                    data: {{ zonas_data|safe }},
+                    backgroundColor: ['#c9a961', '#198754', '#fd7e14', '#6610f2', '#e83e8c'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#aaa', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+    });
+</script>
 {% endblock %}

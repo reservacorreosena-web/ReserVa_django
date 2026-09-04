@@ -6,7 +6,7 @@ import copy
 import operator
 import warnings
 from contextlib import nullcontext
-from functools import reduce
+from functools import partial, reduce
 from itertools import chain, islice
 from weakref import ref as weak_ref
 
@@ -37,8 +37,13 @@ from django.db.models.utils import (
     resolve_callables,
 )
 from django.utils import timezone
-from django.utils.deprecation import RemovedInDjango70Warning, warn_about_external_use
+from django.utils.deprecation import (
+    RemovedInDjango70Warning,
+    django_file_prefixes,
+    warn_about_external_use,
+)
 from django.utils.functional import cached_property
+from django.utils.inspect import func_accepts_kwargs, func_supports_parameter
 
 # The maximum number of results to fetch in a get() query.
 MAX_GET_RESULTS = 21
@@ -47,6 +52,34 @@ MAX_GET_RESULTS = 21
 REPR_OUTPUT_SIZE = 20
 
 DEFAULT_FETCH_MODE = FETCH_ONE
+
+
+# RemovedInDjango70Warning: When the deprecation ends, remove this function
+# and restore direct model_cls.from_db(..., fetch_mode=fetch_mode) calls at
+# its call sites.
+def _get_from_db(model_cls, fetch_mode):
+    """
+    Return a callable equivalent to model_cls.from_db with fetch_mode already
+    bound, accommodating deprecated from_db() overrides that don't accept the
+    fetch_mode keyword argument.
+    """
+    from django.db.models import Model
+
+    from_db = model_cls.from_db
+    if (
+        from_db.__func__ is Model.from_db.__func__
+        or func_supports_parameter(from_db, "fetch_mode")
+        or func_accepts_kwargs(from_db)
+    ):
+        return partial(from_db, fetch_mode=fetch_mode)
+    warnings.warn(
+        f"{model_cls.__qualname__}.from_db() must accept a fetch_mode keyword "
+        "argument. Support for from_db() methods that do not accept it is "
+        "deprecated.",
+        RemovedInDjango70Warning,
+        skip_file_prefixes=django_file_prefixes(),
+    )
+    return from_db
 
 
 class BaseIterable:
@@ -109,6 +142,10 @@ class ModelIterable(BaseIterable):
         init_list = [
             f[0].target.attname for f in select[model_fields_start:model_fields_end]
         ]
+        # RemovedInDjango70Warning: When the deprecation ends, remove this
+        # assignment and call model_cls.from_db(..., fetch_mode=fetch_mode)
+        # directly in the loop below.
+        from_db = _get_from_db(model_cls, fetch_mode)
         related_populators = get_related_populators(klass_info, select, db, fetch_mode)
         known_related_objects = [
             (
@@ -128,11 +165,10 @@ class ModelIterable(BaseIterable):
         ]
         peers = []
         for row in compiler.results_iter(results):
-            obj = model_cls.from_db(
+            obj = from_db(
                 db,
                 init_list,
                 row[model_fields_start:model_fields_end],
-                fetch_mode=fetch_mode,
             )
             if fetch_mode.track_peers:
                 peers.append(weak_ref(obj))
@@ -199,13 +235,16 @@ class RawModelIterable(BaseIterable):
                     query_iterator, cols
                 )
             fetch_mode = self.queryset._fetch_mode
+            # RemovedInDjango70Warning: When the deprecation ends, remove
+            # this assignment and call
+            # model_cls.from_db(..., fetch_mode=fetch_mode) directly in the
+            # loop below.
+            from_db = _get_from_db(model_cls, fetch_mode)
             peers = []
             for values in query_iterator:
                 # Associate fields to values
                 model_init_values = [values[pos] for pos in model_init_pos]
-                instance = model_cls.from_db(
-                    db, model_init_names, model_init_values, fetch_mode=fetch_mode
-                )
+                instance = from_db(db, model_init_names, model_init_values)
                 if fetch_mode.track_peers:
                     peers.append(weak_ref(instance))
                     instance._state.peers = peers
@@ -1236,13 +1275,22 @@ class QuerySet(AltersData):
         def get_obj(obj):
             return obj
 
+        selected_fields = tuple(
+            self.query.selected
+            or (
+                *self.query.extra_select,
+                *self.query.values_select,
+                *self.query.annotation_select,
+            )
+        )
+
         if issubclass(self._iterable_class, ModelIterable):
             # Raise an AttributeError if field_name is deferred.
             get_key = operator.attrgetter(field_name)
 
         elif issubclass(self._iterable_class, ValuesIterable):
             if field_name not in self.query.values_select:
-                qs = qs.values(field_name, *self.query.values_select)
+                qs = qs.values(field_name, *selected_fields)
 
                 def get_obj(obj):  # noqa: F811
                     # We can safely mutate the dictionaries returned by
@@ -1255,16 +1303,16 @@ class QuerySet(AltersData):
 
         elif issubclass(self._iterable_class, ValuesListIterable):
             try:
-                field_index = self.query.values_select.index(field_name)
+                field_index = selected_fields.index(field_name)
             except ValueError:
-                # field_name is missing from values_select, so add it.
+                # field_name isn't selected, so add it.
                 field_index = 0
                 if issubclass(self._iterable_class, NamedValuesListIterable):
                     kwargs = {"named": True}
                 else:
                     kwargs = {}
                     get_obj = operator.itemgetter(slice(1, None))
-                qs = qs.values_list(field_name, *self.query.values_select, **kwargs)
+                qs = qs.values_list(field_name, *selected_fields, **kwargs)
 
             get_key = operator.itemgetter(field_index)
 
@@ -1274,7 +1322,7 @@ class QuerySet(AltersData):
                 get_key = get_obj
             else:
                 # Transform it back into a non-flat values_list().
-                qs = qs.values_list(field_name, *self.query.values_select)
+                qs = qs.values_list(field_name, *selected_fields)
                 get_key = operator.itemgetter(0)
                 get_obj = operator.itemgetter(1)
 
@@ -2999,6 +3047,11 @@ class RelatedPopulator:
             )
 
         self.model_cls = klass_info["model"]
+        # RemovedInDjango70Warning: When the deprecation ends, remove this
+        # assignment and call
+        # self.model_cls.from_db(..., fetch_mode=fetch_mode) directly in
+        # populate().
+        self.from_db = _get_from_db(self.model_cls, fetch_mode)
         # A primary key must have all of its constituents not-NULL as
         # NULL != NULL and thus NULL cannot be referenced through a foreign
         # relationship. Therefore checking for a single member of the primary
@@ -3018,11 +3071,10 @@ class RelatedPopulator:
         if obj_data[self.pk_idx] is None:
             obj = None
         else:
-            obj = self.model_cls.from_db(
+            obj = self.from_db(
                 self.db,
                 self.init_list,
                 obj_data,
-                fetch_mode=self.fetch_mode,
             )
             for rel_iter in self.related_populators:
                 rel_iter.populate(row, obj)
