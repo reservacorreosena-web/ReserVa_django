@@ -1,552 +1,198 @@
 /* ==========================================
-   ESTILOS COMPARTIDOS / MAPA DE MESAS
+   MAPA ARQUITECTÓNICO INTERACTIVO Y PANEL LATERAL
    ================================---------- */
-.mapa-container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    background: #121212;
-    color: white;
-    border-radius: 10px;
-}
 
-.mapa-form {
-    margin: 20px 0;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.mapa-input {
-    background: #222;
-    color: #fff;
-    padding: 6px;
-    border: 1px solid #444;
-}
-
-.mapa-btn {
-    background: #c9a961;
-    border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #121212;
-}
-
-.mapa-grid {
+.rv-map-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+    grid-template-columns: 1fr 360px;
+    gap: 30px;
+    align-items: start;
 }
 
-.mapa-card-link {
-    text-decoration: none;
+@media (max-width: 992px) {
+    .rv-map-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-.mapa-card {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    transition: 0.2s;
+/* Contenedor del Plano / Zonas Estilo Arquitectónico */
+.rv-floor-plan {
+    background: #141414;
+    border: 2px dashed rgba(201, 169, 97, 0.25);
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+
+.rv-zone-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Distribución en grilla ordenada para las mesas de cada zona */
+.rv-zone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    justify-items: center;
+}
+
+/* Formas Geométricas Reales de las Mesas */
+.rv-table {
+    background: #1c1c1c;
     border: 2px solid #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
 }
 
-.mapa-card.consumo {
+/* 1. Mesa Redonda */
+.rv-table.redonda {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+/* 2. Mesa Cuadrada */
+.rv-table.cuadrada {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+}
+
+/* 3. Mesa Rectangular / Grande */
+.rv-table.rectangular {
+    width: 130px;
+    height: 80px;
+    border-radius: 10px;
+}
+
+/* Estados de las Mesas */
+.rv-table.disponible {
     border-color: #c9a961;
 }
 
-.mapa-card.reservada {
-    border-color: #ff6b6b;
+.rv-table.disponible:hover {
+    transform: translateY(-4px);
+    background: rgba(201, 169, 97, 0.08);
+    box-shadow: 0 8px 20px rgba(201, 169, 97, 0.15);
+    border-color: #fd7e14;
 }
 
-.mapa-card.libre {
-    border-color: #333;
+/* Mesa Seleccionada (Acento elegante del proyecto) */
+.rv-table.seleccionada {
+    background: rgba(253, 126, 20, 0.18) !important;
+    border-color: #fd7e14 !important;
+    box-shadow: 0 0 20px rgba(253, 126, 20, 0.35) !important;
+    transform: scale(1.05);
 }
 
-.mapa-card h3 {
-    margin: 0 0 5px 0;
+.rv-table.ocupada {
+    background: #111;
+    border-color: #222;
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Textos internos de la mesa */
+.rv-table-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 600;
     color: #fff;
 }
 
-.mapa-card p {
-    font-size: 11px;
+.rv-table-cap {
+    font-size: 10px;
     color: #888;
-    margin: 0 0 10px 0;
+    margin-top: 2px;
 }
 
-.badge-consumo {
-    background: rgba(201, 169, 97, 0.2);
-    color: #c9a961;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.badge-reservada {
-    background: rgba(255, 107, 107, 0.2);
-    color: #ff6b6b;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.badge-libre {
-    background: rgba(81, 207, 102, 0.2);
-    color: #51cf66;
-    padding: 3px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-
-/* ==========================================
-   ESTILOS PARA DETALLE DE MESA (COMANDA)
-   ================================---------- */
-.detalle-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #121212;
-    color: white;
-    border-radius: 10px;
-}
-
-.detalle-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-}
-
-.detalle-header h2 {
-    margin: 0;
-    color: #c9a961;
-}
-
-.detalle-header p {
-    margin: 5px 0 0 0;
-    color: #888;
-    font-size: 13px;
-}
-
-.btn-volver {
-    background: #333;
+/* Tooltip limpio */
+.rv-table.disponible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -32px;
+    background: #000;
     color: #fff;
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.detalle-grid {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 20px;
-}
-
-.detalle-section-title {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.detalle-form-buscar {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 8px;
-}
-
-.detalle-input-buscar {
-    width: 100%;
-    padding: 8px;
-    background: #222;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 5px;
-}
-
-.detalle-btn-buscar {
-    background: #c9a961;
-    color: #121212;
-    border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.platos-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.plato-item {
-    background: #1a1a1a;
-    padding: 12px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
     border: 1px solid #333;
+    z-index: 10;
 }
 
-.plato-precio {
-    color: #c9a961;
-    font-size: 13px;
+.rv-table.disponible:hover::after {
+    opacity: 1;
 }
 
-.plato-form-add {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin: 0;
+/* Panel Lateral Dinámico */
+.rv-side-panel {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 25px;
+    position: sticky;
+    top: 20px;
 }
 
-.plato-input-cant {
-    width: 45px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
+.panel-placeholder {
     text-align: center;
-    padding: 4px;
-    border-radius: 4px;
+    padding: 40px 20px;
+    color: #666;
 }
 
-.plato-btn-add {
-    background: #c9a961;
-    color: #121212;
-    border: none;
-    padding: 5px 10px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.comanda-box {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.comanda-titulo {
-    font-size: 16px;
-    margin-top: 0;
-    border-bottom: 1px solid #333;
+.panel-content h3 {
+    color: #c9a961;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 1px solid #2a2a2a;
     padding-bottom: 10px;
 }
 
-.comanda-items-lista {
-    max-height: 350px;
-    overflow-y: auto;
-    margin-top: 10px;
-}
-
-.comanda-item {
+.panel-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 13px;
-    border-bottom: 1px dashed #333;
-    padding-bottom: 8px;
+    color: #aaa;
 }
 
-.comanda-subtotal {
-    color: #888;
-    font-size: 11px;
-}
-
-.comanda-eliminar {
-    color: #ff6b6b;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.comanda-footer {
-    border-top: 1px solid #333;
-    padding-top: 15px;
-    margin-top: 15px;
-}
-
-.comanda-total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.comanda-total-precio {
-    color: #c9a961;
-}
-
-.btn-enviar-pedido {
-    display: block;
-    text-align: center;
-    background: #339af0;
+.panel-row strong {
     color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-    margin-bottom: 10px;
 }
 
-.btn-cerrar-cuenta {
-    display: block;
-    text-align: center;
-    background: #ff6b6b;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.btn-disabled {
-    width: 100%;
-    background: #333;
-    color: #666;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: not-allowed;
-    margin-bottom: 10px;
-}
-
-/* ==========================================
-   ESTILOS: DETALLE DE MESA (COMANDA)
-   ================================---------- */
-.detalle-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #121212;
-    color: white;
-    border-radius: 10px;
-}
-
-.detalle-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 15px;
-}
-
-.detalle-header h2 {
-    margin: 0;
-    color: #c9a961;
-}
-
-.detalle-header p {
-    margin: 5px 0 0 0;
-    color: #888;
-    font-size: 13px;
-}
-
-.btn-volver {
-    background: #333;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.detalle-grid {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 20px;
-}
-
-.detalle-section-title {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.detalle-form-buscar {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 8px;
-}
-
-.detalle-input-buscar {
-    width: 100%;
-    padding: 8px;
-    background: #222;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 5px;
-}
-
-.detalle-btn-buscar {
-    background: #c9a961;
+/* Botón de Confirmación con la línea de colores del proyecto */
+.btn-confirmar-reserva {
+    background: linear-gradient(135deg, #c9a961 0%, #b08d44 100%);
     color: #121212;
+    font-weight: 600;
     border: none;
-    padding: 8px 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.platos-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.plato-item {
-    background: #1a1a1a;
-    padding: 12px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #333;
-}
-
-.plato-precio {
-    color: #c9a961;
-    font-size: 13px;
-}
-
-.plato-form-add {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    margin: 0;
-}
-
-.plato-input-cant {
-    width: 45px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-}
-
-.plato-btn-add {
-    background: #c9a961;
-    color: #121212;
-    border: none;
-    padding: 5px 10px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.comanda-box {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.comanda-titulo {
-    font-size: 16px;
-    margin-top: 0;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
-}
-
-.comanda-items-lista {
-    max-height: 350px;
-    overflow-y: auto;
-    margin-top: 10px;
-}
-
-.comanda-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: 13px;
-    border-bottom: 1px dashed #333;
-    padding-bottom: 8px;
-}
-
-.comanda-subtotal {
-    color: #888;
-    font-size: 11px;
-}
-
-.comanda-eliminar {
-    color: #ff6b6b;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.comanda-footer {
-    border-top: 1px solid #333;
-    padding-top: 15px;
-    margin-top: 15px;
-}
-
-.comanda-total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.comanda-total-precio {
-    color: #c9a961;
-}
-
-.btn-enviar-pedido {
-    display: block;
-    text-align: center;
-    background: #339af0;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-    margin-bottom: 10px;
-}
-
-.btn-cerrar-cuenta {
-    display: block;
-    text-align: center;
-    background: #ff6b6b;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.btn-disabled {
-    width: 100%;
-    background: #333;
-    color: #666;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: not-allowed;
-    margin-bottom: 10px;
+.btn-confirmar-reserva:hover {
+    background: linear-gradient(135deg, #d4b56c, #c9a961);
+    box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
+    color: #000;
 }
