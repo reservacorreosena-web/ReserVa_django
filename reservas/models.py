@@ -18,16 +18,24 @@ class Mesa(models.Model):
         return f"Mesa {self.numero} (Cap: {self.capacidad})"
 
 class Plato(models.Model):
+    CATEGORIAS = [
+        ('entradas', 'Entradas'),
+        ('platos_fuertes', 'Platos Fuertes'),
+        ('bebidas', 'Bebidas'),
+        ('postres', 'Postres'),
+        ('otros', 'Otros'),
+    ]
+    
     nombre = models.CharField(max_length=100)
-    descripcion = models.TextField(default="Sin descripción")
-    precio = models.IntegerField()
-    categoria = models.CharField(max_length=50, blank=True, null=True)
-    imagen = models.ImageField(upload_to='platos/', blank=True, null=True)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default='platos_fuertes')
     disponible = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
+    imagen = models.ImageField(upload_to='platos/', blank=True, null=True)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} - {self.get_categoria_display()}"
 
 
 class Reserva(models.Model):

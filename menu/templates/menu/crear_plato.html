@@ -51,10 +51,11 @@
                     <div class="col-md-6 text-center">
                         <label for="categoria" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Categoría</label>
                         <select id="categoria" name="categoria" class="form-select bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;">
-                            <option value="entrada" {% if datos_plato.categoria == 'entrada' %}selected{% endif %}>Entrada</option>
-                            <option value="fuerte" {% if datos_plato.categoria == 'fuerte' or not datos_plato.categoria %}selected{% endif %}>Plato Fuerte</option>
-                            <option value="bebida" {% if datos_plato.categoria == 'bebida' %}selected{% endif %}>Bebida</option>
-                            <option value="postre" {% if datos_plato.categoria == 'postre' %}selected{% endif %}>Postre</option>
+                            <option value="entradas" {% if datos_plato.categoria == 'entrada' %}selected{% endif %}>Entrada</option>
+                            <option value="plato_fuerte" {% if datos_plato.categoria == 'fuerte' or not datos_plato.categoria %}selected{% endif %}>Plato Fuerte</option>
+                            <option value="bebidas" {% if datos_plato.categoria == 'bebida' %}selected{% endif %}>Bebida</option>
+                            <option value="postres" {% if datos_plato.categoria == 'postre' %}selected{% endif %}>Postre</option>
+                            <option value="otros" {% if datos_plato.categoria == 'otros' %}selected{% endif %}>Otros</option>
                         </select>
                     </div>
 
