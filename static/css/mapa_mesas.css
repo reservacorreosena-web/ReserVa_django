@@ -196,3 +196,328 @@
     box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
     color: #000;
 }
+
+
+/* Contenedor Principal */
+.detalle-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #121212;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+    color: white;
+}
+
+/* Cabecera */
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 20px;
+}
+
+.detalle-header h2 {
+    margin: 0;
+    color: #c9a961;
+    font-size: 26px;
+    font-family: 'Playfair Display', serif;
+}
+
+.detalle-header p {
+    color: #888;
+    font-size: 13px;
+    margin: 5px 0 0 0;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a1a1a;
+    color: #c9a961;
+    border: 1px solid #c9a961;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+    background: #c9a961;
+    color: #121212;
+}
+
+/* Estructura en Grid */
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* Tarjetas contenedoras de columnas */
+.detalle-grid > div {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.detalle-section-title {
+    color: #fff;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Buscador */
+.detalle-form-buscar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.detalle-input-buscar {
+    flex: 1;
+    background: #121212;
+    border: 1px solid #333;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 13px;
+}
+
+.detalle-btn-buscar {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    padding: 0 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: opacity 0.2s;
+}
+
+.detalle-btn-buscar:hover {
+    opacity: 0.9;
+}
+
+/* Lista de Platos */
+.platos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.plato-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #121212;
+    border: 1px solid #222;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.plato-precio {
+    font-size: 12px;
+    color: #c9a961;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.plato-form-add {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+}
+
+.plato-input-cant {
+    width: 45px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: white;
+    text-align: center;
+    padding: 6px;
+    border-radius: 4px;
+    outline: none;
+    font-size: 12px;
+}
+
+.plato-btn-add {
+    background: #c9a961;
+    color: #121212;
+    border: none;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.plato-btn-add:hover {
+    opacity: 0.9;
+}
+
+/* Columna de Comanda */
+.comanda-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.comanda-titulo {
+    color: #fff;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
+}
+
+.comanda-items-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 330px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 15px;
+}
+
+.comanda-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #121212;
+    border: 1px solid #222;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.comanda-item span {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.comanda-subtotal {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.comanda-subtotal strong {
+    color: #c9a961;
+}
+
+.comanda-eliminar {
+    color: #ff5555;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.comanda-eliminar:hover {
+    transform: scale(1.1);
+}
+
+/* Footer de Comanda */
+.comanda-footer {
+    border-top: 1px solid #2a2a2a;
+    padding-top: 15px;
+}
+
+.comanda-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.comanda-total-row span:first-child {
+    color: #aaa;
+}
+
+.comanda-total-precio {
+    color: #c9a961;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.btn-enviar-pedido {
+    display: block;
+    text-align: center;
+    background: #222;
+    color: #c9a961;
+    border: 1px solid #c9a961;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+}
+
+.btn-enviar-pedido:hover {
+    background: #c9a961;
+    color: #121212;
+}
+
+.btn-cerrar-cuenta {
+    display: block;
+    text-align: center;
+    background: #c9a961;
+    color: #121212;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.btn-cerrar-cuenta:hover {
+    opacity: 0.9;
+}
+
+.btn-disabled {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #555;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: not-allowed;
+    margin-bottom: 8px;
+}
