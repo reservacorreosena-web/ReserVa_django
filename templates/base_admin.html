@@ -13,6 +13,82 @@
     <!-- Estilos del Panel de Administración -->
     <link rel="stylesheet" href="{% static 'css/base_admin.css' %}">
 
+    <style>
+        /* Ajustes visuales limpios para el menú lateral colapsable */
+        .rv-sidebar {
+            min-width: 260px;
+            max-width: 260px;
+            background-color: #0c0c0c;
+            border-right: 1px solid rgba(201, 169, 97, 0.15);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        .rv-logo h3 {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .gold-text {
+            color: #c9a961 !important;
+        }
+        /* Estilos base para los enlaces del menú */
+        .style-link-admin, .accordion-button {
+            background-color: transparent !important;
+            color: #b0b0b0 !important;
+            font-size: 0.92rem;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.25s ease-in-out;
+            box-shadow: none !important;
+        }
+        .style-link-admin:hover, .accordion-button:not(.collapsed), .sublink-admin:hover {
+            color: #ffffff !important;
+            background-color: rgba(201, 169, 97, 0.1) !important;
+        }
+        .style-link-admin.active-dashboard {
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.2), rgba(201, 169, 97, 0.05)) !important;
+            border-left: 4px solid #c9a961;
+            color: #ffffff !important;
+        }
+        /* Elementos del acordeón */
+        .accordion-item {
+            background-color: transparent !important;
+            border: none !important;
+            margin-bottom: 4px;
+        }
+        .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
+            transform: scale(0.8);
+        }
+        .accordion-body {
+            padding: 4px 0 8px 12px !important;
+            background-color: transparent !important;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .sublink-admin {
+            color: #999999 !important;
+            text-decoration: none;
+            font-size: 0.88rem;
+            padding: 8px 12px 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sublink-admin i {
+            color: #c9a961;
+            font-size: 0.9rem;
+        }
+        .rv-icon {
+            font-size: 1.1rem;
+            color: #c9a961;
+        }
+    </style>
+
     {% block extra_css %}
     {% endblock %}
 </head>
@@ -22,9 +98,9 @@
     <div class="d-flex">
 
         <!-- Sidebar -->
-        <div class="rv-sidebar">
-            <div class="rv-logo">
-                <h3>Reser<span class="gold-text">Va</span> <small class="gold-text">Admin</small></h3>
+        <div class="rv-sidebar p-3">
+            <div class="rv-logo px-2 mb-4 mt-2">
+                <h3>Reser<span class="gold-text">Va</span> <small class="gold-text fs-6">Admin</small></h3>
             </div>
 
             <div class="accordion accordion-flush" id="menuAdminLateral">
@@ -47,7 +123,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropMesas">
-                            <i class="bi bi-calendar-event rv-icon"></i> Gestión de Mesas
+                            <i class="bi bi-calendar-event rv-icon me-2"></i> Gestión de Mesas
                         </button>
                     </h2>
                     <div id="dropMesas" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
@@ -62,7 +138,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropCarta">
-                            <i class="bi bi-egg-fried rv-icon"></i> Control de la Carta
+                            <i class="bi bi-egg-fried rv-icon me-2"></i> Control de la Carta
                         </button>
                     </h2>
                     <div id="dropCarta" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
@@ -78,7 +154,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropUsuarios">
-                            <i class="bi bi-people rv-icon"></i> Base de Usuarios
+                            <i class="bi bi-people rv-icon me-2"></i> Base de Usuarios
                         </button>
                     </h2>
                     <div id="dropUsuarios" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
@@ -88,19 +164,17 @@
                     </div>
                 </div>
                 
-
                 <!-- Contabilidad -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropContabilidad">
-                            <i class="bi bi-cash-coin rv-icon"></i> Pequeña Contabilidad
+                            <i class="bi bi-cash-coin rv-icon me-2"></i> Pequeña Contabilidad
                         </button>
                     </h2>
                     <div id="dropContabilidad" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body">
                             <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i class="bi bi-graph-up-arrow"></i> Reportes Diarios</a>
                             <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2"></i> Control de Gastos</a>
-                            <!-- NUEVA OPCIÓN DE CUADRE DE CAJA -->
                             <a href="#" class="sublink-admin"><i class="bi bi-cash-stack"></i> Cuadre de Caja</a>
                         </div>
                     </div>
@@ -109,25 +183,23 @@
             </div>
         </div>
 
-        
-
         <!-- Main Content -->
-        <div class="rv-main-wrapper">
-            <nav class="rv-topbar">
-                <div class="rv-status">
-                    <span class="rv-status-dot"></span>
-                    <span>Sistema: <strong>ONLINE</strong></span>
+        <div class="rv-main-wrapper flex-grow-1">
+            <nav class="rv-topbar d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-secondary border-opacity-10">
+                <div class="rv-status d-flex align-items-center gap-2">
+                    <span class="rv-status-dot bg-success rounded-circle" style="width: 8px; height: 8px;"></span>
+                    <span class="text-secondary small">Sistema: <strong class="text-light">ONLINE</strong></span>
                 </div>
 
-                <div class="rv-user-section">
-                    <span class="rv-user-name">
-                        <i class="bi bi-key"></i> {{ request.session.logueado.nombre }}
+                <div class="rv-user-section d-flex align-items-center gap-3">
+                    <span class="rv-user-name text-light small">
+                        <i class="bi bi-key text-warning me-1"></i> {{ request.session.logueado.nombre }}
                     </span>
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">Cerrar Sesión</a>
+                    <a href="{% url 'cerrar_sesion' %}" class="btn btn-outline-danger btn-sm px-3">Cerrar Sesión</a>
                 </div>
             </nav>
 
-            <main class="rv-content">
+            <main class="rv-content p-4">
                 {% block content %}
                 {% endblock %}
             </main>
