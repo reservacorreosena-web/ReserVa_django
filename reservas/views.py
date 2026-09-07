@@ -12,10 +12,8 @@ from .utils import enviar_correo_reserva
 
 @verificar
 def crear_reserva(request):
-  # Preparamos los platos disponibles para pasarlos siempre al template
-  platos_disponibles = Plato.objects.filter(disponible=True)
-
   if request.method == "POST":
+    # 1. Verifica las credenciales del usuario logueado con seguridad
     usuario_session = request.session.get("logueado")
     if not usuario_session:
       messages.error(request, "Debes iniciar sesión para realizar una reserva.")
@@ -28,12 +26,12 @@ def crear_reserva(request):
     )
     usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
+    # 2. Captura de datos del formulario
     cantidad_personas = request.POST.get("cantidad_personas", "").strip()
     fecha = request.POST.get("fecha", "").strip()
     hora = request.POST.get("hora", "").strip()
     notas = request.POST.get("notas", "").strip()
     preordenar = request.POST.get("preordenar", "NO")
-    platos_ids = request.POST.getlist("platos[]")
 
     datos_formulario = {
         "cantidad_personas": cantidad_personas,
@@ -50,7 +48,7 @@ def crear_reserva(request):
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario, "platos": platos_disponibles},
+          {"datos": datos_formulario},
       )
 
     try:
@@ -60,7 +58,7 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario, "platos": platos_disponibles},
+            {"datos": datos_formulario},
         )
       if personas > 20:
         messages.warning(
@@ -69,14 +67,14 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario, "platos": platos_disponibles},
+            {"datos": datos_formulario},
         )
     except ValueError:
       messages.error(request, "Ingresa un número válido para las personas.")
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario, "platos": platos_disponibles},
+          {"datos": datos_formulario},
       )
 
     try:
@@ -89,36 +87,38 @@ def crear_reserva(request):
         return render(
             request,
             "reservas/formulario_reserva.html",
-            {"datos": datos_formulario, "platos": platos_disponibles},
+            {"datos": datos_formulario},
         )
     except ValueError:
       messages.error(request, "El formato de fecha u hora es inválido.")
       return render(
           request,
           "reservas/formulario_reserva.html",
-          {"datos": datos_formulario, "platos": platos_disponibles},
+          {"datos": datos_formulario},
       )
 
+    # Redirección a carta si decide preordenar
+    if preordenar == "SI":
+      request.session["datos_reserva_temporal"] = {
+          "usuario_id": usuario_id,
+          "cantidad_personas": personas,
+          "fecha": fecha,
+          "hora": hora,
+          "notas": notas,
+      }
+      return redirect("ver_carta")
+
+    # Guardamos los datos temporales y lo mandamos a el mapa de seleccionar mesas
     request.session["datos_reserva_temporal"] = {
         "usuario_id": usuario_id,
         "cantidad_personas": personas,
         "fecha": fecha,
         "hora": hora,
         "notas": notas,
-        "platos_ids": platos_ids,
     }
-
-    if preordenar == "SI":
-      return redirect("ver_carta")
-
     return redirect("seleccionar_mesa_mapa")
 
-  # Petición GET inicial
-  return render(
-      request,
-      "reservas/formulario_reserva.html",
-      {"platos": platos_disponibles},
-  )
+  return render(request, "reservas/formulario_reserva.html")
 
 
 @verificar
@@ -171,7 +171,6 @@ def seleccionar_mesa_mapa(request):
     )
     usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
-    # Creamos la reserva
     nueva_reserva = Reserva.objects.create(
         usuario=usuario_instancia,
         mesa=mesa_seleccionada,
@@ -182,30 +181,14 @@ def seleccionar_mesa_mapa(request):
         estado="pendiente",
     )
 
-    # --- REGISTRAR PLATOS PRESELECCIONADOS ---
-    platos_ids = datos_temp.get("platos_ids", [])
-    for plato_id in platos_ids:
-      plato_obj = Plato.objects.filter(id=plato_id).first()
-      if plato_obj:
-        ConsumoMesa.objects.create(
-            mesa=mesa_seleccionada,
-            reserva=nueva_reserva,
-            plato=plato_obj,
-            cantidad=1,
-            precio_unitario=plato_obj.precio,
-            pagado=False
-        )
-
     try:
       enviar_correo_reserva(nueva_reserva)
     except Exception as e:
       print(f"Error al enviar el correo de confirmación: {e}")
 
-    # Limpiamos la sesión temporal
     del request.session["datos_reserva_temporal"]
-    
     messages.success(
-        request, f"¡Mesa #{mesa_seleccionada.numero} reservada con éxito con tus platos preordenados!"
+        request, f"¡Mesa #{mesa_seleccionada.numero} reservada con éxito!"
     )
     return redirect("mis_reservas")
 
@@ -327,6 +310,7 @@ def historial_reservas(request):
   return render(request, "reservas/historial_reservas.html", contexto)
 
 
+@solo_admin  # <--- Blindado: Solo administradores pueden cambiar estados por URL
 def cambiar_estado_reserva(request, id, nuevo_estado):
   reservas = get_object_or_404(Reserva, id=id)
   estados_valido = ["asistio", "pendiente", "cancelada", "confirmada"]
@@ -340,6 +324,7 @@ def cambiar_estado_reserva(request, id, nuevo_estado):
   return redirect("historial_reservas")
 
 
+@solo_admin  # <--- Blindado: Clientes curiosos no pueden entrar al mapa de administración
 def admin_mapa_mesas(request):
   fecha = request.GET.get(
       "fecha", timezone.now().date().strftime("%Y-%m-%d")
@@ -353,16 +338,13 @@ def admin_mapa_mesas(request):
   ).select_related("usuario", "mesa")
   mapa_reservas = {r.mesa_id: r for r in reservas_en_horario}
 
-  # NUEVO: Calculamos el total de consumo activo por cada mesa
   consumos_activos = ConsumoMesa.objects.filter(pagado=False)
 
-  # Creamos un diccionario { mesa_id: total_cuenta }
   totales_consumo = {}
   mesas_con_consumo = set()
 
   for consumo in consumos_activos:
     mesas_con_consumo.add(consumo.mesa_id)
-    # Si la mesa ya tiene un total sumado, le acumulamos el subtotal, sino lo iniciamos
     totales_consumo[consumo.mesa_id] = (
         totales_consumo.get(consumo.mesa_id, 0) + consumo.subtotal()
     )
@@ -371,13 +353,14 @@ def admin_mapa_mesas(request):
       "mesas": todas_las_mesas,
       "mapa_reservas": mapa_reservas,
       "mesas_con_consumo": mesas_con_consumo,
-      "totales_consumo": totales_consumo,  # <--- Pasamos este diccionario al template
+      "totales_consumo": totales_consumo,
       "fecha": fecha,
       "hora": hora,
   }
   return render(request, "reservas/admin_mapa.html", contexto)
 
 
+@solo_admin  # <--- Blindado: Solo admins pueden ver los detalles de consumos de las mesas
 def admin_detalle_mesa(request, mesa_id):
   mesa = get_object_or_404(Mesa, id=mesa_id)
 
@@ -401,11 +384,21 @@ def admin_detalle_mesa(request, mesa_id):
   return render(request, "reservas/admin_detalle_mesa.html", contexto)
 
 
+@solo_admin  # <--- Blindado: Solo administradores agregan items al POS
 def admin_agregar_al_carrito(request, mesa_id, plato_id):
   if request.method == "POST":
     mesa = get_object_or_404(Mesa, id=mesa_id)
     plato = get_object_or_404(Plato, id=plato_id)
-    cantidad = int(request.POST.get("cantidad", 1))
+    
+    # Blindaje extra anti F12 (evitar negativos o números locos)
+    try:
+      cantidad = int(request.POST.get("cantidad", 1))
+      if cantidad <= 0 or cantidad > 100:
+        messages.error(request, "La cantidad debe ser entre 1 y 100.")
+        return redirect("admin_detalle_mesa", mesa_id=mesa_id)
+    except ValueError:
+      messages.error(request, "Ingresa un número de cantidad válido.")
+      return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
     consumo_existente = ConsumoMesa.objects.filter(
         mesa=mesa, plato=plato, pagado=False
@@ -432,6 +425,7 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
 
+@solo_admin  # <--- Blindado: Solo administradores eliminan items del POS
 def admin_eliminar_item_carrito(request, consumo_id):
   consumo = get_object_or_404(ConsumoMesa, id=consumo_id)
   mesa_id = consumo.mesa.id
@@ -439,6 +433,7 @@ def admin_eliminar_item_carrito(request, consumo_id):
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
 
+@solo_admin  # <--- Blindado: Solo administradores pueden cerrar cuentas
 def admin_cobrar_mesa(request, mesa_id):
   ConsumoMesa.objects.filter(mesa_id=mesa_id, pagado=False).update(pagado=True)
   Reserva.objects.filter(
@@ -451,17 +446,12 @@ def admin_cobrar_mesa(request, mesa_id):
 
 @solo_admin
 def inicio_admin(request):
-  # Obtener la fecha de hoy del sistema
   hoy = timezone.now().date()
-
-  # Filtrar las reservas de hoy para calcular las métricas del dashboard
   reservas_hoy_qs = Reserva.objects.filter(fecha=hoy)
 
-  # --- MÉTRICA NUEVA: Ventas / Dinero en comandas de hoy ---
   comandas_hoy = ConsumoMesa.objects.filter(mesa__reserva__fecha=hoy)
   ventas_totales_hoy = sum(c.subtotal() for c in comandas_hoy)
 
-  # --- DATOS PARA GRÁFICO 1: Dona de Estados de Reservas de Hoy ---
   estados_conteo = reservas_hoy_qs.values("estado").annotate(
       total=Count("id")
   )
@@ -472,7 +462,6 @@ def inicio_admin(request):
     estados_nombres = ["Sin reservas hoy"]
     estados_valores = [0]
 
-  # --- DATOS PARA GRÁFICO 2: Top Platos Más Solicitados ---
   top_platos = (
       ConsumoMesa.objects.values("plato__nombre")
       .annotate(total_cantidad=Sum("cantidad"))
@@ -488,7 +477,6 @@ def inicio_admin(request):
     platos_labels = ["Sin datos aún"]
     platos_data = [0]
 
-  # --- DATOS PARA GRÁFICO 3 (NUEVO): Reservas por Zona del Restaurante ---
   reservas_por_zona = (
       reservas_hoy_qs.values("mesa__zona__nombre")
       .annotate(total=Count("id"))
@@ -515,7 +503,6 @@ def inicio_admin(request):
       "ventas_totales_hoy": ventas_totales_hoy,
       "total_platos": Plato.objects.count(),
       "total_usuarios": Usuario.objects.count(),
-      # Serialización segura a JSON para Chart.js
       "estados_nombres": json.dumps(estados_nombres),
       "estados_valores": json.dumps(estados_valores),
       "platos_labels": json.dumps(platos_labels),
@@ -527,9 +514,8 @@ def inicio_admin(request):
   return render(request, "landing/inicio_admin.html", contexto)
 
 
+@solo_admin  # <--- Blindado
 def admin_enviar_pedido(request, mesa_id):
-    mesa = get_object_or_404(Mesa, id=mesa_id)
-    # Aquí puedes agregar la lógica necesaria para procesar o confirmar el envío del pedido
-    messages.success(request, f"Pedido de la mesa #{mesa.numero} enviado correctamente.")
-    return redirect('admin_detalle_mesa', mesa_id=mesa_id)
-
+  mesa = get_object_or_404(Mesa, id=mesa_id)
+  messages.success(request, f"Pedido de la mesa #{mesa.numero} enviado correctamente.")
+  return redirect('admin_detalle_mesa', mesa_id=mesa_id)
