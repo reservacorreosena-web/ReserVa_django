@@ -1,80 +1,223 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<!-- CSS de DataTables -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+    /* Estilos personalizados para mantener el diseño idéntico en un solo archivo */
+    .rv-admin-page {
+        padding: 0.5rem 0;
+    }
+    .rv-page-header h2 {
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    .rv-eyebrow {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #c9a961;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .rv-table-container {
+        background-color: #121212 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+    }
+    .rv-table {
+        margin-bottom: 0;
+        color: #e2e8f0;
+        vertical-align: middle;
+        background-color: transparent;
+        width: 100%;
+    }
+    .rv-table th {
+        background-color: rgba(0, 0, 0, 0.2);
+        color: #888;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1rem 1.25rem;
+    }
+    .rv-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .rv-table tbody tr:hover {
+        background-color: rgba(201, 169, 97, 0.02);
+    }
+    .rv-table-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+    .rv-badge-pending {
+        background-color: #1a1a1a;
+        color: #c9a961;
+        border: 1px solid rgba(201, 169, 97, 0.2);
+    }
+    .rv-badge-neutral {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .rv-badge-success {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #2ecc71;
+        border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+    .rv-badge-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #f87171;
+        border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+    .rv-btn-create {
+        background-color: #c9a961;
+        border-color: #c9a961;
+        color: #000;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.5rem 1.25rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .rv-btn-create:hover {
+        background-color: #b5954f;
+        border-color: #b5954f;
+        color: #000;
+        transform: translateY(-1px);
+    }
+    .rv-btn-action {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .rv-btn-edit {
+        background-color: rgba(201, 169, 97, 0.15);
+        color: #c9a961;
+        border: 1px solid rgba(201, 169, 97, 0.3);
+    }
+    .rv-btn-edit:hover {
+        background-color: rgba(201, 169, 97, 0.25);
+        color: #c9a961;
+    }
+    .rv-btn-delete {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #f87171;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    .rv-btn-delete:hover {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #f87171;
+    }
+    .rv-empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #6c757d;
+    }
+    .rv-empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        display: block;
+        color: #495057;
+    }
+</style>
 
-<div class="container my-4">
-  <h2>Gestión de Menú y Stock</h2>
+<div class="container-fluid py-2 rv-admin-page">
+    <!-- Encabezado de la Sección -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div class="rv-page-header">
+            <span class="rv-eyebrow">Gestión de Inventario</span>
+            <h2 class="mb-1">
+                <i class="bi bi-egg-fried me-2" style="color: #c9a961 !important;"></i> Gestión de Menú y Stock
+            </h2>
+            <p class="text-secondary small mb-0">Total de platos registrados: <span class="rv-table-badge rv-badge-pending">{{ plato|length }}</span></p>
+        </div>
 
-  <p>Total {{ plato|length }}</p>
+        <a href="{% url 'crear_plato' %}" class="rv-btn-create shadow-sm">
+            <i class="bi bi-plus-circle-fill"></i> Crear Plato
+        </a>
+    </div>
 
-  <a href="{% url 'crear_plato' %}" class="btn btn-warning mb-3">➕ Crear Plato</a>
-
-  <!-- TABLA DE PLATOS -->
-  <table class="table table-dark table-hover align-middle" id="listado_platos" style="width:100%">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Categoría</th>
-        <th>Precio</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in plato %}
-      <tr>
-        <td>{{ p.nombre }}</td>
-        <td>{{ p.categoria }}</td>
-        <td>${{ p.precio }}</td>
-        <td>
-          {% if p.disponible %}
-            <span class="badge bg-success">Disponible</span>
-          {% else %}
-            <span class="badge bg-danger">Agotado</span>
-          {% endif %}
-        </td>
-        <td>
-          <div class="d-flex gap-2">
-             <a href="{% url 'editar_plato' p.id %}" class="btn btn-warning btn-sm">
-               Editar
-            </a>
-            <a href="{% url 'eliminar_plato' p.id %}" class="btn btn-danger btn-sm btn-eliminar">
-               Eliminar
-            </a>
-          </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <!-- Contenedor Limpio de la Tabla -->
+    <div class="rv-table-container">
+        <div class="table-responsive">
+            <table class="rv-table">
+                <thead>
+                    <tr>
+                        <th class="px-4">Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th class="text-end px-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in plato %}
+                    <tr>
+                        <td class="px-4 fw-semibold text-light">{{ p.nombre }}</td>
+                        <td>
+                            <span class="rv-table-badge rv-badge-neutral">{{ p.categoria }}</span>
+                        </td>
+                        <td class="fw-bold" style="color: #c9a961 !important;">${{ p.precio }}</td>
+                        <td>
+                            {% if p.disponible %}
+                                <span class="rv-table-badge rv-badge-success">Disponible</span>
+                            {% else %}
+                                <span class="rv-table-badge rv-badge-danger">Agotado</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end px-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'editar_plato' p.id %}" class="rv-btn-action rv-btn-edit">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="{% url 'eliminar_plato' p.id %}" class="rv-btn-action rv-btn-delete btn-eliminar">
+                                    <i class="bi bi-trash3"></i> Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="rv-empty-state">
+                                <i class="bi bi-inbox"></i>
+                                No hay platos registrados en este momento.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<!-- LIBRERÍAS -->
+<!-- LIBRERÍAS DE APOYO (Solo SweetAlert2, sin DataTables) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-<!-- 👈 AÑADIDO: CDN de SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- INICIALIZACIÓN Y DELEGACIÓN DE EVENTOS -->
+<!-- DELEGACIÓN DE EVENTOS PARA ELIMINAR -->
 <script>
   $(document).ready(function() {
-      // 1. Inicialización de DataTables
-      if ($.fn.DataTable.isDataTable('#listado_platos')) {
-          $('#listado_platos').DataTable().destroy();
-      }
-
-      var table = $('#listado_platos').DataTable({
-          "language": {
-              "url": "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-          }
-      });
-
-      // 2. Delegación de eventos con jQuery para capturar la clase .btn-eliminar
-      $('#listado_platos').on('click', '.btn-eliminar', function(e) {
-
+      $(document).on('click', '.btn-eliminar', function(e) {
             e.preventDefault();
             let url = $(this).attr('href');
 
@@ -83,11 +226,11 @@
                 text: "¡No podrás revertir este plato eliminado!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#FFC107", 
-                cancelButtonColor: "#d33",     
+                confirmButtonColor: "#c9a961", 
+                cancelButtonColor: "#d33",    
                 confirmButtonText: "Sí, ¡bórralo!",
                 cancelButtonText: "Cancelar",
-                background: "#1e1e1e",         
+                background: "#121212",        
                 color: "#ffffff"
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -98,18 +241,19 @@
   });
 </script>
 
-<!-- 👈 AÑADIDto/error provenientes de Django -->
-{% if messages %}O: Muestra las alertas de éxi
+<!-- ALERTAS DE DJANGO -->
+{% if messages %}
   {% for message in messages %}
     <script>
       Swal.fire({
-        title: "{% if message.tags == 'error' %}¡Error!{% else %}¡Logrado!{% endif %}",
-        text: "{{ message }}",
-        icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
-        background: "#1e1e1e",
-        color: "#ffffff",
-        timer: 2500,
-        showConfirmButton: false
+          title: "{% if message.tags == 'error' %}¡Error!{% else %}¡Logrado!{% endif %}",
+          text: "{{ message }}",
+          icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
+          background: "#121212",
+          color: "#ffffff",
+          confirmButtonColor: "#c9a961",
+          timer: 2500,
+          showConfirmButton: false
       });
     </script>
   {% endfor %}
