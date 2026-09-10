@@ -14,19 +14,17 @@ def listar_platos_admin(request):
 
 
 def listar_platos(request):
-    categoria_seleccionada = request.GET.get('categoria', 'todos')
+  categoria_seleccionada = request.GET.get('categoria', 'todos')
 
-    if categoria_seleccionada != 'todos':
-        platos = Plato.objects.filter(disponible=True, categoria=categoria_seleccionada)
-    else:
-        platos = Plato.objects.filter(disponible=True)
+  if categoria_seleccionada != 'todos':
+    platos = Plato.objects.filter(
+        disponible=True, categoria=categoria_seleccionada, stock__gt=0
+    )
+  else:
+    platos = Plato.objects.filter(disponible=True, stock__gt=0)
 
-    contexto = {
-        'plato': platos,
-        'categoria_actual': categoria_seleccionada
-    }
-    return render(request, 'menu/carta.html', contexto)
-
+  contexto = {'plato': platos, 'categoria_actual': categoria_seleccionada}
+  return render(request, 'menu/carta.html', contexto)
 
 @solo_admin
 def crear_plato(request):

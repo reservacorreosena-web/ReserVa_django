@@ -2,6 +2,7 @@ from multiprocessing.managers import convert_to_error
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from reservas.models import ConsumoMesa
 
 from usuarios.decorador import verificar
 from .models import Movimiento
@@ -153,3 +154,41 @@ def editar_gasto(request, id):
 class MovimientoViewSet(viewsets.ModelViewSet):
     queryset = Movimiento.objects.all()
     serializer_class = MovimientoSerializer
+
+@solo_admin
+def cierre_caja(request):
+    total = 0
+    total_mesas_cobradas = 0
+    mesas_procesadas =  []
+    total_platos_vendidos = 0
+    fecha_seleccionada =  request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
+    consumos_pagados = ConsumoMesa.objects.filter(
+        pagado=True,
+        mesa__reserva__fecha=fecha_seleccionada
+    )
+    for c in consumos_pagados:
+        total += c.subtotal()
+
+    for cobradas in consumos_pagados:
+        if c.mesa.id not in mesas_procesadas:
+            mesas_procesadas.append(c.mesa.id)
+            total_mesas_cobradas+= 1
+
+    for c in consumos_pagados:
+        total_platos_vendidos  += c.cantidad
+
+    contexto = {
+        'consumos' : consumos_pagados,
+        'total_mesas_cobradas' : total_mesas_cobradas,
+        'total_platos_vendidos' : total_platos_vendidos,
+        'fecha_actual' : fecha_seleccionada,
+
+
+    }
+    
+
+    return render(request, "contabilidad/inicio_cierre_caja.html", contexto)
+
+@solo_admin
+def historia_cierres(request):
+    pass
