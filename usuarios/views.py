@@ -11,6 +11,9 @@ from usuarios.serializador import UsuarioSerializer
 from .serializador import *
 from rest_framework import viewsets
 
+# Importaciones para la recuperación de contraseña personalizada
+from .utils import enviar_correo_recuperacion, generar_token_personalizado
+from django.utils.http import urlsafe_base64_decode
 
 
 @solo_anonimos
@@ -186,3 +189,57 @@ def editar_perfil(request):
         return redirect('editar_perfil')
 
     return render(request, "editar_perfil.html", {"usuario": usuario})
+
+
+# ==========================================
+# VISTAS DE RECUPERACIÓN DE CONTRASEÑA PERSONALIZADAS
+# ==========================================
+
+def recuperar_contrasena_custom(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip().lower()
+        try:
+            usuario = Usuario.objects.get(email=email)
+            enviar_correo_recuperacion(usuario, request)
+        except Usuario.DoesNotExist:
+            # Por seguridad no revelamos si el correo existe, pero redirigimos al mensaje de enviado
+            pass
+        
+        return redirect("password_reset_done")
+
+    return render(request, "password_reset_form.html")
+
+
+def password_reset_done_view(request):
+    return render(request, "password_reset_done.html")
+
+
+def reset_confirm_custom(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        usuario = Usuario.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
+        usuario = None
+
+    # Validamos usando nuestro generador personalizado inmune a campos de Django
+    token_valido = generar_token_personalizado(usuario) if usuario else None
+
+    if usuario is not None and token == token_valido:
+        if request.method == "POST":
+            nueva_password = request.POST.get("password", "").strip()
+            if len(nueva_password) < 8:
+                messages.error(request, "La contraseña debe tener al menos 8 caracteres.")
+                return render(request, "password_reset_confirm.html")
+            
+            usuario.contraseña = nueva_password
+            usuario.save()
+            return redirect("password_reset_complete")
+        
+        return render(request, "password_reset_confirm.html")
+    else:
+        messages.error(request, "El enlace de recuperación es inválido o ha expirado.")
+        return redirect("iniciar_sesion")
+
+
+def password_reset_complete_view(request):
+    return render(request, "password_reset_complete.html")

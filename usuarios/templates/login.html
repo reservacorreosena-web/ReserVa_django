@@ -33,6 +33,11 @@
             <div class="rv-form-group">
                 <label for="contraseña" class="rv-form-label">Contraseña</label>
                 <input type="password" placeholder="••••••••" required name="contraseña" id="contraseña" class="rv-input">
+                
+                <!-- ENLACE DE RECUPERACIÓN DE CONTRASEÑA -->
+                <div class="text-end mt-1">
+                    <a href="{% url 'password_reset' %}" style="font-size: 0.85rem; color: #c9a961; text-decoration: none;">¿Olvidaste tu contraseña?</a>
+                </div>
             </div>
 
             <button type="submit" class="btn-gold">
