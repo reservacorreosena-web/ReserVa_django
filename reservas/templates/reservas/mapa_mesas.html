@@ -5,6 +5,54 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/mapa_mesas.css' %}">
+<style>
+    /* Estilos específicos para darle apariencia de plano arquitectónico real */
+    .rv-restaurant-floor {
+        position: relative;
+        background: #111;
+        border: 2px solid #222;
+        border-radius: 12px;
+        padding: 30px;
+        min-height: 550px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 20px;
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+    }
+    .rv-architectural-block {
+        background: #161616;
+        border: 1px dashed #333;
+        color: #666;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 6px;
+    }
+    .rv-zone-section {
+        background: #141414;
+        border: 1px solid #222;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .rv-zone-header {
+        color: #c9a961;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #222;
+        padding-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -32,86 +80,107 @@
     <!-- Layout Principal: Plano Izquierda + Panel Lateral Derecha -->
     <div class="rv-map-layout">
         
-        <!-- COLUMNA IZQUIERDA: EL MAPA VISUAL ORGANIZADO -->
+        <!-- COLUMNA IZQUIERDA: EL PLANO ARQUITECTÓNICO REAL -->
         <div class="rv-floor-plan">
             
-            <div style="text-align: center; color: #555; font-size: 11px; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase;">
-                <i class="bi bi-compass"></i> Zona de Ingreso / Recepción Principal
-            </div>
+            <div class="rv-restaurant-floor">
+                
+                <!-- SECCIÓN SUPERIOR: BAÑOS, RECEPCIÓN Y COCINA -->
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px;">
+                    <div class="rv-architectural-block"><i class="bi bi-water"></i> Baños</div>
+                    <div class="rv-architectural-block" style="border-style: solid; border-color: #333; color: #888;"><i class="bi bi-door-open"></i> Ingreso / Recepción</div>
+                    <div class="rv-architectural-block"><i class="bi bi-fire"></i> Cocina</div>
+                </div>
 
-            <!-- ZONA VENTANA -->
-            <div class="rv-zone-title"><i class="bi bi-window"></i> Zona Ventana (Vista Panorámica)</div>
-            <div class="rv-zone-grid">
-                {% for mesa in mesas %}
-                    {% if "ventana" in mesa.zona|lower or forloop.counter <= 3 %}
-                        <!-- Asignación dinámica de formas si el modelo no la trae explícita -->
-                        {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:2|yesno:"redonda,cuadrada" %}
-                            {% if forloop.counter|divisibleby:3 %}{% with forma_estilo="rectangular" %}{% endwith %}{% endif %}
-                            
-                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
-                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
-                            {% else %}
-                                <div class="rv-table {{ forma_estilo }} disponible" 
-                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
-                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Ventana" }}', '{{ forma_estilo }}')">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
-                {% endfor %}
-            </div>
+                <!-- SECCIÓN MEDIA: DISTRIBUCIÓN DE MESAS POR ZONAS DEL RESTAURANTE -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-self: center;">
+                    
+                    <!-- ZONA VENTANA (PANORÁMICA) -->
+                    <div class="rv-zone-section">
+                        <div class="rv-zone-header"><i class="bi bi-window"></i> Zona Ventana</div>
+                        <div class="rv-zone-grid" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                            {% for mesa in mesas %}
+                                {% if "ventana" in mesa.zona|lower or forloop.counter <= 3 %}
+                                    {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:2|yesno:"redonda,cuadrada" %}
+                                        {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                            <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                                <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                                <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="rv-table {{ forma_estilo }} disponible" 
+                                                 data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                                 onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Ventana" }}', '{{ forma_estilo }}')">
+                                                <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                                <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
 
-            <!-- ZONA CENTRAL -->
-            <div class="rv-zone-title"><i class="bi bi-grid"></i> Zona Central</div>
-            <div class="rv-zone-grid">
-                {% for mesa in mesas %}
-                    {% if "central" in mesa.zona|lower or forloop.counter > 3 and forloop.counter <= 7 %}
-                        {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:3|yesno:"rectangular,cuadrada" %}
-                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
-                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
-                            {% else %}
-                                <div class="rv-table {{ forma_estilo }} disponible" 
-                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
-                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Central" }}', '{{ forma_estilo }}')">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
-                {% endfor %}
-            </div>
+                    <!-- ZONA VIP / BALCÓN -->
+                    <div class="rv-zone-section">
+                        <div class="rv-zone-header"><i class="bi bi-stars"></i> Zona VIP / Balcón</div>
+                        <div class="rv-zone-grid" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                            {% for mesa in mesas %}
+                                {% if "vip" in mesa.zona|lower or "terraza" in mesa.zona|lower or "balcon" in mesa.zona|lower %}
+                                    {% with forma_estilo=mesa.forma|default:"redonda" %}
+                                        {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                            <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                                <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                                <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="rv-table {{ forma_estilo }} disponible" 
+                                                 data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                                 onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"VIP" }}', '{{ forma_estilo }}')">
+                                                <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                                <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
 
-            <!-- ZONA VIP / PRIVADA -->
-            <div class="rv-zone-title"><i class="bi bi-stars"></i> Zona VIP / Privada</div>
-            <div class="rv-zone-grid">
-                {% for mesa in mesas %}
-                    {% if "vip" in mesa.zona|lower or "terraza" in mesa.zona|lower or forloop.counter > 7 %}
-                        {% with forma_estilo=mesa.forma|default:"redonda" %}
-                            {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
-                                <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
-                            {% else %}
-                                <div class="rv-table {{ forma_estilo }} disponible" 
-                                     data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
-                                     onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"VIP" }}', '{{ forma_estilo }}')">
-                                    <span class="rv-table-num">#{{ mesa.numero }}</span>
-                                    <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
-                                </div>
+                </div>
+
+                <!-- ZONA CENTRAL / GENERAL Y NUEVAS MESAS CREADAS POR EL CRUD -->
+                <div class="rv-zone-section" style="margin-bottom: 0;">
+                    <div class="rv-zone-header"><i class="bi bi-grid-3x3"></i> Zona Central y Mesas Generales (CRUD)</div>
+                    <div class="rv-zone-grid" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 10px 0;">
+                        {% for mesa in mesas %}
+                            <!-- Filtramos las que no estén en ventana, vip o balcón, o si son mesas nuevas del CRUD -->
+                            {% if not "ventana" in mesa.zona|lower and not "vip" in mesa.zona|lower and not "terraza" in mesa.zona|lower and not "balcon" in mesa.zona|lower %}
+                                {% with forma_estilo=mesa.forma|default:"cuadrada" %}
+                                    {% if mesa.id in mesas_ocupadas_ids or mesa.capacidad < datos.cantidad_personas %}
+                                        <div class="rv-table {{ forma_estilo }} ocupada" title="Mesa #{{ mesa.numero }} - No disponible">
+                                            <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                            <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="rv-table {{ forma_estilo }} disponible" 
+                                             data-tooltip="Mesa {{ mesa.numero }} · {{ mesa.capacidad }} pers."
+                                             onclick="seleccionarMesaPlano(this, '{{ mesa.id }}', '{{ mesa.numero }}', '{{ mesa.capacidad }}', '{{ mesa.zona|default:"Central" }}', '{{ forma_estilo }}')">
+                                            <span class="rv-table-num">#{{ mesa.numero }}</span>
+                                            <span class="rv-table-cap">{{ mesa.capacidad }}p</span>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
                             {% endif %}
-                        {% endwith %}
-                    {% endif %}
-                {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN INFERIOR: BARRA DE COCTELERÍA -->
+                <div class="rv-architectural-block">
+                    <i class="bi bi-cup-straw"></i> Barra Principal y Salida al Balcón
+                </div>
+
             </div>
 
         </div>

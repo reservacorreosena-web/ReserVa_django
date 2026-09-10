@@ -158,6 +158,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'reservacorreosena@gmail.com'          # El correo del restaurante o tuyo
-EMAIL_HOST_PASSWORD = 'szghjirajjcwbjju '     # Contraseña de aplicación de Google
+EMAIL_HOST_PASSWORD = 'szghjirajjcwbjju'     # Contraseña de aplicación de Google
 DEFAULT_FROM_EMAIL = 'ReserVa Medellín <reservacorreosena@gmail.com>'
 
