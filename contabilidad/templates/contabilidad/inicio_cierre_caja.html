@@ -1,0 +1,129 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Cierre de Caja - ReserVa{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3 text-light">
+    <!-- ENCABEZADO Y FILTRO DE FECHA -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Cuadre y Cierre de Caja</h2>
+            <small class="text-white-50">Control de ingresos, arqueos y ventas cobradas</small>
+        </div>
+        <form method="GET" class="d-flex gap-2 align-items-center">
+            <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
+            <button type="submit" class="btn btn-warning fw-bold px-4 rounded-0" style="background-color: #c9a961; border-color: #c9a961; color: #0a0a0a;">Consultar</button>
+        </form>
+    </div>
+
+    <!-- FILA DE MÉTRICAS RÁPIDAS -->
+    <div class="row g-4 mb-4">
+        <!-- Tarjeta Total Recaudado -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
+                <div class="card-body text-center py-4">
+                    <span class="text-uppercase text-white-50 small tracking-wide" style="letter-spacing: 2px;">Total Recaudado en la Jornada</span>
+                    <h1 class="display-4 text-warning fw-bold mb-0 mt-2" style="color: #c9a961 !important;">${{ total_recaudado|floatformat:0|default:"0" }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Métricas Operativas (Mesas/Platos) -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
+                <div class="card-body d-flex justify-content-around align-items-center py-4">
+                    <div class="text-center">
+                        <span class="text-uppercase text-white-50 small d-block" style="letter-spacing: 1.5px;">Mesas Cobradas</span>
+                        <h3 class="text-white fw-bold mt-1 mb-0">{{ total_mesas_cobradas|default:"0" }}</h3>
+                    </div>
+                    <div class="vr bg-secondary opacity-25" style="height: 50px;"></div>
+                    <div class="text-center">
+                        <span class="text-uppercase text-white-50 small d-block" style="letter-spacing: 1.5px;">Platos Despachados</span>
+                        <h3 class="text-white fw-bold mt-1 mb-0">{{ total_platos_vendidos }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE NOTA / OBSERVACIÓN DE ARQUEO -->
+    <div class="card bg-dark border-secondary shadow-lg mb-4" style="background-color: #111 !important; border-radius: 8px;">
+        <div class="card-body p-4">
+            <h5 class="card-title text-white mb-2 fw-bold" style="font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
+                <i class="bi bi-journal-text text-warning me-2" style="color: #c9a961 !important;"></i> Observación del Arqueo Diario
+            </h5>
+            <p class="text-white-50 small mb-3">Deja constancia de novedades, dinero de base dejado en caja o diferencias encontradas.</p>
+            
+            <form method="POST" action="#">
+                {% csrf_token %}
+                <input type="hidden" name="fecha" value="{{ fecha_actual }}">
+                <div class="mb-3">
+                    <textarea name="observacion" rows="3" class="form-control bg-black text-white border-secondary rounded-0" placeholder="Ej: Caja cuadrada perfectamente. Se dejaron $50.000 en base para el cambio de mañana...">{{ observacion_actual }}</textarea>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-dark border-warning text-warning fw-bold px-4 rounded-0 hover-gold" style="border-color: #c9a961 !important; color: #c9a961 !important;">
+                        <i class="bi bi-check2-circle me-1"></i> Guardar Observación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLA DE DETALLE DE VENTAS -->
+    <div class="card bg-dark border-secondary shadow-lg" style="background-color: #111 !important; border-radius: 8px;">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title text-white mb-0 fw-bold" style="font-size: 15px; letter-spacing: 1px; text-transform: uppercase;">Detalle de Transacciones Cobradas</h5>
+                <button onclick="window.print()" class="btn btn-sm btn-outline-secondary text-light rounded-0">
+                    <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-secondary text-uppercase" style="font-size: 11px; letter-spacing: 1.5px;">
+                            <th>Mesa</th>
+                            <th>Cliente</th>
+                            <th>Plato / Bebida</th>
+                            <th>Cantidad</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in consumos %}
+                        <tr>
+                            <td><span class="badge bg-secondary rounded-0 px-2 py-1">Mesa #{{ c.mesa.numero }}</span></td>
+                            <td>{{ c.reserva.usuario.nombre|default:"Cliente General" }}</td>
+                            <td class="fw-bold text-light">{{ c.plato.nombre }}</td>
+                            <td>{{ c.cantidad }}</td>
+                            <td class="text-end fw-bold" style="color: #c9a961;">${{ c.subtotal }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-receipt fs-2 d-block mb-2 text-secondary"></i>
+                                No hay registros de caja pagados para la fecha seleccionada.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-gold:hover {
+        background-color: #c9a961 !important;
+        color: #0a0a0a !important;
+        transition: all 0.3s ease;
+    }
+    @media print {
+        body { background: #fff !important; color: #000 !important; }
+        .navbar, form, button, .card { background: transparent !important; color: #000 !important; border-color: #ddd !important; box-shadow: none !important; }
+        .text-warning, .text-light, .text-white { color: #000 !important; }
+    }
+</style>
+{% endblock %}
