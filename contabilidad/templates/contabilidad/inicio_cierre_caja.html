@@ -6,13 +6,14 @@
 {% block content %}
 <div class="container-fluid px-4 py-3 text-light">
     <!-- ENCABEZADO Y FILTRO DE FECHA -->
+  
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Cuadre y Cierre de Caja</h2>
             <small class="text-white-50">Control de ingresos, arqueos y ventas cobradas</small>
         </div>
         <form method="GET" class="d-flex gap-2 align-items-center">
-            <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
+                <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
             <button type="submit" class="btn btn-warning fw-bold px-4 rounded-0" style="background-color: #c9a961; border-color: #c9a961; color: #0a0a0a;">Consultar</button>
         </form>
     </div>
@@ -24,7 +25,7 @@
             <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
                 <div class="card-body text-center py-4">
                     <span class="text-uppercase text-white-50 small tracking-wide" style="letter-spacing: 2px;">Total Recaudado en la Jornada</span>
-                    <h1 class="display-4 text-warning fw-bold mb-0 mt-2" style="color: #c9a961 !important;">${{ total_recaudado|floatformat:0|default:"0" }}</h1>
+                    <h1 class="display-4 text-warning fw-bold mb-0 mt-2" style="color: #c9a961 !important;">${{ c.subtotal }}</h1>
                 </div>
             </div>
         </div>
@@ -91,7 +92,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for c in consumos %}
+                       
                         <tr>
                             <td><span class="badge bg-secondary rounded-0 px-2 py-1">Mesa #{{ c.mesa.numero }}</span></td>
                             <td>{{ c.reserva.usuario.nombre|default:"Cliente General" }}</td>
@@ -99,20 +100,15 @@
                             <td>{{ c.cantidad }}</td>
                             <td class="text-end fw-bold" style="color: #c9a961;">${{ c.subtotal }}</td>
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-5">
-                                <i class="bi bi-receipt fs-2 d-block mb-2 text-secondary"></i>
-                                No hay registros de caja pagados para la fecha seleccionada.
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        
+                       
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
 
 <style>
     .hover-gold:hover {
