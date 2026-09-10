@@ -46,6 +46,11 @@
                     <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30" required>{{ datos_plato.descripcion }}</textarea>
                 </div>
 
+                   <div class="mb-4 text-center">
+        <label for="stock" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Stock</label>
+        <input type="number" id="stock" name="stock" value="{{ datos_plato.stock }}" min="0" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required>
+    </div>
+
                 <!-- FILA DOBLE: CATEGORÍA Y PRECIO -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6 text-center">

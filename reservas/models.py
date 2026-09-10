@@ -33,6 +33,7 @@ class Plato(models.Model):
     disponible = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
     imagen = models.ImageField(upload_to='platos/', blank=True, null=True)
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.nombre} - {self.get_categoria_display()}"
