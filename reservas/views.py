@@ -12,8 +12,10 @@ from .utils import enviar_correo_reserva
 
 @verificar
 def crear_reserva(request):
+  # Recuperamos los platos con stock para la preselección
+  platos_disponibles = Plato.objects.filter(disponible=True, stock__gt=0)
+
   if request.method == "POST":
-    # 1. Verifica las credenciales del usuario logueado con seguridad
     usuario_session = request.session.get("logueado")
     if not usuario_session:
       messages.error(request, "Debes iniciar sesión para realizar una reserva.")
@@ -24,14 +26,15 @@ def crear_reserva(request):
         if isinstance(usuario_session, dict)
         else usuario_session
     )
-    usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
-    # 2. Captura de datos del formulario
     cantidad_personas = request.POST.get("cantidad_personas", "").strip()
     fecha = request.POST.get("fecha", "").strip()
     hora = request.POST.get("hora", "").strip()
     notas = request.POST.get("notas", "").strip()
     preordenar = request.POST.get("preordenar", "NO")
+
+    # Capturamos los IDs de los platos seleccionados mediante checkboxes
+    platos_seleccionados = request.POST.getlist("platos[]")
 
     datos_formulario = {
         "cantidad_personas": cantidad_personas,
@@ -40,85 +43,41 @@ def crear_reserva(request):
         "notas": notas,
     }
 
-    # --- VALIDACIONES DE NEGOCIO ---
+    contexto_error = {"datos": datos_formulario, "platos": platos_disponibles}
+
     if not cantidad_personas or not fecha or not hora:
       messages.error(
           request, "Por favor completa la cantidad de personas, fecha y hora."
       )
-      return render(
-          request,
-          "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
-      )
+      return render(request, "reservas/formulario_reserva.html", contexto_error)
 
     try:
       personas = int(cantidad_personas)
-      if personas <= 0:
-        messages.error(request, "La cantidad de personas debe ser mayor a 0.")
-        return render(
-            request,
-            "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
-        )
-      if personas > 20:
-        messages.warning(
-            request, "Las reservas no pueden superar las 20 personas."
+      if personas <= 0 or personas > 20:
+        messages.error(
+            request, "La cantidad de personas debe ser entre 1 y 20."
         )
         return render(
-            request,
-            "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
+            request, "reservas/formulario_reserva.html", contexto_error
         )
     except ValueError:
       messages.error(request, "Ingresa un número válido para las personas.")
-      return render(
-          request,
-          "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
-      )
+      return render(request, "reservas/formulario_reserva.html", contexto_error)
 
-    try:
-      fecha_reserva_dt = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
-      if fecha_reserva_dt < datetime.now():
-        messages.error(
-            request,
-            "No puedes realizar una reserva para una fecha u hora pasadas.",
-        )
-        return render(
-            request,
-            "reservas/formulario_reserva.html",
-            {"datos": datos_formulario},
-        )
-    except ValueError:
-      messages.error(request, "El formato de fecha u hora es inválido.")
-      return render(
-          request,
-          "reservas/formulario_reserva.html",
-          {"datos": datos_formulario},
-      )
-
-    # Redirección a carta si decide preordenar
-    if preordenar == "SI":
-      request.session["datos_reserva_temporal"] = {
-          "usuario_id": usuario_id,
-          "cantidad_personas": personas,
-          "fecha": fecha,
-          "hora": hora,
-          "notas": notas,
-      }
-      return redirect("ver_carta")
-
-    # Guardamos los datos temporales y lo mandamos a el mapa de seleccionar mesas
+    # Guardamos los datos temporales incluyendo los platos elegidos
     request.session["datos_reserva_temporal"] = {
         "usuario_id": usuario_id,
         "cantidad_personas": personas,
         "fecha": fecha,
         "hora": hora,
         "notas": notas,
+        "platos_ids": [int(p_id) for p_id in platos_seleccionados],
     }
+
     return redirect("seleccionar_mesa_mapa")
 
-  return render(request, "reservas/formulario_reserva.html")
+  contexto = {"platos": platos_disponibles}
+  return render(request, "reservas/formulario_reserva.html", contexto)
 
 
 @verificar
@@ -132,17 +91,13 @@ def seleccionar_mesa_mapa(request):
   hora = datos_temp["hora"]
   personas_requeridas = datos_temp["cantidad_personas"]
 
-  # 1. Mesas ocupadas por otras reservas en esa fecha y hora
   mesas_por_reserva_ids = Reserva.objects.filter(
       fecha=fecha, hora=hora, estado__in=["pendiente", "confirmada", "asistio"]
   ).values_list("mesa_id", flat=True)
 
-  # 2. Mesas que tienen un consumo activo en este preciso momento (en el POS / presenciales)
   mesas_con_consumo_ids = ConsumoMesa.objects.filter(pagado=False).values_list(
       "mesa_id", flat=True
   )
-
-  # 3. Unimos ambos grupos para bloquearlas en el mapa de reservas
   mesas_ocupadas_ids = set(
       list(mesas_por_reserva_ids) + list(mesas_con_consumo_ids)
   )
@@ -152,7 +107,6 @@ def seleccionar_mesa_mapa(request):
   if request.method == "POST":
     mesa_id = request.POST.get("mesa_id")
 
-    # Validación extra por seguridad por si intentan forzar una mesa ocupada
     if int(mesa_id) in mesas_ocupadas_ids:
       messages.error(
           request,
@@ -171,6 +125,7 @@ def seleccionar_mesa_mapa(request):
     )
     usuario_instancia = get_object_or_404(Usuario, id=usuario_id)
 
+    # 1. Creamos la reserva principal
     nueva_reserva = Reserva.objects.create(
         usuario=usuario_instancia,
         mesa=mesa_seleccionada,
@@ -180,6 +135,29 @@ def seleccionar_mesa_mapa(request):
         notas=datos_temp.get("notas", ""),
         estado="pendiente",
     )
+
+    # ==========================================================
+    # 2. AQUÍ AGREGAS LA LÓGICA PARA RESTAR EL STOCK Y REGISTRAR EL CONSUMO
+    # ==========================================================
+    platos_ids = datos_temp.get("platos_ids", [])
+    for plato_id in platos_ids:
+      try:
+        plato_obj = Plato.objects.get(id=plato_id)
+        if plato_obj.stock > 0:
+          plato_obj.stock -= 1  # Resta una unidad del stock global
+          plato_obj.save()
+
+          # Lo registramos de una vez en el consumo de la mesa
+          ConsumoMesa.objects.create(
+              mesa=mesa_seleccionada,
+              reserva=nueva_reserva,
+              plato=plato_obj,
+              cantidad=1,
+              precio_unitario=plato_obj.precio,
+          )
+      except Plato.DoesNotExist:
+        continue
+    # ==========================================================
 
     try:
       enviar_correo_reserva(nueva_reserva)
@@ -389,8 +367,7 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
   if request.method == "POST":
     mesa = get_object_or_404(Mesa, id=mesa_id)
     plato = get_object_or_404(Plato, id=plato_id)
-    
-    # Blindaje extra anti F12 (evitar negativos o números locos)
+
     try:
       cantidad = int(request.POST.get("cantidad", 1))
       if cantidad <= 0 or cantidad > 100:
@@ -398,6 +375,15 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
         return redirect("admin_detalle_mesa", mesa_id=mesa_id)
     except ValueError:
       messages.error(request, "Ingresa un número de cantidad válido.")
+      return redirect("admin_detalle_mesa", mesa_id=mesa_id)
+
+    # Validación de Stock disponible
+    if plato.stock < cantidad:
+      messages.error(
+          request,
+          f"Stock insuficiente. Solo quedan {plato.stock} unidades de"
+          f" {plato.nombre}.",
+      )
       return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
     consumo_existente = ConsumoMesa.objects.filter(
@@ -422,13 +408,23 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
           precio_unitario=plato.precio,
       )
 
+    # Descontar del stock global del plato
+    plato.stock -= cantidad
+    plato.save()
+
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
 
-@solo_admin  # <--- Blindado: Solo administradores eliminan items del POS
+@solo_admin
 def admin_eliminar_item_carrito(request, consumo_id):
   consumo = get_object_or_404(ConsumoMesa, id=consumo_id)
   mesa_id = consumo.mesa.id
+
+
+  plato = consumo.plato
+  plato.stock += consumo.cantidad
+  plato.save()
+
   consumo.delete()
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
