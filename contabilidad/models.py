@@ -37,3 +37,10 @@ class Movimiento(models.Model):
 
     def __str__(self):
         return f"{self.tipo} - {self.concepto} (${self.valor})"
+
+class Comentario_caja(models.Model):
+    fecha = models.DateField(unique=True)
+    comentario = models.TextField(max_length=500)
+
+    def __str__(self):
+        return f"Observación del {self.fecha}"

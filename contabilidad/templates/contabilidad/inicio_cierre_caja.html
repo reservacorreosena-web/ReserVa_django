@@ -5,15 +5,36 @@
 
 {% block content %}
 <div class="container-fluid px-4 py-3 text-light">
+    
+    <!-- BARRA DE ACCIÓN Y ESTADOS DE CAJA -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 pb-3 border-bottom border-secondary">
+        <div>
+            <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Gestión de Caja</h2>
+            <small class="text-white-50">Control de ingresos, arqueos y estados operacionales</small>
+        </div>
+        
+        <!-- Botones de Control de Caja (Abrir, Cerrar, Historial) -->
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="#" class="btn btn-outline-success rounded-0 fw-bold px-3">
+                <i class="bi bi-unlock-fill me-1"></i> Abrir Caja
+            </a>
+            <a href="#" class="btn btn-outline-danger rounded-0 fw-bold px-3">
+                <i class="bi bi-lock-fill me-1"></i> Cerrar Caja
+            </a>
+            <a href="#" class="btn btn-outline-warning rounded-0 fw-bold px-3" style="color: #c9a961; border-color: #c9a961;">
+                <i class="bi bi-clock-history me-1"></i> Historial Cierres
+            </a>
+        </div>
+    </div>
+
     <!-- ENCABEZADO Y FILTRO DE FECHA -->
-  
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Cuadre y Cierre de Caja</h2>
-            <small class="text-white-50">Control de ingresos, arqueos y ventas cobradas</small>
+            <h4 class="fw-bold text-white mb-0">Cuadre del Día</h4>
+            <small class="text-white-50">Ventas cobradas y transacciones de la jornada</small>
         </div>
         <form method="GET" class="d-flex gap-2 align-items-center">
-                <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
+            <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
             <button type="submit" class="btn btn-warning fw-bold px-4 rounded-0" style="background-color: #c9a961; border-color: #c9a961; color: #0a0a0a;">Consultar</button>
         </form>
     </div>
@@ -25,7 +46,7 @@
             <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
                 <div class="card-body text-center py-4">
                     <span class="text-uppercase text-white-50 small tracking-wide" style="letter-spacing: 2px;">Total Recaudado en la Jornada</span>
-                    <h1 class="display-4 text-warning fw-bold mb-0 mt-2" style="color: #c9a961 !important;">${{ c.subtotal }}</h1>
+                    <h1 class="display-4 text-warning fw-bold mb-0 mt-2" style="color: #c9a961 !important;">${{ total_recaudado|default:"0" }}</h1>
                 </div>
             </div>
         </div>
@@ -41,7 +62,7 @@
                     <div class="vr bg-secondary opacity-25" style="height: 50px;"></div>
                     <div class="text-center">
                         <span class="text-uppercase text-white-50 small d-block" style="letter-spacing: 1.5px;">Platos Despachados</span>
-                        <h3 class="text-white fw-bold mt-1 mb-0">{{ total_platos_vendidos }}</h3>
+                        <h3 class="text-white fw-bold mt-1 mb-0">{{ total_platos_vendidos|default:"0" }}</h3>
                     </div>
                 </div>
             </div>
@@ -56,7 +77,7 @@
             </h5>
             <p class="text-white-50 small mb-3">Deja constancia de novedades, dinero de base dejado en caja o diferencias encontradas.</p>
             
-            <form method="POST" action="#">
+            <form method="POST" action="{% url 'comentario_caja' %}">
                 {% csrf_token %}
                 <input type="hidden" name="fecha" value="{{ fecha_actual }}">
                 <div class="mb-3">
@@ -92,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                       
+                        {% for c in consumos %}
                         <tr>
                             <td><span class="badge bg-secondary rounded-0 px-2 py-1">Mesa #{{ c.mesa.numero }}</span></td>
                             <td>{{ c.reserva.usuario.nombre|default:"Cliente General" }}</td>
@@ -100,15 +121,17 @@
                             <td>{{ c.cantidad }}</td>
                             <td class="text-end fw-bold" style="color: #c9a961;">${{ c.subtotal }}</td>
                         </tr>
-                        
-                       
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-white-50 py-4">No hay transacciones registradas para esta fecha.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
 
 <style>
     .hover-gold:hover {
