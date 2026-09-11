@@ -161,3 +161,5 @@ EMAIL_HOST_USER = 'reservacorreosena@gmail.com'          # El correo del restaur
 EMAIL_HOST_PASSWORD = 'szghjirajjcwbjju '     # Contraseña de aplicación de Google
 DEFAULT_FROM_EMAIL = 'ReserVa Medellín <reservacorreosena@gmail.com>'
 
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
