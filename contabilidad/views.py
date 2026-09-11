@@ -172,6 +172,7 @@ def cierre_caja(request):
     
     for c in consumos_pagados:
         total_recaudado += c.subtotal()
+        
         total_platos_vendidos += c.cantidad
         
         # Conteo de mesas únicas evitando duplicados
