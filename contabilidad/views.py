@@ -157,36 +157,36 @@ class MovimientoViewSet(viewsets.ModelViewSet):
 
 @solo_admin
 def cierre_caja(request):
-    total = 0
+    total_recaudado = 0
     total_mesas_cobradas = 0
-    mesas_procesadas =  []
+    mesas_procesadas = []
     total_platos_vendidos = 0
-    fecha_seleccionada =  request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
+    
+    fecha_seleccionada = request.GET.get('fecha', timezone.now().date().strftime('%Y-%m-%d'))
+    
+    # Filtramos por el campo fecha_hora del consumo, que es el momento real en que se paga/registra
     consumos_pagados = ConsumoMesa.objects.filter(
         pagado=True,
-        mesa__reserva__fecha=fecha_seleccionada
+        fecha_hora__date=fecha_seleccionada
     )
+    
     for c in consumos_pagados:
-        total += c.subtotal()
-
-    for cobradas in consumos_pagados:
+        total_recaudado += c.subtotal()
+        total_platos_vendidos += c.cantidad
+        
+        # Conteo de mesas únicas evitando duplicados
         if c.mesa.id not in mesas_procesadas:
             mesas_procesadas.append(c.mesa.id)
-            total_mesas_cobradas+= 1
-
-    for c in consumos_pagados:
-        total_platos_vendidos  += c.cantidad
+            total_mesas_cobradas += 1
 
     contexto = {
-        'consumos' : consumos_pagados,
-        'total_mesas_cobradas' : total_mesas_cobradas,
-        'total_platos_vendidos' : total_platos_vendidos,
-        'fecha_actual' : fecha_seleccionada,
-
-
+        'consumos': consumos_pagados,
+        'total_recaudado': total_recaudado,
+        'total_mesas_cobradas': total_mesas_cobradas,
+        'total_platos_vendidos': total_platos_vendidos,
+        'fecha_actual': fecha_seleccionada,
     }
     
-
     return render(request, "contabilidad/inicio_cierre_caja.html", contexto)
 
 @solo_admin
