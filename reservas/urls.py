@@ -1,5 +1,10 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+from .views import ReservaViewSet
+
+router = DefaultRouter()
+router.register(r'api/reservas', ReservaViewSet, basename='api-reservas')
 
 urlpatterns = [
     # Ruta del panel de administración (conecta el enlace {% url 'inicio' %} de tu menú lateral)
@@ -25,4 +30,6 @@ urlpatterns = [
          name='admin_eliminar_item_carrito'),
     path('admin/vender/mesa/<int:mesa_id>/cobrar/', views.admin_cobrar_mesa, name='admin_cobrar_mesa'),
     path('admin/vender/mesa/<int:mesa_id>/enviar-pedido/', views.admin_enviar_pedido, name='admin_enviar_pedido'),
+    
+    path('', include(router.urls)),
 ]

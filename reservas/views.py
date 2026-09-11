@@ -9,6 +9,26 @@ from usuarios.models import Usuario
 from .models import ConsumoMesa, Mesa, Plato, Reserva, Zona
 from .utils import enviar_correo_reserva
 
+# ==========================================
+# 🚀 VISTAS DE API (Django REST Framework)
+# ==========================================
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .serializador import ReservaSerializer
+
+class ReservaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para gestionar las reservas (CRUD completo).
+    Requiere autenticación por Token.
+    """
+    queryset = Reserva.objects.all().order_by('-id')
+    serializer_class = ReservaSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# ==========================================
+# 🌐 VISTAS TRADICIONALES (HTML / Plantillas)
+# ==========================================
 
 @verificar
 def crear_reserva(request):
