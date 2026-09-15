@@ -4,22 +4,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from reservas.models import ConsumoMesa
 
-from usuarios.decorador import verificar
-from .models import Movimiento
-from usuarios.decorador import solo_admin
+from usuarios.decorador import verificar, solo_admin
+from .models import Movimiento, Comentario_caja
 from django.db.models import Sum
 
-
-from contabilidad.serializador import MovimientoSerializer
-
-from .serializador import *
+from .serializador import MovimientoSerializer, ComentarioCajaSerializer
 from rest_framework import viewsets
 from datetime import datetime
 
 # Esta es la parte principal, acá mostraremos todos los gastos, ganancias ETC
 @solo_admin
 def inicio(request):
-    #Creamos una variable que tiene todos los movimientos registrados
     gastos = Movimiento.objects.all()
 
     gasto_total = 0
@@ -145,9 +140,6 @@ def editar_gasto(request, id):
     }
     return render(request, "contabilidad/editar_gasto.html", contexto)
 
-class MovimientoViewSet(viewsets.ModelViewSet):
-    queryset = Movimiento.objects.all()
-    serializer_class = MovimientoSerializer
 
 @solo_admin
 def cierre_caja(request):
@@ -174,6 +166,7 @@ def cierre_caja(request):
     
     return render(request, "contabilidad/inicio_cierre_caja.html", contexto)
 
+
 @solo_admin
 def comentario_caja(request):
     if request.method == "POST":
@@ -185,14 +178,23 @@ def comentario_caja(request):
             defaults={'comentario': texto}
         )
         
-    
         messages.success(request, "¡Creado Con Éxito!")
 
     return redirect('inicio_cierre_caja')
 
 
-
-
 @solo_admin
 def historial_cierres(request):
     pass
+
+
+# ==========================================
+# VIEWSETS PARA LA API REST
+# ==========================================
+class MovimientoViewSet(viewsets.ModelViewSet):
+    queryset = Movimiento.objects.all()
+    serializer_class = MovimientoSerializer
+
+class ComentarioCajaViewSet(viewsets.ModelViewSet):
+    queryset = Comentario_caja.objects.all()
+    serializer_class = ComentarioCajaSerializer
