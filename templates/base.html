@@ -230,14 +230,77 @@
            RESPONSIVE
            ========================================= */
         @media (max-width: 992px) {
-            .rv-nav-menu {
-                display: none; /* Se puede agregar un toggle de menú móvil después */
+            .rv-navbar {
+                height: auto;
+                padding: 10px 0;
+                position: relative;
             }
+
+            .rv-main {
+                padding-top: 15px;
+            }
+
             .rv-nav-container {
-                padding: 0 20px;
+                padding: 0 15px;
+                flex-direction: column;
+                gap: 14px;
             }
+
+            .rv-logo-text {
+                font-size: 22px; /* Logo un pelo más estilizado en móvil */
+            }
+
+            .rv-nav-menu {
+                width: 100%;
+                justify-content: center;
+                border-top: 1px solid var(--border-color);
+                padding-top: 12px;
+            }
+
+            .rv-nav-links {
+                gap: 14px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .rv-nav-item {
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+
+            .rv-nav-actions {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                border-top: 1px solid var(--border-color);
+                padding-top: 12px;
+            }
+
+            /* Tamaños limpios y equilibrados para los botones en móviles */
+            .rv-btn-gold-sm, 
+            .rv-btn-outline-sm {
+                padding: 8px 18px;
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+
+            .rv-user-badge {
+                gap: 12px;
+            }
+
+            .rv-user-greeting {
+                font-size: 13px;
+            }
+
             .rv-user-greeting span {
-                display: none; /* Ocultar nombre en móviles, dejar solo ícono */
+                display: inline;
+                font-size: 11px;
+            }
+
+            .rv-btn-logout {
+                padding: 6px 12px;
+                font-size: 11px;
             }
         }
     </style>
@@ -250,7 +313,7 @@
         <div class="rv-nav-container">
             <!-- LOGO -->
             <a href="{% url 'inicio' %}" class="rv-logo-link">
-                <h1 class="rv-logo-text">Reser<span class="gold-text">Va</span> <span style="font-size: 20px;">🍽️</span></h1>
+                <h1 class="rv-logo-text">Reser<span class="gold-text">Va</span> <span style="font-size: 20px;"></span></h1>
             </a>
 
             <!-- MENÚ DE NAVEGACIÓN -->
