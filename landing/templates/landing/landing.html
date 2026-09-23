@@ -42,49 +42,35 @@
     </section>
 
     <!-- ============================================================
-         BOOKING BAR — franja horizontal compacta y elegante
+         SUGERIDO DEL DÍA — Destacado gastronómico (En lugar de la barra)
          ============================================================ -->
-    <section class="rv-bookingbar">
-        <form action="{% url 'crear_reserva' %}" method="POST" class="rv-bookingbar__form">
-            {% csrf_token %}
+    {% if plato_sugerido %}
+    <section class="rv-suggested" style="padding: 6rem 5%; background: #121212; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div class="rv-gallery__intro" style="margin-bottom: 3rem; text-align: center;">
+            <span class="rv-eyebrow">Recomendación del Chef</span>
+            <h2>Sugerido del <em>Día</em></h2>
+        </div>
 
-            <div class="rv-bookingbar__label">
-                <i class="bi bi-calendar2-check"></i>
-                <span>Haz tu reserva</span>
+        <div class="rv-suggested__card" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; align-items: center; max-width: 1200px; margin: 0 auto;">
+            {% if plato_sugerido.imagen %}
+            <div class="rv-suggested__image" style="position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                <img src="{{ plato_sugerido.imagen.url }}" alt="{{ plato_sugerido.nombre }}" style="width: 100%; height: 400px; object-fit: cover; display: block;">
             </div>
-
-            <div class="rv-bookingbar__field">
-                <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" name="fecha" required>
+            {% endif %}
+            
+            <div class="rv-suggested__info">
+                <span style="color: #c9a961; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight: 600;">Exclusivo de la casa</span>
+                <h3 style="font-size: 2.5rem; font-family: 'Playfair Display', serif; color: #fff; margin: 0.5rem 0 1rem 0;">{{ plato_sugerido.nombre }}</h3>
+                <p style="color: #a0a0a0; font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">{{ plato_sugerido.descripcion }}</p>
+                
+                <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                    <span style="font-size: 2rem; font-weight: 700; color: #c9a961;">${{ plato_sugerido.precio }}</span>
+                    <a href="{% url 'ver_carta' %}" class="btn-gold" style="padding: 0.8rem 2rem; background: #c9a961; color: #111; text-decoration: none; border-radius: 4px; font-weight: 600; transition: background 0.3s;">Ver Carta Completa</a>
+                </div>
             </div>
-
-            <div class="rv-bookingbar__field">
-                <label for="hora">Hora</label>
-                <input type="time" id="hora" name="hora" required>
-            </div>
-
-            <div class="rv-bookingbar__field">
-                <label for="cantidad_personas">Personas</label>
-                <select id="cantidad_personas" name="cantidad_personas" required>
-                    <option value="1">1 Persona</option>
-                    <option value="2" selected>2 Personas</option>
-                    <option value="4">4 Personas</option>
-                    <option value="6">6+ Personas</option>
-                </select>
-            </div>
-
-            <div class="rv-bookingbar__field">
-                <label for="mesa">Área / Mesa</label>
-                <select id="mesa" name="mesa">
-                    <option value="Interior">Interior</option>
-                    <option value="Terraza">Terraza</option>
-                    <option value="VIP">Zona VIP</option>
-                </select>
-            </div>
-
-            <button type="submit" class="rv-bookingbar__submit">Buscar</button>
-        </form>
+        </div>
     </section>
+    {% endif %}
 
     <!-- ============================================================
          GALERÍA EDITORIAL — composición asimétrica con imágenes

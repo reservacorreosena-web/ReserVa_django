@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from comentarios.models import Resena  
 from usuarios.decorador import verificar
 from usuarios.models import Usuario
-# Importa la vista de reservas para usarla cuando sea admin
+# Importamos la vista de reservas para el admin y el modelo Plato
 from reservas.views import inicio_admin 
+from reservas.models import Plato  # <-- ¡Importamos el modelo Plato de reservas!
 
 def home(request):
     usuario_actual = request.session.get("logueado")
@@ -12,10 +13,15 @@ def home(request):
     if usuario_actual and usuario_actual.get("rol") == "admin":
         return inicio_admin(request)
 
-    # Si es un cliente normal, carga la landing page con sus reseñas
+    # Si es un cliente normal, buscamos el primer plato disponible como sugerido del día
+    plato_sugerido = Plato.objects.filter(disponible=True).first()
+
+    # Traemos las reseñas
     todas_las_resenas = Resena.objects.all().order_by('-fecha')
+    
     contexto = {
-        'reseñas': todas_las_resenas
+        'reseñas': todas_las_resenas,
+        'plato_sugerido': plato_sugerido, # <-- ¡Lo mandamos al template de la landing!
     }
     return render(request, 'landing/landing.html', contexto)
 
