@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 from django.contrib import messages
 from django.db.models import Count, Q, Sum
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from usuarios.decorador import solo_admin, verificar
@@ -535,3 +536,22 @@ def admin_enviar_pedido(request, mesa_id):
   mesa = get_object_or_404(Mesa, id=mesa_id)
   messages.success(request, f"Pedido de la mesa #{mesa.numero} enviado correctamente.")
   return redirect('admin_detalle_mesa', mesa_id=mesa_id)
+
+@solo_admin
+def admin_actualizar_posicion_mesa(request, mesa_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            pos_x = data.get('posicion_x')
+            pos_y = data.get('posicion_y')
+            
+            mesa = get_object_or_404(Mesa, id=mesa_id)
+            mesa.posicion_x = pos_x
+            mesa.posicion_y = pos_y
+            mesa.save()
+            
+            return JsonResponse({'status': 'success', 'message': 'Posición actualizada correctamente'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

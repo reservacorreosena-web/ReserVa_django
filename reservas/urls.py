@@ -32,4 +32,7 @@ urlpatterns = [
     path('admin/vender/mesa/<int:mesa_id>/enviar-pedido/', views.admin_enviar_pedido, name='admin_enviar_pedido'),
     
     path('', include(router.urls)),
+
+    #ruta para mover mesas
+    path('admin/mesas/<int:mesa_id>/actualizar-posicion/', views.admin_actualizar_posicion_mesa, name='admin_actualizar_posicion_mesa'),
 ]

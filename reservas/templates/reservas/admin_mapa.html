@@ -4,19 +4,189 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin_mapa.css' %}">
+<style>
+    /* Plano Arquitectónico Estilo Blueprint Profesional - ReserVa */
+    .rv-admin-floor {
+        position: relative;
+        width: 100%;
+        min-width: 1050px;
+        height: 780px;
+        background-color: #0b0d10;
+        background-image:
+            linear-gradient(rgba(201, 169, 97, 0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(201, 169, 97, 0.025) 1px, transparent 1px);
+        background-size: 30px 30px;
+        border: 2px solid #222731;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+
+    /* Muros perimetrales interiores decorativos */
+    .plano-muro-perimetral {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        border: 1px solid rgba(201, 169, 97, 0.15);
+        border-radius: 12px;
+        pointer-events: none;
+    }
+
+    /* 1. Zona de Baños */
+    .plano-zona-banos {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 220px;
+        height: 110px;
+        border-right: 1px solid rgba(201, 169, 97, 0.2);
+        border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+        background: rgba(18, 21, 28, 0.6);
+        border-bottom-right-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 12px;
+        color: #777;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    /* 2. Zona de Cocina */
+    .plano-zona-cocina {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 260px;
+        height: 140px;
+        border-left: 1px solid rgba(201, 169, 97, 0.2);
+        border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+        background: rgba(18, 21, 28, 0.6);
+        border-bottom-left-radius: 12px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 12px;
+        color: #777;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    /* 3. Zona de Bar */
+    .plano-zona-bar {
+        position: absolute;
+        top: 145px;
+        left: 15px;
+        width: 130px;
+        height: 250px;
+        border: 1px solid rgba(201, 169, 97, 0.15);
+        border-left: none;
+        background: rgba(26, 22, 18, 0.4);
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #c9a961;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    /* 4. Balcón / Terrazas */
+    .plano-zona-balcon {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        width: 240px;
+        height: 180px;
+        border-right: 1px solid rgba(201, 169, 97, 0.2);
+        border-top: 1px solid rgba(201, 169, 97, 0.2);
+        background: linear-gradient(135deg, rgba(201, 169, 97, 0.04) 0%, rgba(18, 21, 28, 0.5) 100%);
+        border-top-right-radius: 12px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 12px;
+        color: #c9a961;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    /* 5. Entrada Principal */
+    .plano-zona-entrada {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        text-align: center;
+        color: #666;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        pointer-events: none;
+        border-top: 1px dashed rgba(201, 169, 97, 0.3);
+        padding-top: 6px;
+    }
+
+    /* Contenedor de la mesa para el arrastre */
+    .mesa-plano-card {
+        position: absolute;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+        z-index: 10;
+    }
+
+    .mesa-plano-card:active {
+        cursor: grabbing;
+        z-index: 1000;
+    }
+
+    .mapa-card-link {
+        text-decoration: none;
+        display: block;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="mapa-container">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
-        <h2 style="margin: 0; font-family: 'Playfair Display', serif; color: #c9a961;">Seleccione una Mesa para Gestionar</h2>
-        
-        <!-- Leyenda de Estados del POS -->
-        <div style="display: flex; gap: 15px; font-size: 12px; background: #1a1a1a; padding: 8px 15px; border-radius: 6px; border: 1px solid #2a2a2a;">
-            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #51cf66; border-radius: 50%;"></span> Libre</div>
-            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #ff6b6b; border-radius: 50%;"></span> Reservada</div>
-            <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #c9a961; border-radius: 50%;"></span> En Consumo</div>
+
+    <div
+        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+        <div>
+            <h2 style="margin: 0; font-family: 'Playfair Display', serif; color: #c9a961;">Seleccione una Mesa para
+                Gestionar</h2>
+            <p style="color: #888; font-size: 13px; margin: 3px 0 0 0;">Arrastra las mesas para reorganizar el plano
+                arquitectónico.</p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <span id="estadoGuardadoPlan" style="color: #51cf66; font-size: 12px; font-weight: bold;"></span>
+            <!-- Leyenda de Estados del POS -->
+            <div
+                style="display: flex; gap: 15px; font-size: 12px; background: #12151c; padding: 8px 15px; border-radius: 6px; border: 1px solid #222731;">
+                <div style="display: flex; align-items: center; gap: 6px;"><span
+                        style="width: 10px; height: 10px; background: #51cf66; border-radius: 50%;"></span> Libre</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span
+                        style="width: 10px; height: 10px; background: #ff6b6b; border-radius: 50%;"></span> Reservada
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span
+                        style="width: 10px; height: 10px; background: #c9a961; border-radius: 50%;"></span> En Consumo
+                </div>
+            </div>
         </div>
     </div>
 
@@ -31,42 +201,111 @@
             <input type="time" name="hora" value="{{ hora }}" class="mapa-input">
         </div>
         <button type="submit" class="mapa-btn"><i class="bi bi-filter me-1"></i> Filtrar</button>
+
+        <button type="button" id="btnGuardarPlano" class="btn btn-success" onclick="guardarTodoElPlano()"
+            style="background: #c9a961; color: #12151c; font-weight: bold; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+            <i class="bi bi-save me-1"></i> Guardar Distribución
+        </button>
     </form>
 
-    <!-- Plano Arquitectónico del Administrador -->
-    <div class="rv-admin-floor">
-        
-        <div style="text-align: center; color: #555; font-size: 11px; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase;">
-            <i class="bi bi-shop"></i> Distribución del Salón / Panel POS
+    <!-- Plano Arquitectónico -->
+    <div class="rv-admin-floor" id="planoAdminFloor">
+        <!-- Muros y zonas estáticas -->
+        <div class="plano-muro-perimetral"></div>
+        <div class="plano-zona-banos"><i class="bi bi-gender-ambiguous me-1"></i> Restrooms</div>
+        <div class="plano-zona-cocina"><i class="bi bi-shop me-1"></i> Kitchen</div>
+        <div class="plano-zona-bar"><i class="bi bi-cup-straw me-1"></i> Bar</div>
+        <div class="plano-zona-balcon"><i class="bi bi-flower1 me-1"></i> Balcón / Terrazas</div>
+        <div class="plano-zona-entrada"><i class="bi bi-door-open me-1"></i> Entrance</div>
+
+        {% for mesa in mesas %}
+        {% with forma_estilo=mesa.forma|default:"cuadrada" %}
+        <div class="mesa-plano-card"
+            style="left: {{ mesa.posicion_x|default:100 }}px; top: {{ mesa.posicion_y|default:120 }}px;"
+            data-id="{{ mesa.id }}" onmousedown="iniciarArrastreMesa(event, this)">
+
+            <a href="{% url 'admin_detalle_mesa' mesa.id %}" class="mapa-card-link" onclick="interceptarClick(event)">
+                <div
+                    class="rv-table {{ forma_estilo }} {% if mesa.id in mesas_con_consumo %}consumo{% elif mesa.id in mapa_reservas %}reservada{% else %}libre{% endif %}">
+                    <h3>#{{ mesa.numero }}</h3>
+                    <p>{{ mesa.zona.nombre|default:"Salón Principal" }}</p>
+
+                    {% if mesa.id in mesas_con_consumo %}
+                    <span class="badge-consumo">En Consumo</span>
+                    <div>
+                        <span class="monto-consumo">${{ totales_consumo|get_item:mesa.id }}</span>
+                    </div>
+                    {% elif mesa.id in mapa_reservas %}
+                    <span class="badge-reservada">Reservada</span>
+                    {% else %}
+                    <span class="badge-libre">Libre</span>
+                    {% endif %}
+                </div>
+            </a>
         </div>
-
-        <div class="rv-zone-grid">
-            {% for mesa in mesas %}
-                <!-- Asignación automática de formas geométricas variadas para salir de la vista de lista -->
-                {% with forma_estilo=mesa.forma|default:forloop.counter|divisibleby:3|yesno:"redonda,cuadrada" %}
-                    {% if forloop.counter|divisibleby:4 %}{% with forma_estilo="rectangular" %}{% endwith %}{% endif %}
-                    
-                    <a href="{% url 'admin_detalle_mesa' mesa.id %}" class="mapa-card-link">
-                        <div class="rv-table {{ forma_estilo }} {% if mesa.id in mesas_con_consumo %}consumo{% elif mesa.id in mapa_reservas %}reservada{% else %}libre{% endif %}">
-                            <h3>#{{ mesa.numero }}</h3>
-                            <p>{{ mesa.zona.nombre|default:"Salón Principal" }}</p>
-
-                            {% if mesa.id in mesas_con_consumo %}
-                                <span class="badge-consumo">En Consumo</span>
-                                <div>
-                                    <span class="monto-consumo">${{ totales_consumo|get_item:mesa.id }}</span>
-                                </div>
-                            {% elif mesa.id in mapa_reservas %}
-                                <span class="badge-reservada">Reservada</span>
-                            {% else %}
-                                <span class="badge-libre">Libre</span>
-                            {% endif %}
-                        </div>
-                    </a>
-                {% endwith %}
-            {% endfor %}
-        </div>
-
+        {% endwith %}
+        {% endfor %}
     </div>
 </div>
+
+<script>
+    let elementoArrastrado = null;
+    let startX = 0, startY = 0;
+    let fueMovido = false;
+
+    function iniciarArrastreMesa(e, elemento) {
+        if (e.button !== 0) return; // Solo clic izquierdo
+
+        elementoArrastrado = elemento;
+        fueMovido = false;
+
+        const contenedorPlano = document.getElementById('planoAdminFloor');
+        const rect = elemento.getBoundingClientRect();
+
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+
+        document.addEventListener('mousemove', moverMesaEnPlano);
+        document.addEventListener('mouseup', soltarMesaEnPlano);
+
+        e.stopPropagation();
+    }
+
+    function moverMesaEnPlano(e) {
+        if (!elementoArrastrado) return;
+
+        fueMovido = true; // Marcamos que hubo movimiento para evitar abrir el enlace
+
+        const contenedorPlano = document.getElementById('planoAdminFloor');
+        const contenedorRect = contenedorPlano.getBoundingClientRect();
+
+        let x = e.clientX - contenedorRect.left - startX;
+        let y = e.clientY - contenedorRect.top - startY;
+
+        const maxX = contenedorPlano.clientWidth - elementoArrastrado.offsetWidth - 20;
+        const maxY = contenedorPlano.clientHeight - elementoArrastrado.offsetHeight - 20;
+
+        x = Math.max(15, Math.min(x, maxX));
+        y = Math.max(15, Math.min(y, maxY));
+
+        elementoArrastrado.style.left = x + 'px';
+        elementoArrastrado.style.top = y + 'px';
+    }
+
+    function soltarMesaEnPlano(e) { if (!elementoArrastrado) return; elementoArrastrado.style.cursor = 'grab'; elementoArrastrado.style.zIndex = '10'; document.removeEventListener('mousemove', moverMesaEnPlano); document.removeEventListener('mouseup', soltarMesaEnPlano); setTimeout(() => { elementoArrastrado = null; }, 50); }
+
+    // Evita que el enlace abra el detalle si la mesa fue arrastrada
+    function interceptarClick(e) {
+        if (fueMovido) {
+            e.preventDefault();
+            e.stopPropagation();
+            fueMovido = false;
+        }
+    }
+
+    // Función temporal para el botón de guardar (puedes programarla después)
+    function guardarTodoElPlano() {
+        alert('Función de guardado pendiente de configurar.');
+    }
+</script>
 {% endblock %}

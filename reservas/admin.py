@@ -6,8 +6,16 @@ class PlatoAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'precio')
     list_filter = ('disponible',)
 
-# Registra aquí los demás modelos para que vuelvan a aparecer en el menú lateral:
-admin.site.register(Zona)
-admin.site.register(Mesa)
+# Registramos Zona y Mesa de forma limpia con @admin.register para poder filtrar las mesas por zona y forma fácilmente:
+@admin.register(Zona)
+class ZonaAdmin(admin.ModelAdmin):
+    search_fields = ('nombre',)
+
+@admin.register(Mesa)
+class MesaAdmin(admin.ModelAdmin):
+    list_filter = ('zona', 'forma')
+    search_fields = ('numero',)
+
+# Dejamos estos tal cual los tenías con site.register para no tocar su lógica interna
 admin.site.register(Reserva)
-admin.site.register(ConsumoMesa) # (Ajusta los nombres según cómo se llamen exactamente en tu models.py de reservas)
+admin.site.register(ConsumoMesa)

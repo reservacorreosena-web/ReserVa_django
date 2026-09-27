@@ -191,3 +191,29 @@
     border-radius: 4px;
     display: inline-block;
 }
+
+
+
+.rv-admin-floor {
+    background: #151515;
+    border: 2px dashed rgba(201, 169, 97, 0.25);
+    border-radius: 16px;
+    padding: 30px;
+    position: relative; /* ¡CRUCIAL para que el absolute funcione! */
+    min-height: 650px;   /* Altura suficiente para soltar las mesas */
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+    overflow: hidden;
+}
+
+.mapa-card-link {
+    position: absolute; /* ¡CRUCIAL para que se muevan con left y top! */
+    text-decoration: none;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+
+.mapa-card-link:active {
+    cursor: grabbing;
+    z-index: 1000;
+}

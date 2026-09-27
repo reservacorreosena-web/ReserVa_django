@@ -2,20 +2,27 @@ from django.db import models
 from usuarios.models import Usuario
 
 class Zona(models.Model):
-    nombre = models.CharField(max_length=50)
-
+    nombre = models.CharField(max_length=50) # Ej: Zona Ventana, Zona Central, VIP
+    
     def __str__(self):
         return self.nombre
-
 class Mesa(models.Model):
+    FORMA_CHOICES = [
+        ('redonda', 'Redonda'),
+        ('cuadrada', 'Cuadrada'),
+        ('rectangular', 'Rectangular'),
+    ]
+    
     numero = models.IntegerField(unique=True)
-    zona = models.ForeignKey(Zona, on_delete=models.CASCADE)
     capacidad = models.IntegerField()
-    posicion_x = models.IntegerField(default=0)
-    posicion_y = models.IntegerField(default=0)
+    zona = models.ForeignKey(Zona, on_delete=models.SET_NULL, null=True, blank=True, related_name='mesas')
+    forma = models.CharField(max_length=20, choices=FORMA_CHOICES, default='cuadrada')
+    
+    posicion_x = models.IntegerField(default=0, blank=True)
+    posicion_y = models.IntegerField(default=0, blank=True)
 
     def __str__(self):
-        return f"Mesa {self.numero} (Cap: {self.capacidad})"
+        return f"Mesa #{self.numero} ({self.capacidad}p)"
 
 class Plato(models.Model):
     CATEGORIAS = [
