@@ -34,5 +34,5 @@ urlpatterns = [
     path('', include(router.urls)),
 
     #ruta para mover mesas
-    path('admin/mesas/<int:mesa_id>/actualizar-posicion/', views.admin_actualizar_posicion_mesa, name='admin_actualizar_posicion_mesa'),
+    path('admin/mesas/guardar-mapa/', views.guardar_mapa_mesas, name='guardar_mapa_mesas'),
 ]

@@ -538,19 +538,24 @@ def admin_enviar_pedido(request, mesa_id):
   return redirect('admin_detalle_mesa', mesa_id=mesa_id)
 
 @solo_admin
-def admin_actualizar_posicion_mesa(request, mesa_id):
+def guardar_mapa_mesas(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            pos_x = data.get('posicion_x')
-            pos_y = data.get('posicion_y')
+            mesas_actualizadas = data.get('mesas', [])
             
-            mesa = get_object_or_404(Mesa, id=mesa_id)
-            mesa.posicion_x = pos_x
-            mesa.posicion_y = pos_y
-            mesa.save()
-            
-            return JsonResponse({'status': 'success', 'message': 'Posición actualizada correctamente'})
+            for item in mesas_actualizadas:
+                mesa_id = item.get('id')
+                pos_x = item.get('x')
+                pos_y = item.get('y')
+                
+                # Buscamos y actualizamos cada mesa
+                mesa = Mesa.objects.get(id=mesa_id)
+                mesa.posicion_x = pos_x
+                mesa.posicion_y = pos_y
+                mesa.save()
+                
+            return JsonResponse({'status': 'success', 'message': '¡Plano actualizado correctamente!'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             

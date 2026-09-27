@@ -312,9 +312,62 @@
         }
     }
 
-    // Función temporal para el botón de guardar
     function guardarTodoElPlano() {
-        alert('Función de guardado pendiente de configurar.');
-    }
+    const btnGuardar = document.getElementById('btnGuardarPlano');
+    const estadoTexto = document.getElementById('estadoGuardadoPlan');
+    
+    // Recopilamos todas las mesas del plano actual
+    const tarjetasMesas = document.querySelectorAll('.mesa-plano-card');
+    const mesasData = [];
+
+    tarjetasMesas.forEach(tarjeta => {
+        const id = tarjeta.getAttribute('data-id');
+        // Extraemos los píxeles limpios quitando el 'px'
+        const x = parseInt(tarjeta.style.left) || 0;
+        const y = parseInt(tarjeta.style.top) || 0;
+
+        mesasData.push({ id: id, x: x, y: y });
+    });
+
+    // Deshabilitar botón temporalmente mientras guarda
+    btnGuardar.disabled = true;
+    btnGuardar.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Guardando...`;
+    estadoTexto.innerText = "";
+
+    // Petición AJAX (Fetch) hacia Django
+    fetch("{% url 'guardar_mapa_mesas' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ mesas: mesasData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            estadoTexto.style.color = '#51cf66';
+            estadoTexto.innerText = "¡Distribución guardada con éxito!";
+        } else {
+            estadoTexto.style.color = '#ff6b6b';
+            estadoTexto.innerText = "Error: " + data.message;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        estadoTexto.style.color = '#ff6b6b';
+        estadoTexto.innerText = "Error de conexión al guardar.";
+    })
+    .finally(() => {
+        // Restaurar botón
+        btnGuardar.disabled = false;
+        btnGuardar.innerHTML = `<i class="bi bi-save me-1"></i> Guardar Distribución`;
+        
+        // Limpiar mensaje de texto a los 4 segundos
+        setTimeout(() => {
+            estadoTexto.innerText = "";
+        }, 4000);
+    });
+}
 </script>
 {% endblock %}
