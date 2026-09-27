@@ -157,6 +157,8 @@
     .mapa-card-link {
         text-decoration: none;
         display: block;
+        user-drag: none;
+        -webkit-user-drag: none;
     }
 </style>
 {% endblock %}
@@ -164,28 +166,19 @@
 {% block content %}
 <div class="mapa-container">
 
-    <div
-        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px;">
         <div>
-            <h2 style="margin: 0; font-family: 'Playfair Display', serif; color: #c9a961;">Seleccione una Mesa para
-                Gestionar</h2>
-            <p style="color: #888; font-size: 13px; margin: 3px 0 0 0;">Arrastra las mesas para reorganizar el plano
-                arquitectónico.</p>
+            <h2 style="margin: 0; font-family: 'Playfair Display', serif; color: #c9a961;">Seleccione una Mesa para Gestionar</h2>
+            <p style="color: #888; font-size: 13px; margin: 3px 0 0 0;">Arrastra las mesas para reorganizar el plano arquitectónico.</p>
         </div>
 
         <div style="display: flex; align-items: center; gap: 20px;">
             <span id="estadoGuardadoPlan" style="color: #51cf66; font-size: 12px; font-weight: bold;"></span>
             <!-- Leyenda de Estados del POS -->
-            <div
-                style="display: flex; gap: 15px; font-size: 12px; background: #12151c; padding: 8px 15px; border-radius: 6px; border: 1px solid #222731;">
-                <div style="display: flex; align-items: center; gap: 6px;"><span
-                        style="width: 10px; height: 10px; background: #51cf66; border-radius: 50%;"></span> Libre</div>
-                <div style="display: flex; align-items: center; gap: 6px;"><span
-                        style="width: 10px; height: 10px; background: #ff6b6b; border-radius: 50%;"></span> Reservada
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;"><span
-                        style="width: 10px; height: 10px; background: #c9a961; border-radius: 50%;"></span> En Consumo
-                </div>
+            <div style="display: flex; gap: 15px; font-size: 12px; background: #12151c; padding: 8px 15px; border-radius: 6px; border: 1px solid #222731;">
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #51cf66; border-radius: 50%;"></span> Libre</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #ff6b6b; border-radius: 50%;"></span> Reservada</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: #c9a961; border-radius: 50%;"></span> En Consumo</div>
             </div>
         </div>
     </div>
@@ -202,8 +195,7 @@
         </div>
         <button type="submit" class="mapa-btn"><i class="bi bi-filter me-1"></i> Filtrar</button>
 
-        <button type="button" id="btnGuardarPlano" class="btn btn-success" onclick="guardarTodoElPlano()"
-            style="background: #c9a961; color: #12151c; font-weight: bold; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+        <button type="button" id="btnGuardarPlano" class="btn btn-success" onclick="guardarTodoElPlano()" style="background: #c9a961; color: #12151c; font-weight: bold; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
             <i class="bi bi-save me-1"></i> Guardar Distribución
         </button>
     </form>
@@ -219,31 +211,31 @@
         <div class="plano-zona-entrada"><i class="bi bi-door-open me-1"></i> Entrance</div>
 
         {% for mesa in mesas %}
-        {% with forma_estilo=mesa.forma|default:"cuadrada" %}
-        <div class="mesa-plano-card"
-            style="left: {{ mesa.posicion_x|default:100 }}px; top: {{ mesa.posicion_y|default:120 }}px;"
-            data-id="{{ mesa.id }}" onmousedown="iniciarArrastreMesa(event, this)">
+            {% with forma_estilo=mesa.forma|default:"cuadrada" %}
+            <div class="mesa-plano-card"
+                 style="left: {{ mesa.posicion_x|default:100 }}px; top: {{ mesa.posicion_y|default:120 }}px;"
+                 data-id="{{ mesa.id }}"
+                 onmousedown="iniciarArrastreMesa(event, this)">
 
-            <a href="{% url 'admin_detalle_mesa' mesa.id %}" class="mapa-card-link" onclick="interceptarClick(event)">
-                <div
-                    class="rv-table {{ forma_estilo }} {% if mesa.id in mesas_con_consumo %}consumo{% elif mesa.id in mapa_reservas %}reservada{% else %}libre{% endif %}">
-                    <h3>#{{ mesa.numero }}</h3>
-                    <p>{{ mesa.zona.nombre|default:"Salón Principal" }}</p>
+                <a href="{% url 'admin_detalle_mesa' mesa.id %}" class="mapa-card-link" onclick="interceptarClick(event)">
+                    <div class="rv-table {{ forma_estilo }} {% if mesa.id in mesas_con_consumo %}consumo{% elif mesa.id in mapa_reservas %}reservada{% else %}libre{% endif %}">
+                        <h3>#{{ mesa.numero }}</h3>
+                        <p>{{ mesa.zona.nombre|default:"Salón Principal" }}</p>
 
-                    {% if mesa.id in mesas_con_consumo %}
-                    <span class="badge-consumo">En Consumo</span>
-                    <div>
-                        <span class="monto-consumo">${{ totales_consumo|get_item:mesa.id }}</span>
+                        {% if mesa.id in mesas_con_consumo %}
+                            <span class="badge-consumo">En Consumo</span>
+                            <div>
+                                <span class="monto-consumo">${{ totales_consumo|get_item:mesa.id }}</span>
+                            </div>
+                        {% elif mesa.id in mapa_reservas %}
+                            <span class="badge-reservada">Reservada</span>
+                        {% else %}
+                            <span class="badge-libre">Libre</span>
+                        {% endif %}
                     </div>
-                    {% elif mesa.id in mapa_reservas %}
-                    <span class="badge-reservada">Reservada</span>
-                    {% else %}
-                    <span class="badge-libre">Libre</span>
-                    {% endif %}
-                </div>
-            </a>
-        </div>
-        {% endwith %}
+                </a>
+            </div>
+            {% endwith %}
         {% endfor %}
     </div>
 </div>
@@ -251,40 +243,47 @@
 <script>
     let elementoArrastrado = null;
     let startX = 0, startY = 0;
+    let initialClientX = 0, initialClientY = 0;
     let fueMovido = false;
 
     function iniciarArrastreMesa(e, elemento) {
         if (e.button !== 0) return; // Solo clic izquierdo
+        
+        // Bloquea el comportamiento por defecto del navegador al arrastrar enlaces o textos
+        e.preventDefault();
 
         elementoArrastrado = elemento;
         fueMovido = false;
 
-        const contenedorPlano = document.getElementById('planoAdminFloor');
-        const rect = elemento.getBoundingClientRect();
+        initialClientX = e.clientX;
+        initialClientY = e.clientY;
 
+        const rect = elemento.getBoundingClientRect();
         startX = e.clientX - rect.left;
         startY = e.clientY - rect.top;
 
         document.addEventListener('mousemove', moverMesaEnPlano);
         document.addEventListener('mouseup', soltarMesaEnPlano);
-
-        e.stopPropagation();
     }
 
     function moverMesaEnPlano(e) {
         if (!elementoArrastrado) return;
-
-        fueMovido = true; // Marcamos que hubo movimiento para evitar abrir el enlace
+        
+        // Calculamos distancia recorrida para asegurarnos de que sea un arrastre real y no un temblor de clic
+        const distanciaMovimiento = Math.hypot(e.clientX - initialClientX, e.clientY - initialClientY);
+        if (distanciaMovimiento > 4) {
+            fueMovido = true;
+        }
 
         const contenedorPlano = document.getElementById('planoAdminFloor');
         const contenedorRect = contenedorPlano.getBoundingClientRect();
-
+        
         let x = e.clientX - contenedorRect.left - startX;
         let y = e.clientY - contenedorRect.top - startY;
 
         const maxX = contenedorPlano.clientWidth - elementoArrastrado.offsetWidth - 20;
         const maxY = contenedorPlano.clientHeight - elementoArrastrado.offsetHeight - 20;
-
+        
         x = Math.max(15, Math.min(x, maxX));
         y = Math.max(15, Math.min(y, maxY));
 
@@ -292,9 +291,19 @@
         elementoArrastrado.style.top = y + 'px';
     }
 
-    function soltarMesaEnPlano(e) { if (!elementoArrastrado) return; elementoArrastrado.style.cursor = 'grab'; elementoArrastrado.style.zIndex = '10'; document.removeEventListener('mousemove', moverMesaEnPlano); document.removeEventListener('mouseup', soltarMesaEnPlano); setTimeout(() => { elementoArrastrado = null; }, 50); }
+    function soltarMesaEnPlano(e) {
+        if (!elementoArrastrado) return;
 
-    // Evita que el enlace abra el detalle si la mesa fue arrastrada
+        document.removeEventListener('mousemove', moverMesaEnPlano);
+        document.removeEventListener('mouseup', soltarMesaEnPlano);
+        
+        // Mantenemos el estado de fueMovido un instante para que el evento click lo detecte y bloquee si aplica
+        setTimeout(() => {
+            elementoArrastrado = null;
+        }, 100);
+    }
+
+    // Si la mesa se movió, frena la redirección del enlace. Si fue un clic limpio, lo deja pasar.
     function interceptarClick(e) {
         if (fueMovido) {
             e.preventDefault();
@@ -303,7 +312,7 @@
         }
     }
 
-    // Función temporal para el botón de guardar (puedes programarla después)
+    // Función temporal para el botón de guardar
     function guardarTodoElPlano() {
         alert('Función de guardado pendiente de configurar.');
     }
