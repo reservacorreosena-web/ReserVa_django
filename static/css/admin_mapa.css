@@ -217,3 +217,162 @@
     cursor: grabbing;
     z-index: 1000;
 }
+/* ============================================================
+   CSS EXTRAÍDO DE reservas/templates/reservas/admin_mapa.html
+   ============================================================ */
+
+/* Plano Arquitectónico Estilo Blueprint Profesional - ReserVa */
+.rv-admin-floor {
+    position: relative;
+    width: 100%;
+    min-width: 1050px;
+    height: 780px;
+    background-color: #0b0d10;
+    background-image:
+        linear-gradient(rgba(201, 169, 97, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 169, 97, 0.025) 1px, transparent 1px);
+    background-size: 30px 30px;
+    border: 2px solid #222731;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* Muros perimetrales interiores decorativos */
+.plano-muro-perimetral {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 1px solid rgba(201, 169, 97, 0.15);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+/* 1. Zona de Baños */
+.plano-zona-banos {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 220px;
+    height: 110px;
+    border-right: 1px solid rgba(201, 169, 97, 0.2);
+    border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+    background: rgba(18, 21, 28, 0.6);
+    border-bottom-right-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    color: #777;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 2. Zona de Cocina */
+.plano-zona-cocina {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 260px;
+    height: 140px;
+    border-left: 1px solid rgba(201, 169, 97, 0.2);
+    border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+    background: rgba(18, 21, 28, 0.6);
+    border-bottom-left-radius: 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 12px;
+    color: #777;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 3. Zona de Bar */
+.plano-zona-bar {
+    position: absolute;
+    top: 145px;
+    left: 15px;
+    width: 130px;
+    height: 250px;
+    border: 1px solid rgba(201, 169, 97, 0.15);
+    border-left: none;
+    background: rgba(26, 22, 18, 0.4);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c9a961;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 4. Balcón / Terrazas */
+.plano-zona-balcon {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 240px;
+    height: 180px;
+    border-right: 1px solid rgba(201, 169, 97, 0.2);
+    border-top: 1px solid rgba(201, 169, 97, 0.2);
+    background: linear-gradient(135deg, rgba(201, 169, 97, 0.04) 0%, rgba(18, 21, 28, 0.5) 100%);
+    border-top-right-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 12px;
+    color: #c9a961;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 5. Entrada Principal */
+.plano-zona-entrada {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    text-align: center;
+    color: #666;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    pointer-events: none;
+    border-top: 1px dashed rgba(201, 169, 97, 0.3);
+    padding-top: 6px;
+}
+
+/* Contenedor de la mesa para el arrastre */
+.mesa-plano-card {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    z-index: 10;
+}
+
+.mesa-plano-card:active {
+    cursor: grabbing;
+    z-index: 1000;
+}
+
+.mapa-card-link {
+    text-decoration: none;
+    display: block;
+    user-drag: none;
+    -webkit-user-drag: none;
+}

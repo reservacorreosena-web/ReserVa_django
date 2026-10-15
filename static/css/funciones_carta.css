@@ -1,0 +1,160 @@
+/* ============================================================
+   ESTILOS EXTRAÍDOS DE menu/templates/menu/funciones_carta.html (ReserVa)
+   ============================================================ */
+
+/* Estilos personalizados para mantener el diseño idéntico en un solo archivo */
+.rv-admin-page {
+    padding: 0.5rem 0;
+}
+
+.rv-page-header h2 {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.rv-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #c9a961;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.rv-table-container {
+    background-color: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.rv-table {
+    margin-bottom: 0;
+    color: #e2e8f0;
+    vertical-align: middle;
+    background-color: transparent;
+    width: 100%;
+}
+
+.rv-table th {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #888;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem 1.25rem;
+}
+
+.rv-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.rv-table tbody tr:hover {
+    background-color: rgba(201, 169, 97, 0.02);
+}
+
+.rv-table-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.rv-badge-pending {
+    background-color: #1a1a1a;
+    color: #c9a961;
+    border: 1px solid rgba(201, 169, 97, 0.2);
+}
+
+.rv-badge-neutral {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rv-badge-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.rv-badge-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.rv-btn-create {
+    background-color: #c9a961;
+    border-color: #c9a961;
+    color: #000;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rv-btn-create:hover {
+    background-color: #b5954f;
+    border-color: #b5954f;
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.rv-btn-action {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.rv-btn-edit {
+    background-color: rgba(201, 169, 97, 0.15);
+    color: #c9a961;
+    border: 1px solid rgba(201, 169, 97, 0.3);
+}
+
+.rv-btn-edit:hover {
+    background-color: rgba(201, 169, 97, 0.25);
+    color: #c9a961;
+}
+
+.rv-btn-delete {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.rv-btn-delete:hover {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #f87171;
+}
+
+.rv-empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #6c757d;
+}
+
+.rv-empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    color: #495057;
+}

@@ -3,6 +3,10 @@
 
 {% block title %}Cierre de Caja - ReserVa{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cierre_caja.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid px-4 py-3 text-light">
     
@@ -133,16 +137,4 @@
     </div>
 </div>
 
-<style>
-    .hover-gold:hover {
-        background-color: #c9a961 !important;
-        color: #0a0a0a !important;
-        transition: all 0.3s ease;
-    }
-    @media print {
-        body { background: #fff !important; color: #000 !important; }
-        .navbar, form, button, .card { background: transparent !important; color: #000 !important; border-color: #ddd !important; box-shadow: none !important; }
-        .text-warning, .text-light, .text-white { color: #000 !important; }
-    }
-</style>
 {% endblock %}
