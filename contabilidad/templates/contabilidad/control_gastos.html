@@ -24,7 +24,7 @@
 
     <!-- Formulario -->
     <div class="rv-form-container">
-        <form method="POST" action="{% url 'guardar_gasto' %}">
+        <form method="POST" action="{% url 'guardar_gasto' %}" data-loading-text="Registrando gasto en contabilidad...">
             {% csrf_token %}
 
             <!-- Concepto -->

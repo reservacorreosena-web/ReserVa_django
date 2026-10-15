@@ -22,7 +22,7 @@
             <p class="rv-login-subtitle">Ingresa tu correo y contraseña para continuar en <em>ReserVa</em></p>
         </div>
 
-        <form action="" method="POST" class="rv-form">
+        <form action="" method="POST" class="rv-form" data-loading-text="Verificando credenciales...">
             {% csrf_token %}
 
             <div class="rv-form-group">

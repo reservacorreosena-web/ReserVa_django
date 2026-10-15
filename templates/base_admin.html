@@ -13,6 +13,7 @@
     <!-- Estilos del Panel de Administración -->
     <link rel="stylesheet" href="{% static 'css/base_admin.css' %}">
     <link rel="stylesheet" href="{% static 'css/base_admin_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
 
     {% block extra_css %}
     {% endblock %}
@@ -148,6 +149,9 @@
         {% endfor %}
     </script>
     {% endif %}
+
+    <!-- Animaciones de Carga ReserVa -->
+    <script src="{% static 'js/loading.js' %}"></script>
 </body>
 
 </html>

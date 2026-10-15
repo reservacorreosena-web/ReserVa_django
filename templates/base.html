@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <link rel="stylesheet" href="{% static 'css/base_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
 
     {% block extra_css %}
     {% endblock %}
@@ -108,7 +109,7 @@
         });
         {% endfor %}
     </script>
-    {% endif %}
-
+    <!-- Animaciones de Carga ReserVa -->
+    <script src="{% static 'js/loading.js' %}"></script>
 </body>
 </html>

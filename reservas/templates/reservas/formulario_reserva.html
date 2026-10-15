@@ -23,7 +23,7 @@
             <p class="rv-subtitle">Completa los detalles de tu reserva y asegura tu lugar en ReserVa.</p>
         </div>
 
-        <form method="POST" action="{% url 'crear_reserva' %}" class="rv-form">
+        <form method="POST" action="{% url 'crear_reserva' %}" class="rv-form" data-loading-text="Verificando disponibilidad y cargando plano de mesas...">
             {% csrf_token %}
 
             <div class="rv-form-group">

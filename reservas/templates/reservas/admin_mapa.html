@@ -174,8 +174,11 @@
 
     // Deshabilitar botón temporalmente mientras guarda
     btnGuardar.disabled = true;
-    btnGuardar.innerHTML = `<i class="bi bi-hourglass-split me-1"></i> Guardando...`;
+    btnGuardar.innerHTML = `<span class="rv-btn-spinner"></span> Guardando...`;
     estadoTexto.innerText = "";
+    if (window.ReserVaLoading) {
+        window.ReserVaLoading.show("Guardando distribución arquitectónica en el servidor...");
+    }
 
     // Petición AJAX (Fetch) hacia Django
     fetch("{% url 'guardar_mapa_mesas' %}", {
@@ -191,6 +194,18 @@
         if (data.status === 'success') {
             estadoTexto.style.color = '#51cf66';
             estadoTexto.innerText = "¡Distribución guardada con éxito!";
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Plano guardado con éxito',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: '#111',
+                    color: '#fff'
+                });
+            }
         } else {
             estadoTexto.style.color = '#ff6b6b';
             estadoTexto.innerText = "Error: " + data.message;
@@ -202,6 +217,9 @@
         estadoTexto.innerText = "Error de conexión al guardar.";
     })
     .finally(() => {
+        if (window.ReserVaLoading) {
+            window.ReserVaLoading.hide();
+        }
         // Restaurar botón
         btnGuardar.disabled = false;
         btnGuardar.innerHTML = `<i class="bi bi-save me-1"></i> Guardar Distribución`;

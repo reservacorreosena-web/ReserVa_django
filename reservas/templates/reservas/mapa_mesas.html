@@ -68,7 +68,7 @@
 
         <!-- COLUMNA DERECHA: PANEL LATERAL DINÁMICO -->
         <div class="rv-side-panel" style="background: #12151c; border: 1px solid #222731; border-radius: 12px; padding: 20px;">
-            <form method="POST" id="formMapaMesas">
+            <form method="POST" id="formMapaMesas" data-loading-text="Confirmando tu mesa y enviando correo de confirmación...">
                 {% csrf_token %}
                 <input type="hidden" name="mesa_id" id="inputMesaSeleccionada">
 

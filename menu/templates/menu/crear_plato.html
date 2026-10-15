@@ -31,7 +31,7 @@
         <div class="card-body p-4 p-md-5">
 
             <!-- FORMULARIO CON MULTIPART PARA IMÁGENES -->
-            <form action="{% url 'crear_plato' %}" method="POST" enctype="multipart/form-data">
+            <form action="{% url 'crear_plato' %}" method="POST" enctype="multipart/form-data" data-loading-text="Subiendo imagen y guardando plato en la carta...">
                 {% csrf_token %}
 
                 <!-- NOMBRE DEL PLATO -->

@@ -37,7 +37,7 @@
             <h4 class="fw-bold text-white mb-0">Cuadre del Día</h4>
             <small class="text-white-50">Ventas cobradas y transacciones de la jornada</small>
         </div>
-        <form method="GET" class="d-flex gap-2 align-items-center">
+        <form method="GET" class="d-flex gap-2 align-items-center" data-loading-text="Consultando transacciones del día...">
             <input type="date" name="fecha" value="{{ fecha_actual }}" class="form-control bg-dark text-white border-secondary rounded-0">
             <button type="submit" class="btn btn-warning fw-bold px-4 rounded-0" style="background-color: #c9a961; border-color: #c9a961; color: #0a0a0a;">Consultar</button>
         </form>
@@ -81,7 +81,7 @@
             </h5>
             <p class="text-white-50 small mb-3">Deja constancia de novedades, dinero de base dejado en caja o diferencias encontradas.</p>
             
-            <form method="POST" action="{% url 'comentario_caja' %}">
+            <form method="POST" action="{% url 'comentario_caja' %}" data-loading-text="Guardando observación del arqueo...">
                 {% csrf_token %}
                 <input type="hidden" name="fecha" value="{{ fecha_actual }}">
                 <div class="mb-3">
