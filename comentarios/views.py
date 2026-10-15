@@ -62,11 +62,23 @@ def crear_resena(request):
             messages.warning(request, "El comentario no puede superar los 300 caracteres")
             return render(request,"comentarios/resena.html",contexto )
 
-        # Aca ya creamos el objeto
+        # Obtenemos el usuario de la sesión
+        usuario_sesion = request.session.get("logueado")
+        if not usuario_sesion:
+            messages.error(request, "Debes iniciar sesión para publicar una reseña.")
+            return redirect('iniciar_sesion')
+
+        from django.contrib.auth.models import User
+        user_auth, _ = User.objects.get_or_create(
+            username=usuario_sesion.get("email", usuario_sesion.get("nombre", "cliente")),
+            defaults={'first_name': usuario_sesion.get("nombre", "")}
+        )
+
+        # Creamos la reseña vinculada al usuario
         Resena.objects.create(
-            usuario=request.user,
-            calificacion_comida=comida,
-            calificacion_servicio=servicio,
+            usuario=user_auth,
+            calificacion_comida=comida1,
+            calificacion_servicio=servicio1,
             comentario=comentario
         )
 

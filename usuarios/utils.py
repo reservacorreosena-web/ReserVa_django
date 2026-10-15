@@ -5,8 +5,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
 def generar_token_personalizado(usuario):
-    # Creamos un hash único usando datos del usuario
-    valor_secreto = f"{usuario.pk}-{usuario.email}-{usuario.contraseña}"
+    # Creamos un hash seguro usando datos del usuario y la clave secreta del proyecto
+    valor_secreto = f"{usuario.pk}-{usuario.email}-{usuario.contraseña}-{settings.SECRET_KEY}"
     return hashlib.sha256(valor_secreto.encode()).hexdigest()
 
 def enviar_correo_recuperacion(usuario, request):

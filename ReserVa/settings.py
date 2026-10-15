@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9o=)dtomv)f=(p_)iszx75+3lm5^gi)*!e00vx$wk2fx0^6l+t'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-9o=)dtomv)f=(p_)iszx75+3lm5^gi)*!e00vx$wk2fx0^6l+t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 
 # Application definition
@@ -61,7 +61,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ReserVa.urls'
-import os
 
 TEMPLATES = [
     {
@@ -121,6 +120,8 @@ USE_I18N = True
 
 USE_TZ = False
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -154,9 +155,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'reservacorreosena@gmail.com'          # El correo del restaurante o tuyo
-EMAIL_HOST_PASSWORD = 'szghjirajjcwbjju '     # Contraseña de aplicación de Google
-DEFAULT_FROM_EMAIL = 'ReserVa Medellín <reservacorreosena@gmail.com>'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'reservacorreosena@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'szghjirajjcwbjju')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f'ReserVa Medellín <{EMAIL_HOST_USER}>')
 
-STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Cabeceras de seguridad
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True

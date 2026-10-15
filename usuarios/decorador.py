@@ -1,7 +1,9 @@
+from functools import wraps
 from django.shortcuts import redirect
 from django.contrib import messages
 
 def verificar(func):
+    @wraps(func)
     def vigilante(request, *args, **kwargs):
         if not request.session.get("logueado", False):
             return redirect ('inicio')
@@ -10,6 +12,7 @@ def verificar(func):
 
 
 def solo_anonimos(func):
+    @wraps(func)
     def vigilante(request, *args, **kwargs):
         # Si ya tiene la sesión activa, no lo dejamos entrar al Login o Registro
         if request.session.get("logueado", False):
@@ -21,6 +24,7 @@ def solo_anonimos(func):
 
 
 def solo_admin(func):
+    @wraps(func)
     def vigilante(request, *args, **kwargs):
         sesion = request.session.get("logueado", None)
 

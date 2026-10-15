@@ -40,7 +40,7 @@ def crear_reserva(request):
     usuario_session = request.session.get("logueado")
     if not usuario_session:
       messages.error(request, "Debes iniciar sesión para realizar una reserva.")
-      return redirect("login")
+      return redirect("iniciar_sesion")
 
     usuario_id = (
         usuario_session.get("id")
@@ -83,6 +83,15 @@ def crear_reserva(request):
         )
     except ValueError:
       messages.error(request, "Ingresa un número válido para las personas.")
+      return render(request, "reservas/formulario_reserva.html", contexto_error)
+
+    try:
+      fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
+      if fecha_obj < timezone.now().date():
+        messages.error(request, "No puedes realizar una reserva en una fecha pasada.")
+        return render(request, "reservas/formulario_reserva.html", contexto_error)
+    except ValueError:
+      messages.error(request, "Formato de fecha inválido.")
       return render(request, "reservas/formulario_reserva.html", contexto_error)
 
     # Guardamos los datos temporales incluyendo los platos elegidos
@@ -137,6 +146,13 @@ def seleccionar_mesa_mapa(request):
       return redirect("seleccionar_mesa_mapa")
 
     mesa_seleccionada = get_object_or_404(Mesa, id=mesa_id)
+
+    if mesa_seleccionada.capacidad < personas_requeridas:
+      messages.error(
+          request,
+          f"La mesa #{mesa_seleccionada.numero} tiene capacidad para {mesa_seleccionada.capacidad} personas y tu reserva es para {personas_requeridas}. Por favor selecciona una mesa más amplia."
+      )
+      return redirect("seleccionar_mesa_mapa")
 
     usuario_session = request.session.get("logueado")
     usuario_id = (
@@ -220,10 +236,21 @@ def cancelar_reserva(request, id):
   usuario_id = usuario_session.get("id")
 
   reserva = get_object_or_404(Reserva, id=id, usuario_id=usuario_id)
-  reserva.estado = "cancelada"
-  reserva.save()
 
-  messages.info(request, "La reserva ha sido cancelada exitosamente.")
+  if reserva.estado != "cancelada":
+    # Restaurar stock de platos preordenados si no habían sido pagados
+    consumos = ConsumoMesa.objects.filter(reserva=reserva, pagado=False)
+    for c in consumos:
+      c.plato.stock += c.cantidad
+      c.plato.save(update_fields=['stock'])
+    consumos.delete()
+
+    reserva.estado = "cancelada"
+    reserva.save()
+    messages.info(request, "La reserva ha sido cancelada exitosamente.")
+  else:
+    messages.warning(request, "Esta reserva ya se encontraba cancelada.")
+
   return redirect("mis_reservas")
 
 
@@ -452,12 +479,31 @@ def admin_eliminar_item_carrito(request, consumo_id):
 
 @solo_admin  # <--- Blindado: Solo administradores pueden cerrar cuentas
 def admin_cobrar_mesa(request, mesa_id):
-  ConsumoMesa.objects.filter(mesa_id=mesa_id, pagado=False).update(pagado=True)
+  mesa = get_object_or_404(Mesa, id=mesa_id)
+  consumos_pendientes = ConsumoMesa.objects.filter(mesa_id=mesa_id, pagado=False)
+  total_cuenta = sum(c.subtotal() for c in consumos_pendientes)
+
+  if total_cuenta > 0:
+    try:
+      from contabilidad.models import Movimiento
+      Movimiento.objects.create(
+          tipo='INGRESO',
+          concepto=f'Consumo Mesa #{mesa.numero}',
+          categoria='RESERVA',
+          valor=total_cuenta,
+          metodo_pago='EFECTIVO',
+      )
+    except Exception:
+      pass
+
+  consumos_pendientes.update(pagado=True)
   Reserva.objects.filter(
       mesa_id=mesa_id,
       fecha=timezone.now().date(),
       estado__in=["pendiente", "confirmada", "asistio"],
   ).update(estado="completada")
+
+  messages.success(request, f"¡Mesa #{mesa.numero} cobrada con éxito! Total registrado: ${total_cuenta:,}")
   return redirect("admin_mapa_mesas")
 
 
@@ -556,7 +602,7 @@ def guardar_mapa_mesas(request):
                 mesa.save()
                 
             return JsonResponse({'status': 'success', 'message': '¡Plano actualizado correctamente!'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'Ocurrió un error al actualizar el plano de mesas.'}, status=400)
             
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

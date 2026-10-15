@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+import os
+from django.shortcuts import render, redirect, get_object_or_404
 from reservas.models import Plato
 from django.contrib import messages
 from usuarios.decorador import solo_admin
@@ -76,6 +77,15 @@ def crear_plato(request):
             messages.error(request, "El nombre debe tener al menos 3 caracteres.")
             return render(request, "menu/crear_plato.html", contexto)
 
+        if imagen:
+            ext = os.path.splitext(imagen.name)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.gif']:
+                messages.error(request, "Solo se permiten formatos de imagen válidos (JPG, PNG, WEBP, GIF).")
+                return render(request, "menu/crear_plato.html", contexto)
+            if imagen.size > 5 * 1024 * 1024:
+                messages.error(request, "La imagen no puede superar los 5 MB.")
+                return render(request, "menu/crear_plato.html", contexto)
+
         # Creación en la base de datos (Incluyendo stock e imagen)
         Plato.objects.create(
             nombre=nombre,
@@ -107,7 +117,7 @@ def eliminar_plato(request, plato_id):
 
 @solo_admin
 def editar_plato(request, id):
-    plato = Plato.objects.get(id=id)
+    plato = get_object_or_404(Plato, id=id)
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip().title()
         descripcion = request.POST.get("descripcion", "").capitalize()

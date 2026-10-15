@@ -11,6 +11,8 @@ from usuarios.serializador import UsuarioSerializer
 from .serializador import *
 from rest_framework import viewsets
 
+from django.contrib.auth.hashers import make_password, check_password
+
 # Importaciones para la recuperación de contraseña personalizada
 from .utils import enviar_correo_recuperacion, generar_token_personalizado
 from django.utils.http import urlsafe_base64_decode
@@ -30,7 +32,17 @@ def inicio_sesion(request):
         email_html = email_raw.strip().lower()
 
         try:
-            q = Usuario.objects.get(email=email_html, contraseña=clave_html)
+            q = Usuario.objects.get(email=email_html)
+
+            # Verificación de contraseña: hash seguro o migración transparente si estaba en texto plano
+            clave_valida = check_password(clave_html, q.contraseña)
+            if not clave_valida and q.contraseña == clave_html:
+                clave_valida = True
+                q.contraseña = make_password(clave_html)
+                q.save(update_fields=['contraseña'])
+
+            if not clave_valida:
+                raise Usuario.DoesNotExist
 
             if "[SUSPENDIDO]" in q.nombre:
                 messages.error(request, "Tu cuenta se encuentra suspendida. Comunícate con el administrador.")
@@ -87,7 +99,7 @@ def crear_usuario(request):
         Usuario.objects.create(
             nombre=nombre,
             email=email,
-            contraseña=contraseña,
+            contraseña=make_password(contraseña),
             rol='cliente'
         )
         messages.success(request, "¡Cuenta creada con éxito! Ya puedes iniciar sesión.")
@@ -177,7 +189,7 @@ def editar_perfil(request):
             if len(nueva_contraseña) < 8:
                 messages.error(request, "La nueva contraseña debe tener al menos 8 caracteres.")
                 return render(request, "editar_perfil.html", {"usuario": usuario})
-            usuario.contraseña = nueva_contraseña
+            usuario.contraseña = make_password(nueva_contraseña)
 
         # Guardar cambios en la base de datos
         usuario.save()
@@ -231,7 +243,7 @@ def reset_confirm_custom(request, uidb64, token):
                 messages.error(request, "La contraseña debe tener al menos 8 caracteres.")
                 return render(request, "password_reset_confirm.html")
             
-            usuario.contraseña = nueva_password
+            usuario.contraseña = make_password(nueva_password)
             usuario.save()
             return redirect("password_reset_complete")
         
