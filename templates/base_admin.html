@@ -33,14 +33,17 @@
 
                 <!-- Dashboard -->
                 <div class="mb-2">
-                    <a href="{% url 'inicio' %}" class="style-link-admin active-dashboard d-flex align-items-center gap-2 text-decoration-none">
+                    <a href="{% url 'inicio' %}"
+                        class="style-link-admin active-dashboard d-flex align-items-center gap-2 text-decoration-none">
                         <i class="bi bi-speedometer2 rv-icon"></i> Dashboard
                     </a>
                 </div>
 
                 <!-- Vender / Módulo de Comandas (NUEVO) -->
                 <div class="mb-2">
-                    <a href="{% url 'admin_mapa_mesas' %}" class="style-link-admin d-flex align-items-center gap-2 text-decoration-none" style="background: rgba(201, 169, 97, 0.15); border-left: 4px solid #c9a961;">
+                    <a href="{% url 'admin_mapa_mesas' %}"
+                        class="style-link-admin d-flex align-items-center gap-2 text-decoration-none"
+                        style="background: rgba(201, 169, 97, 0.15); border-left: 4px solid #c9a961;">
                         <i class="bi bi-shop rv-icon" style="color: #c9a961;"></i> Vender / Mesas
                     </a>
                 </div>
@@ -48,14 +51,15 @@
                 <!-- Gestión de Mesas -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropMesas">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#dropMesas">
                             <i class="bi bi-calendar-event rv-icon me-2"></i> Gestión de Mesas
                         </button>
                     </h2>
                     <div id="dropMesas" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body">
-                            <a href="#" class="sublink-admin"><i class="bi bi-sliders"></i> Configurar Zonas</a>
-                            <a href="{% url 'historial_reservas' %}" class="sublink-admin"><i class="bi bi-clock-history"></i> Historial Reservas</a>
+                            <a href="{% url 'historial_reservas' %}" class="sublink-admin"><i
+                                    class="bi bi-clock-history"></i> Historial Reservas</a>
                         </div>
                     </div>
                 </div>
@@ -63,14 +67,15 @@
                 <!-- Control de la Carta -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropCarta">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#dropCarta">
                             <i class="bi bi-egg-fried rv-icon me-2"></i> Control de la Carta
                         </button>
                     </h2>
                     <div id="dropCarta" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body">
-                            <a href="#" class="sublink-admin"><i class="bi bi-arrow-repeat"></i> Actualizar Stock</a>
-                            <a href="{% url 'ver_carta_admin' %}" class="sublink-admin"><i class="bi bi-plus-circle"></i> Nuevo Plato / Categoría</a>
+                            <a href="{% url 'ver_carta_admin' %}" class="sublink-admin"><i
+                                    class="bi bi-plus-circle"></i> Nuevo Plato / Categoría</a>
                             <a href="#" class="sublink-admin"><i class="bi bi-tags"></i> Precios y Ofertas</a>
                         </div>
                     </div>
@@ -79,29 +84,35 @@
                 <!-- Base de Usuarios -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropUsuarios">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#dropUsuarios">
                             <i class="bi bi-people rv-icon me-2"></i> Base de Usuarios
                         </button>
                     </h2>
                     <div id="dropUsuarios" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body">
-                            <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul"></i> Listado General</a>
+                            <a href="{% url 'listado_general' %}" class="sublink-admin"><i class="bi bi-list-ul"></i>
+                                Listado General</a>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Contabilidad -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dropContabilidad">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#dropContabilidad">
                             <i class="bi bi-cash-coin rv-icon me-2"></i> Pequeña Contabilidad
                         </button>
                     </h2>
                     <div id="dropContabilidad" class="accordion-collapse collapse" data-bs-parent="#menuAdminLateral">
                         <div class="accordion-body">
-                            <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i class="bi bi-graph-up-arrow"></i> Reportes Diarios</a>
-                            <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2"></i> Control de Gastos</a>
-                            <a href="{% url 'inicio_cierre_caja' %}" class="sublink-admin"><i class="bi bi-cash-stack"></i> Cuadre de Caja</a>
+                            <a href="{% url 'inicio_contabilidad' %}" class="sublink-admin"><i
+                                    class="bi bi-graph-up-arrow"></i> Reportes Diarios</a>
+                            <a href="{% url 'control_gastos' %}" class="sublink-admin"><i class="bi bi-wallet2"></i>
+                                Control de Gastos</a>
+                            <a href="{% url 'inicio_cierre_caja' %}" class="sublink-admin"><i
+                                    class="bi bi-cash-stack"></i> Cuadre de Caja</a>
                         </div>
                     </div>
                 </div>
@@ -111,7 +122,8 @@
 
         <!-- Main Content -->
         <div class="rv-main-wrapper flex-grow-1">
-            <nav class="rv-topbar d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-secondary border-opacity-10">
+            <nav
+                class="rv-topbar d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-secondary border-opacity-10">
                 <div class="rv-status d-flex align-items-center gap-2">
                     <span class="rv-status-dot bg-success rounded-circle" style="width: 8px; height: 8px;"></span>
                     <span class="text-secondary small">Sistema: <strong class="text-light">ONLINE</strong></span>

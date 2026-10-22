@@ -215,7 +215,7 @@ def seleccionar_mesa_mapa(request):
   return render(request, "reservas/mapa_mesas.html", contexto)
 
 
-@verificar
+
 def mis_reservas(request):
   usuario_session = request.session.get("logueado")
   usuario_id = usuario_session.get("id")
@@ -230,7 +230,7 @@ def mis_reservas(request):
   return render(request, "reservas/mis_reservas.html", contexto)
 
 
-@verificar
+
 def cancelar_reserva(request, id):
   usuario_session = request.session.get("logueado")
   usuario_id = usuario_session.get("id")
