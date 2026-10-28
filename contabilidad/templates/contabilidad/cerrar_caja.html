@@ -1,0 +1,159 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Cerrar Caja - ReserVa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cierre_caja.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3 text-light">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Cerrar Caja</h2>
+            <small class="text-white-50">Arqueo y cierre de la sesión actual</small>
+        </div>
+        <a href="{% url 'inicio_cierre_caja' %}" class="btn btn-outline-secondary btn-sm rounded-0">← Volver</a>
+    </div>
+
+    {% if not caja %}
+        <div class="card bg-dark border-secondary shadow-lg mx-auto" style="max-width: 550px; background-color: #111 !important; border-radius: 8px;">
+            <div class="card-body p-4 p-md-5 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 48px; color: #c9a961 !important;"></i>
+                <h4 class="text-white fw-bold mt-3 mb-2">No hay caja abierta</h4>
+                <p class="text-white-50 mb-4">No existe una sesión de caja activa para cerrar.</p>
+                <a href="{% url 'abrir_caja' %}" class="btn btn-outline-success rounded-0 fw-bold px-4">
+                    <i class="bi bi-unlock-fill me-1"></i> Abrir Caja
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <h5 class="text-white fw-bold mb-3" style="text-transform: uppercase; letter-spacing: 1px; font-size: 14px;">
+                            <i class="bi bi-calculator text-warning me-2" style="color: #c9a961 !important;"></i> Resumen del Día
+                        </h5>
+                        <div class="mb-3 pb-3 border-bottom border-secondary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-white-50">Base inicial (saldo con el que abrió)</span>
+                                <span class="text-white fw-bold">${{ caja.saldo_inicial|floatformat:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-white-50">Ventas del día</span>
+                                <span class="text-success fw-bold">+ ${{ total_ventas|floatformat:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-white-50">Gastos del día</span>
+                                <span class="text-danger fw-bold">- ${{ total_gastos|floatformat:0 }}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-white text-uppercase small" style="letter-spacing: 1px;">Saldo esperado en caja</span>
+                            <span class="text-warning fw-bold fs-4" style="color: #c9a961 !important;">${{ balance_esperado|floatformat:0 }}</span>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-white-50">Abierta por: {{ caja.usuario_apertura.nombre|default:"N/A" }} | Desde: {{ caja.fecha_apertura|date:"d/M/Y H:i" }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card bg-dark border-secondary shadow-lg h-100" style="background-color: #111 !important; border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <h5 class="text-white fw-bold mb-3" style="text-transform: uppercase; letter-spacing: 1px; font-size: 14px;">
+                            <i class="bi bi-cash-stack text-warning me-2" style="color: #c9a961 !important;"></i> Arqueo - Conteo Real
+                        </h5>
+                        <p class="text-white-50 small mb-3">Cuenta el dinero físico que hay en caja ahora y registra el cierre.</p>
+                        <form method="POST" action="{% url 'cerrar_caja' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="dinero_real" class="form-label text-light opacity-75 fw-bold text-uppercase small" style="letter-spacing: 1.5px;">Dinero en caja (físico)</label>
+                                <input type="number" id="dinero_real" name="dinero_real" min="0" step="100" 
+                                       class="form-control bg-dark text-white border-secondary text-center py-3"
+                                       style="background-color: #121212 !important; border-color: rgba(255,255,255,0.15) !important; font-size: 1.5rem; font-weight: bold;"
+                                       placeholder="Ej: 150000" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="observaciones" class="form-label text-light opacity-75 small">Observaciones (opcional)</label>
+                                <textarea id="observaciones" name="observaciones" rows="3" class="form-control bg-dark text-white border-secondary" placeholder="Diferencias, novedades, etc."></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn fw-bold py-2 rounded-0" style="background-color: #c9a961; border-color: #c9a961; color: #0a0a0a;" onclick="return confirm('¿Estás seguro de cerrar la caja? Esta acción no se puede deshacer.');">
+                                    <i class="bi bi-lock-fill me-1"></i> Cerrar Caja
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-lg-6">
+                <div class="card bg-dark border-secondary shadow-lg" style="background-color: #111 !important; border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <h6 class="text-white fw-bold mb-3 text-uppercase small" style="letter-spacing: 1px;">Ventas registradas (INGRESOS)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm align-middle mb-0">
+                                <thead>
+                                    <tr class="text-secondary small text-uppercase">
+                                        <th>Concepto</th>
+                                        <th class="text-end">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in ingresos %}
+                                    <tr>
+                                        <td class="text-white-50">{{ i.concepto }}</td>
+                                        <td class="text-end text-success">+ ${{ i.valor }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-center text-white-50 py-2">Sin ingresos registrados</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card bg-dark border-secondary shadow-lg" style="background-color: #111 !important; border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <h6 class="text-white fw-bold mb-3 text-uppercase small" style="letter-spacing: 1px;">Gastos registrados</h6>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-sm align-middle mb-0">
+                                <thead>
+                                    <tr class="text-secondary small text-uppercase">
+                                        <th>Concepto</th>
+                                        <th class="text-end">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for g in gastos_lista %}
+                                    <tr>
+                                        <td class="text-white-50">{{ g.concepto }}</td>
+                                        <td class="text-end text-danger">- ${{ g.valor }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-center text-white-50 py-2">Sin gastos registrados</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

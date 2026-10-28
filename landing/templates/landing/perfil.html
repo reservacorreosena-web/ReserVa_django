@@ -24,14 +24,14 @@
             <span class="rv-eyebrow">Panel de Control Personal</span>
             <h1 class="rv-profile-title">
                 {% if usuario_datos %}
-                    {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                    {{ usuario_datos.nombre }}
                 {% else %}
                     {{ request.session.logueado.nombre }}
                 {% endif %}
             </h1>
             <div>
                 <span class="rv-badge">
-                    <i class="bi bi-shield-check me-1"></i>{% if usuario_datos %}{{ usuario_datos.rol }}{% else %}{{ request.session.logueado.rol }}{% endif %}
+                    <i class="bi bi-shield-check me-1"></i>{% if usuario_datos %}{{ usuario_datos.rol|title }}{% else %}{{ request.session.logueado.rol|title }}{% endif %}
                 </span>
             </div>
         </div>
@@ -46,10 +46,10 @@
             <!-- Estado -->
             <div class="rv-info-box">
                 <span class="rv-info-label">
-                    <i class="bi bi-circle-fill me-1 text-success" style="font-size: 8px;"></i>Estado del Sistema
+                    <i class="bi bi-circle-fill me-1 {% if usuario_datos.estado %}text-success{% else %}text-danger{% endif %}" style="font-size: 8px;"></i>Estado del Sistema
                 </span>
-                <span class="fw-semibold text-success" style="font-size: 16px;">
-                    Activo
+                <span class="fw-semibold {% if usuario_datos.estado %}text-success{% else %}text-danger{% endif %}" style="font-size: 16px;">
+                    {% if usuario_datos.estado %}Activo{% else %}Inactivo / Suspendido{% endif %}
                 </span>
             </div>
 
@@ -60,7 +60,7 @@
                 </span>
                 <span class="rv-info-value">
                     {% if usuario_datos %}
-                        {{ usuario_datos.nombre }} {{ usuario_datos.apellido }}
+                        {{ usuario_datos.nombre }}
                     {% else %}
                         {{ request.session.logueado.nombre }}
                     {% endif %}

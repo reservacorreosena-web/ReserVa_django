@@ -89,5 +89,15 @@ def crear_resena(request):
     return render(request, "comentarios/resena.html")
 
 class ResenaViewSet(viewsets.ModelViewSet):
-    queryset = Resena.objects.all()
     serializer_class = ResenaSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return Resena.objects.all().order_by('-fecha')
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            return Resena.objects.none()
+        if user.is_staff or user.is_superuser:
+            return Resena.objects.all().order_by('-fecha')
+        return Resena.objects.filter(usuario=user).order_by('-fecha')

@@ -5,6 +5,7 @@ from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from usuarios.decorador import solo_admin, verificar
 from usuarios.models import Usuario
 from .models import ConsumoMesa, Mesa, Plato, Reserva, Zona
@@ -15,16 +16,28 @@ from .utils import enviar_correo_reserva
 # ==========================================
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from usuarios.permissions import IsOwnerOrUsuarioAdmin, get_usuario_app
 from .serializador import ReservaSerializer
+
 
 class ReservaViewSet(viewsets.ModelViewSet):
     """
     API endpoint para gestionar las reservas (CRUD completo).
     Requiere autenticación por Token.
     """
-    queryset = Reserva.objects.all().order_by('-id')
     serializer_class = ReservaSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrUsuarioAdmin]
+
+    def get_queryset(self):
+        user = self.request.user
+        usuario = get_usuario_app(user)
+        if usuario and usuario.rol == 'admin':
+            return Reserva.objects.all().order_by('-id')
+        if user and user.is_staff:
+            return Reserva.objects.all().order_by('-id')
+        if usuario:
+            return Reserva.objects.filter(usuario=usuario).order_by('-id')
+        return Reserva.objects.filter(usuario__email=user.email).order_by('-id') if user and user.email else Reserva.objects.none()
 
 
 # ==========================================
@@ -94,7 +107,7 @@ def crear_reserva(request):
       messages.error(request, "Formato de fecha inválido.")
       return render(request, "reservas/formulario_reserva.html", contexto_error)
 
-    # Guardamos los datos temporales incluyendo los platos elegidos
+    # GUARDAMOS LOS DATOS DE MANERA TEMPORAL EN LA SESION
     request.session["datos_reserva_temporal"] = {
         "usuario_id": usuario_id,
         "cantidad_personas": personas,
@@ -112,15 +125,15 @@ def crear_reserva(request):
 
 @verificar
 def seleccionar_mesa_mapa(request):
+  #CREAMOS UNA VARIABLE Y PASAMOS LOS DATOS
   datos_temp = request.session.get("datos_reserva_temporal")
   if not datos_temp:
     messages.error(request, "Primero debes completar los datos de tu reserva.")
     return redirect("crear_reserva")
-
   fecha = datos_temp["fecha"]
   hora = datos_temp["hora"]
   personas_requeridas = datos_temp["cantidad_personas"]
-
+  #Obtenemos los ID de las mesas que estan ocupadas o reservasdas por el momento
   mesas_por_reserva_ids = Reserva.objects.filter(
       fecha=fecha, hora=hora, estado__in=["pendiente", "confirmada", "asistio"]
   ).values_list("mesa_id", flat=True)
@@ -128,6 +141,7 @@ def seleccionar_mesa_mapa(request):
   mesas_con_consumo_ids = ConsumoMesa.objects.filter(pagado=False).values_list(
       "mesa_id", flat=True
   )
+  #Aca se juntan todas las mesas que estan reservadas + las que tienen un consumo actual
   mesas_ocupadas_ids = set(
       list(mesas_por_reserva_ids) + list(mesas_con_consumo_ids)
   )
@@ -230,18 +244,19 @@ def mis_reservas(request):
   return render(request, "reservas/mis_reservas.html", contexto)
 
 
-
+@verificar
 def cancelar_reserva(request, id):
   usuario_session = request.session.get("logueado")
   usuario_id = usuario_session.get("id")
-
+  #Con esto nos aseguramos que el usuario solo pueda cancelar sus propias reservas
   reserva = get_object_or_404(Reserva, id=id, usuario_id=usuario_id)
 
   if reserva.estado != "cancelada":
-    # Restaurar stock de platos preordenados si no habían sido pagados
+    # Con esto restauramos el stock de los platos al cancelar la reserva
     consumos = ConsumoMesa.objects.filter(reserva=reserva, pagado=False)
     for c in consumos:
-      c.plato.stock += c.cantidad
+      if c.plato:
+        c.plato.stock += c.cantidad
       c.plato.save(update_fields=['stock'])
     consumos.delete()
 
@@ -271,7 +286,7 @@ def actualizar_reserva(request, id):
       messages.error(
           request, "Todos los campos obligatorios deben estar diligenciados."
       )
-      return redirect("actualizar_reserva", id=id)
+      return redirect("actualizar", id=id)
 
     try:
       personas = int(cantidad_personas)
@@ -279,10 +294,10 @@ def actualizar_reserva(request, id):
         messages.error(
             request, "La cantidad de personas debe ser entre 1 y 20."
         )
-        return redirect("actualizar_reserva", id=id)
+        return redirect("actualizar", id=id)
     except ValueError:
       messages.error(request, "La cantidad de personas no es válida.")
-      return redirect("actualizar_reserva", id=id)
+      return redirect("actualizar", id=id)
 
     reserva.cantidad_personas = personas
     reserva.fecha = fecha
@@ -336,7 +351,8 @@ def historial_reservas(request):
   return render(request, "reservas/historial_reservas.html", contexto)
 
 
-@solo_admin  # <--- Blindado: Solo administradores pueden cambiar estados por URL
+@solo_admin  
+@require_POST
 def cambiar_estado_reserva(request, id, nuevo_estado):
   reservas = get_object_or_404(Reserva, id=id)
   estados_valido = ["asistio", "pendiente", "cancelada", "confirmada"]
@@ -411,6 +427,7 @@ def admin_detalle_mesa(request, mesa_id):
 
 
 @solo_admin  # <--- Blindado: Solo administradores agregan items al POS
+@require_POST
 def admin_agregar_al_carrito(request, mesa_id, plato_id):
   if request.method == "POST":
     mesa = get_object_or_404(Mesa, id=mesa_id)
@@ -459,25 +476,34 @@ def admin_agregar_al_carrito(request, mesa_id, plato_id):
     # Descontar del stock global del plato
     plato.stock -= cantidad
     plato.save()
+  
 
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
 
 @solo_admin
+@require_POST
 def admin_eliminar_item_carrito(request, consumo_id):
   consumo = get_object_or_404(ConsumoMesa, id=consumo_id)
   mesa_id = consumo.mesa.id
 
 
-  plato = consumo.plato
-  plato.stock += consumo.cantidad
-  plato.save()
+  if consumo.plato:
+
+    consumo.plato.stock += consumo.cantidad
+    consumo.plato.save()
+
+
+
+
+
 
   consumo.delete()
   return redirect("admin_detalle_mesa", mesa_id=mesa_id)
 
 
 @solo_admin  # <--- Blindado: Solo administradores pueden cerrar cuentas
+@require_POST
 def admin_cobrar_mesa(request, mesa_id):
   mesa = get_object_or_404(Mesa, id=mesa_id)
   consumos_pendientes = ConsumoMesa.objects.filter(mesa_id=mesa_id, pagado=False)
@@ -578,6 +604,7 @@ def inicio_admin(request):
 
 
 @solo_admin  # <--- Blindado
+@require_POST
 def admin_enviar_pedido(request, mesa_id):
   mesa = get_object_or_404(Mesa, id=mesa_id)
   messages.success(request, f"Pedido de la mesa #{mesa.numero} enviado correctamente.")

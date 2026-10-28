@@ -19,6 +19,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from rest_framework.authtoken.views import obtain_auth_token
+from usuarios.views import api_login, api_me
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,9 +28,15 @@ urlpatterns = [
     path('', include('landing.urls')),
     path('usuarios/', include('usuarios.urls')),
     path('comentarios/', include('comentarios.urls')),
-    path('menu/',include('menu.urls')),
-    path('contabilidad/',include('contabilidad.urls')),
-    
+    path('menu/', include('menu.urls')),
+    path('contabilidad/', include('contabilidad.urls')),
+
+    # Autenticación API para Flutter
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('api/auth/token/', obtain_auth_token, name='api_auth_token'),
+    path('api/auth/login/', api_login, name='api_auth_login'),
+    path('api/auth/me/', api_me, name='api_auth_me'),
+
     # 📚 Endpoints para la documentación de la API con drf-spectacular
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

@@ -16,6 +16,9 @@ urlpatterns = [
     path('editar_gasto/<int:id>/', views.editar_gasto, name='editar_gasto'),
     path('inicio_cierre_caja/', views.cierre_caja, name='inicio_cierre_caja'),
     path('comentario_caja/', views.comentario_caja, name='comentario_caja'),
+    path('caja/abrir/', views.abrir_caja, name='abrir_caja'),
+    path('caja/cerrar/', views.cerrar_caja_proceso, name='cerrar_caja'),
+    path('caja/historial/', views.historial_cierres, name='historial_cierres'),
     
     # Inclusión de las rutas de la API REST
     path('', include(router.urls)),

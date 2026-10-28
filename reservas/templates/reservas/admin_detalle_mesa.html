@@ -55,7 +55,10 @@
                                 <span>{{ item.cantidad }}x {{ item.plato.nombre }}</span>
                                 <div class="comanda-subtotal">Subtotal: ${{ item.subtotal }}</div>
                             </div>
-                            <a href="{% url 'admin_eliminar_item_carrito' item.id %}" class="comanda-eliminar" title="Eliminar">🗑️</a>
+                            <form action="{% url 'admin_eliminar_item_carrito' item.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="comanda-eliminar" title="Eliminar" style="background:none;border:none;">🗑️</button>
+                            </form>
                         </div>
                     {% empty %}
                         <p style="color: #777; text-align: center; margin-top: 40px;">La mesa no tiene consumos registrados.</p>
@@ -70,8 +73,14 @@
                 </div>
 
                 {% if consumos %}
-                    <a href="{% url 'admin_enviar_pedido' mesa.id %}" class="btn-enviar-pedido">Enviar Pedido</a>
-                    <a href="{% url 'admin_cobrar_mesa' mesa.id %}" class="btn-cerrar-cuenta" onclick="return confirm('¿Estás seguro de cobrar y cerrar la mesa definitivamente?');">Cerrar Cuenta y Cobrar</a>
+                    <form action="{% url 'admin_enviar_pedido' mesa.id %}" method="POST" style="margin-bottom: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-enviar-pedido" style="border:none; width:100%;">Enviar Pedido</button>
+                    </form>
+                    <form action="{% url 'admin_cobrar_mesa' mesa.id %}" method="POST" onsubmit="return confirm('¿Estás seguro de cobrar y cerrar la mesa definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-cerrar-cuenta" style="border:none; width:100%;">Cerrar Cuenta y Cobrar</button>
+                    </form>
                 {% else %}
                     <button disabled class="btn-disabled" style="margin-bottom: 10px;">Enviar Pedido</button>
                     <button disabled class="btn-disabled">Cerrar Cuenta y Cobrar 1</button>

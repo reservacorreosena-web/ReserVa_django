@@ -24,13 +24,15 @@
             </p>
 
             <div class="rv-hero__actions">
-                {% if not request.session.logueado or request.session.logueado.rol == 'cliente' %}
+                {% if not request.session.logueado %}
                     <a href="{% url 'iniciar_sesion' %}" class="btn-gold"><i class="bi bi-calendar-event"></i> Reservar Mesa Ahora</a>
                     <a href="{% url 'ver_carta' %}" class="btn-dark"><i class="bi bi-journal-richtext"></i> Ver Menú</a>
-                {% endif %}
-
-                {% if request.session.logueado and request.session.logueado.rol == "admin" %}
-                    <a href="{% url 'mis_reservas' %}" class="btn-gold"><i class="bi bi-shield-lock"></i> Panel de Administración</a>
+                {% elif request.session.logueado.rol == "admin" %}
+                    <a href="{% url 'inicio' %}" class="btn-gold"><i class="bi bi-shield-lock"></i> Panel de Administración</a>
+                    <a href="{% url 'ver_carta' %}" class="btn-dark"><i class="bi bi-journal-richtext"></i> Ver Menú</a>
+                {% else %}
+                    <a href="{% url 'crear_reserva' %}" class="btn-gold"><i class="bi bi-calendar-event"></i> Reservar Mesa Ahora</a>
+                    <a href="{% url 'ver_carta' %}" class="btn-dark"><i class="bi bi-journal-richtext"></i> Ver Menú</a>
                 {% endif %}
             </div>
         </div>

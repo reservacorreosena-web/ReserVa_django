@@ -15,17 +15,34 @@
         <div>
             <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Gestión de Caja</h2>
             <small class="text-white-50">Control de ingresos, arqueos y estados operacionales</small>
+            {% if caja_abierta %}
+                <div class="mt-1">
+                    <span class="badge px-2 py-1" style="background-color: rgba(25, 135, 84, 0.2); color: #75b798; border: 1px solid rgba(25, 135, 84, 0.3);">
+                        <i class="bi bi-unlock-fill me-1"></i> Caja Abierta — Base: ${{ caja_abierta.saldo_inicial|floatformat:0 }}
+                    </span>
+                    <small class="text-white-50 ms-2">Desde: {{ caja_abierta.fecha_apertura|date:"d/M/Y H:i" }}</small>
+                </div>
+            {% else %}
+                <div class="mt-1">
+                    <span class="badge px-2 py-1" style="background-color: rgba(220, 53, 69, 0.15); color: #ea868f; border: 1px solid rgba(220, 53, 69, 0.3);">
+                        <i class="bi bi-lock-fill me-1"></i> Caja Cerrada
+                    </span>
+                </div>
+            {% endif %}
         </div>
         
         <!-- Botones de Control de Caja (Abrir, Cerrar, Historial) -->
         <div class="d-flex gap-2 flex-wrap">
-            <a href="#" class="btn btn-outline-success rounded-0 fw-bold px-3">
-                <i class="bi bi-unlock-fill me-1"></i> Abrir Caja
-            </a>
-            <a href="#" class="btn btn-outline-danger rounded-0 fw-bold px-3">
-                <i class="bi bi-lock-fill me-1"></i> Cerrar Caja
-            </a>
-            <a href="#" class="btn btn-outline-warning rounded-0 fw-bold px-3" style="color: #c9a961; border-color: #c9a961;">
+            {% if not caja_abierta %}
+                <a href="{% url 'abrir_caja' %}" class="btn btn-outline-success rounded-0 fw-bold px-3">
+                    <i class="bi bi-unlock-fill me-1"></i> Abrir Caja
+                </a>
+            {% else %}
+                <a href="{% url 'cerrar_caja' %}" class="btn btn-outline-danger rounded-0 fw-bold px-3">
+                    <i class="bi bi-lock-fill me-1"></i> Cerrar Caja
+                </a>
+            {% endif %}
+            <a href="{% url 'historial_cierres' %}" class="btn btn-outline-warning rounded-0 fw-bold px-3" style="color: #c9a961; border-color: #c9a961;">
                 <i class="bi bi-clock-history me-1"></i> Historial Cierres
             </a>
         </div>

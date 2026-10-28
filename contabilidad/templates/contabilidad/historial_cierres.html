@@ -1,0 +1,70 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Historial de Cierres - ReserVa{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cierre_caja.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3 text-light">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-0" style="font-family: 'Playfair Display', serif;">Historial de Cierres</h2>
+            <small class="text-white-50">Registro de todas las sesiones cerradas</small>
+        </div>
+        <a href="{% url 'inicio_cierre_caja' %}" class="btn btn-outline-secondary btn-sm rounded-0">← Volver a Cuadre de Caja</a>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-lg" style="background-color: #111 !important; border-radius: 8px;">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="text-secondary text-uppercase" style="font-size: 11px; letter-spacing: 1.5px;">
+                            <th># Cierre</th>
+                            <th>Apertura</th>
+                            <th>Cierre</th>
+                            <th>Abrió</th>
+                            <th>Cerró</th>
+                            <th class="text-end">Base Inicial</th>
+                            <th class="text-end">Ventas</th>
+                            <th class="text-end">Gastos</th>
+                            <th class="text-end">Saldo Esperado</th>
+                            <th class="text-end">Dinero Real</th>
+                            <th class="text-end">Diferencia</th>
+                            <th>Obs.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in cierres %}
+                        <tr>
+                            <td><span class="badge bg-secondary rounded-0">#{{ c.id }}</span></td>
+                            <td>{{ c.fecha_apertura|date:"d/M/Y H:i" }}</td>
+                            <td>{{ c.fecha_cierre|date:"d/M/Y H:i" }}</td>
+                            <td class="text-white-50">{{ c.usuario_apertura.nombre|default:"-" }}</td>
+                            <td class="text-white-50">{{ c.usuario_cierre.nombre|default:"-" }}</td>
+                            <td class="text-end">${{ c.saldo_inicial|floatformat:0 }}</td>
+                            <td class="text-end text-success">+ ${{ c.total_ventas|floatformat:0 }}</td>
+                            <td class="text-end text-danger">- ${{ c.total_gastos|floatformat:0 }}</td>
+                            <td class="text-end text-warning" style="color: #c9a961 !important;">${{ c.balance_esperado|floatformat:0 }}</td>
+                            <td class="text-end">${{ c.dinero_real|floatformat:0 }}</td>
+                            <td class="text-end {% if c.diferencia < 0 %}text-danger{% elif c.diferencia > 0 %}text-success{% else %}text-white-50{% endif %}">
+                                {% if c.diferencia >= 0 %}+{% endif %}${{ c.diferencia|floatformat:0 }}
+                            </td>
+                            <td class="text-white-50 small">{{ c.observaciones|default:""|truncatechars:40 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="12" class="text-center text-white-50 py-4">Aún no hay cierres registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

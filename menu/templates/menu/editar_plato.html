@@ -12,7 +12,7 @@
             <h2 class="fw-bold text-white mb-0">Editar Plato</h2>
             <small class="text-white-50">Modifica los detalles del producto en la carta</small>
         </div>
-        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">← Volver</a>
+        <a href="{% url 'ver_carta_admin' %}" class="btn btn-outline-secondary btn-sm">← Volver</a>
     </div>
 
     {% if error %}
@@ -31,49 +31,49 @@
                 <!-- NOMBRE DEL PLATO -->
                 <div class="mb-4 text-center">
                     <label for="nombre" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Nombre del Plato</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{platos.nombre}}">
+                    <input type="text" id="nombre" name="nombre" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ platos.nombre }}">
                 </div>
 
                 <!-- DESCRIPCIÓN -->
                 <div class="mb-4 text-center">
                     <label for="descripcion" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30">{{platos.descripcion}}</textarea>
+                    <textarea id="descripcion" name="descripcion" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" rows="3" cols="30">{{ platos.descripcion }}</textarea>
                 </div>
                 <div class="mb-4 text-center">
-        <label for="stock" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Stock</label>
-        <input type="number" id="stock" name="stock"  min="0" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value ="{{platos.stock}}">
-    </div>
+                    <label for="stock" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Stock</label>
+                    <input type="number" id="stock" name="stock" min="0" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ platos.stock }}">
+                </div>
 
                 <!-- FILA DOBLE: CATEGORÍA Y PRECIO -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6 text-center">
                         <label for="categoria" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Categoría</label>
                         <select id="categoria" name="categoria" class="form-select bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;">
-                            <option value="entradas">Entrada</option>
-                            <option value="platos_fuertes" selected>Plato Fuerte</option>
-                            <option value="bebidas">Bebida</option>
-                            <option value="postres">Postre</option>
-                            <option value="otros">Otros</option>
+                            <option value="entradas" {% if platos.categoria == 'entradas' %}selected{% endif %}>Entrada</option>
+                            <option value="platos_fuertes" {% if platos.categoria == 'platos_fuertes' %}selected{% endif %}>Plato Fuerte</option>
+                            <option value="bebidas" {% if platos.categoria == 'bebidas' %}selected{% endif %}>Bebida</option>
+                            <option value="postres" {% if platos.categoria == 'postres' %}selected{% endif %}>Postre</option>
+                            <option value="otros" {% if platos.categoria == 'otros' %}selected{% endif %}>Otros</option>
                         </select>
                     </div>
 
                     <div class="col-md-6 text-center">
                         <label for="precio" class="form-label text-light opacity-75 fw-bold text-uppercase small tracking-wide">Precio ($)</label>
-                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{platos.precio}}">
+                        <input type="number" id="precio" name="precio" class="form-control bg-dark text-white border-secondary text-center py-2" style="background-color: #121212 !important; border-color: rgba(255, 255, 255, 0.15) !important;" required value="{{ platos.precio }}">
                     </div>
                 </div>
 
                 <!-- CHECKBOXES CENTRADOS -->
                 <div class="d-flex flex-column align-items-center gap-2 mb-4">
                     <div class="form-check">
-                        <input type="checkbox" id="destacado" name="destacado" value="true" class="form-check-input bg-dark border-secondary">
+                        <input type="checkbox" id="destacado" name="destacado" value="on" class="form-check-input bg-dark border-secondary" {% if platos.destacado %}checked{% endif %}>
                         <label for="destacado" class="form-check-label text-light small">
                             ¿Destacar este producto?
                         </label>
                     </div>
 
                     <div class="form-check">
-                        <input type="checkbox" id="disponible" name="disponible" value="on" class="form-check-input bg-dark border-secondary" checked>
+                        <input type="checkbox" id="disponible" name="disponible" value="on" class="form-check-input bg-dark border-secondary" {% if platos.disponible %}checked{% endif %}>
                         <label for="disponible" class="form-check-label text-light small">
                             Actualmente está disponible?
                         </label>
@@ -83,7 +83,7 @@
                 <!-- BOTÓN PRINCIPAL CENTRADO -->
                 <div class="text-center pt-2">
                     <button type="submit" class="btn btn-warning fw-bold px-5 py-2" style="border-radius: 8px;">
-                        ACTUALIZAR Plato
+                        Actualizar Plato
                     </button>
                 </div>
 

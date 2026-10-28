@@ -1,8 +1,49 @@
 import os
 from django.shortcuts import render, redirect, get_object_or_404
-from reservas.models import Plato
+from reservas.models import Plato, Zona, Mesa
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 from usuarios.decorador import solo_admin
+
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from usuarios.permissions import IsUsuarioAdminOrReadOnly
+from .serializador import PlatoSerializer, ZonaSerializer, MesaSerializer
+
+
+class PlatoViewSet(viewsets.ModelViewSet):
+    serializer_class = PlatoSerializer
+    permission_classes = [IsAuthenticated, IsUsuarioAdminOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Plato.objects.all().order_by('categoria', 'nombre')
+        categoria = self.request.query_params.get('categoria')
+        destacado = self.request.query_params.get('destacado')
+        if categoria and categoria != 'todos':
+            queryset = queryset.filter(categoria=categoria)
+        if destacado in ('1', 'true', 'True'):
+            queryset = queryset.filter(destacado=True)
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            queryset = queryset.filter(disponible=True)
+        return queryset
+
+
+class ZonaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Zona.objects.all().order_by('nombre')
+    serializer_class = ZonaSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class MesaViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MesaSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Mesa.objects.all().order_by('numero')
+        zona = self.request.query_params.get('zona')
+        if zona:
+            queryset = queryset.filter(zona_id=zona)
+        return queryset
 
 
 @solo_admin
@@ -36,7 +77,7 @@ def crear_plato(request):
         categoria = request.POST.get("categoria", "")
         imagen = request.FILES.get('imagen')
         disponible = request.POST.get("disponible") == 'on'
-        destacado = request.POST.get("destacado") == 'on'
+        destacado = request.POST.get("destacado") in ('on', 'true', 'True')
         stock_raw = request.POST.get("stock", "")
 
         datos_plato = {
@@ -104,6 +145,7 @@ def crear_plato(request):
 
 
 @solo_admin
+@require_POST
 def eliminar_plato(request, plato_id):
     try:
         plato = Plato.objects.get(pk=plato_id)
@@ -124,7 +166,7 @@ def editar_plato(request, id):
         precio_raw = request.POST.get("precio", "")
         categoria = request.POST.get("categoria", "")
         disponible = request.POST.get("disponible") == 'on'
-        destacado = request.POST.get("destacado") == 'on'
+        destacado = request.POST.get("destacado") in ('on', 'true', 'True')
         stock_raw = request.POST.get("stock", "")
 
         if not nombre or not descripcion or not precio_raw or not categoria or not stock_raw:

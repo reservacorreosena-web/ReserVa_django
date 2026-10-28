@@ -46,9 +46,9 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="user-avatar">
-                                        {{ u.usuario|first|upper }}
+                                        {{ u.nombre|first|upper }}
                                     </div>
-                                    <span class="fw-semibold text-white">{{ u.usuario }}</span>
+                                    <span class="fw-semibold text-white">{{ u.nombre }}</span>
                                 </div>
                             </td>
 
@@ -87,14 +87,24 @@
                             <!-- Acciones -->
                             <td class="text-center">
                                 <div class="d-inline-flex gap-2">
-                                    {% if "[SUSPENDIDO]" in u.nombre %}
-                                        <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-outline-success px-3" title="Activar Usuario">
-                                            <i class="bi bi-person-check me-1"></i> Activar
-                                        </a>
+                                    {% if u.rol == 'admin' or u.rol == 'Administrador' %}
+                                        <button type="button" class="btn btn-sm btn-outline-secondary px-3 btn-admin-protegido" disabled title="Los administradores no pueden ser suspendidos">
+                                            <i class="bi bi-shield-lock me-1"></i> Protegido
+                                        </button>
+                                    {% elif "[SUSPENDIDO]" in u.nombre %}
+                                        <form action="{% url 'cambiar_estado_usuario' u.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-success px-3" title="Activar Usuario">
+                                                <i class="bi bi-person-check me-1"></i> Activar
+                                            </button>
+                                        </form>
                                     {% else %}
-                                        <a href="{% url 'cambiar_estado_usuario' u.id %}" class="btn btn-sm btn-outline-danger px-3 btn-suspender" title="Suspender Usuario">
-                                            <i class="bi bi-person-x me-1"></i> Suspender
-                                        </a>
+                                        <form action="{% url 'cambiar_estado_usuario' u.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger px-3 btn-suspender" title="Suspender Usuario">
+                                                <i class="bi bi-person-x me-1"></i> Suspender
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </div>
                             </td>
@@ -130,11 +140,11 @@
         // Confirmación con SweetAlert para suspender/cambiar estado
         $('#tablaDeBryan').on('click', '.btn-suspender', function(e) {
             e.preventDefault();
-            let url = $(this).attr('href');
+            const form = $(this).closest('form');
 
             Swal.fire({
                 title: "¿Cambiar estado del usuario?",
-                text: "Esta acción modificaría los accesos del usuario a la plataforma.",
+                text: "Esta acción modificará los accesos del usuario a la plataforma.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#800020",
@@ -145,7 +155,7 @@
                 color: "#ffffff"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = url;
+                    form.submit();
                 }
             });
         });

@@ -41,7 +41,7 @@
                     <tr>
                         <td class="px-4 fw-semibold text-light">{{ p.nombre }}</td>
                         <td>
-                            <span class="rv-table-badge rv-badge-neutral">{{ p.categoria }}</span>
+                            <span class="rv-table-badge rv-badge-neutral">{{ p.get_categoria_display|default:p.categoria }}</span>
                         </td>
                         <td class="fw-bold" style="color: #c9a961 !important;">${{ p.precio }}</td>
                         <td>
@@ -56,9 +56,12 @@
                                 <a href="{% url 'editar_plato' p.id %}" class="rv-btn-action rv-btn-edit">
                                     <i class="bi bi-pencil-square"></i> Editar
                                 </a>
-                                <a href="{% url 'eliminar_plato' p.id %}" class="rv-btn-action rv-btn-delete btn-eliminar">
-                                    <i class="bi bi-trash3"></i> Eliminar
-                                </a>
+                                <form action="{% url 'eliminar_plato' p.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="rv-btn-action rv-btn-delete btn-eliminar" style="border: none; background: transparent;">
+                                        <i class="bi bi-trash3"></i> Eliminar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -87,7 +90,7 @@
   $(document).ready(function() {
       $(document).on('click', '.btn-eliminar', function(e) {
             e.preventDefault();
-            let url = $(this).attr('href');
+            const form = $(this).closest('form');
 
             Swal.fire({
                 title: "¿Estás seguro?",
@@ -102,7 +105,7 @@
                 color: "#ffffff"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = url;
+                    form.submit();
                 }
             });
       });

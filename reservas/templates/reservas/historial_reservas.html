@@ -88,10 +88,10 @@
                             <span class="rv-id">#{{ r.id }}</span>
                         </td>
                         <td>
-                            <span class="rv-client-name">{{ r.nombre_cliente }}</span>
+                            <span class="rv-client-name">{{ r.usuario.nombre|default:"Cliente" }}</span>
                         </td>
                         <td class="text-center">
-                            Mesa {{ r.mesa.numero|default:r.mesa }}
+                            {% if r.mesa %}Mesa #{{ r.mesa.numero }}{% else %}Sin asignar{% endif %}
                         </td>
                         <td class="text-center">{{ r.fecha }}</td>
                         <td class="text-center">{{ r.hora }}</td>

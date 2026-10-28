@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Reservar Mesa | ReserVa{% endblock %}
+{% block title %}Editar Reserva | ReserVa{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/editar_reserva.css' %}">
@@ -11,51 +11,43 @@
 
 <div class="rv-page">
     <div class="rv-back-wrapper">
-        <a href="{% url 'inicio' %}" class="btn-dark">
-            <i class="bi bi-arrow-left"></i> Volver al inicio
+        <a href="{% url 'mis_reservas' %}" class="btn-dark">
+            <i class="bi bi-arrow-left"></i> Volver a Mis Reservas
         </a>
     </div>
 
     <div class="rv-form-container">
         <div class="rv-header">
-            <span class="rv-eyebrow">Experiencia gastronómica</span>
-            <h1 class="rv-title">Crear Reserva</h1>
-            <p class="rv-subtitle">Completa los detalles de tu reserva y asegura tu lugar en ReserVa.</p>
+            <span class="rv-eyebrow">Gestión de Reserva</span>
+            <h1 class="rv-title">Editar Reserva #{{ datos.id }}</h1>
+            <p class="rv-subtitle">Modifica los detalles de tu reserva y guarda los cambios.</p>
         </div>
 
-        <form method="POST" action="{% url 'crear_reserva' %}" class="rv-form">
+        <form method="POST" action="{% url 'actualizar' datos.id %}" class="rv-form" data-loading-text="Actualizando los datos de tu reserva...">
             {% csrf_token %}
 
             <div class="rv-form-group">
                 <label for="cantidad_personas" class="rv-form-label">Personas</label>
-                <input type="number" name="cantidad_personas" id="cantidad_personas" min="1" max="20" placeholder="Ej: 4" required class="rv-input">
+                <input type="number" name="cantidad_personas" id="cantidad_personas" min="1" max="20" placeholder="Ej: 4" required value="{{ datos.cantidad_personas }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
                 <label for="fecha" class="rv-form-label">Fecha</label>
-                <input type="date" name="fecha" id="fecha" required class="rv-input">
+                <input type="date" name="fecha" id="fecha" required value="{{ datos.fecha|date:'Y-m-d' }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
                 <label for="hora" class="rv-form-label">Hora</label>
-                <input type="time" name="hora" id="hora" required class="rv-input">
+                <input type="time" name="hora" id="hora" required value="{{ datos.hora|time:'H:i' }}" class="rv-input">
             </div>
 
             <div class="rv-form-group">
-                <label for="notas" class="rv-form-label">Notas</label>
-                <textarea name="notas" id="notas" rows="4" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input"></textarea>
-            </div>
-
-            <div class="rv-form-group">
-                <label for="preordenar" class="rv-form-label">¿Desea preordenar sus platos de una vez?</label>
-                <select name="preordenar" id="preordenar" class="rv-input">
-                    <option value="NO">No, solo reservar la mesa</option>
-                    <option value="SI">Sí, elegir los platos ahora</option>
-                </select>
+                <label for="notas" class="rv-form-label">Notas / Observaciones</label>
+                <textarea name="notas" id="notas" rows="4" placeholder="Ej: Alergias, mesa cerca a la ventana..." class="rv-input">{{ datos.notas }}</textarea>
             </div>
 
             <button type="submit" class="btn-gold">
-                <i class="bi bi-calendar-check"></i> Confirmar Reserva
+                <i class="bi bi-check-circle"></i> Guardar Cambios
             </button>
         </form>
     </div>

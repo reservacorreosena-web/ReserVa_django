@@ -21,21 +21,21 @@
             <div class="rv-reserva-header">
                 <span class="rv-reserva-id">Reserva #{{ r.id }}</span>
                 <span class="rv-status-badge">
-                    <span class="rv-status-dot"></span> Activa
+                    <span class="rv-status-dot"></span> {{ r.estado|title }}
                 </span>
             </div>
 
             <div class="rv-reserva-info">
                 <div class="rv-info-group">
-                    <span class="rv-info-label">Evento</span>
-                    <h3 class="rv-reserva-title">{{ r.nombre }}</h3>
+                    <span class="rv-info-label">Titular / Personas</span>
+                    <h3 class="rv-reserva-title">{{ r.usuario.nombre }} ({{ r.cantidad_personas }} pers.)</h3>
                 </div>
 
                 <div class="rv-info-group">
-                    <span class="rv-info-label">Fecha Programada</span>
+                    <span class="rv-info-label">Fecha y Hora Programada</span>
                     <div class="rv-info-value">
                         <i class="bi bi-calendar2-week"></i>
-                        <span>{{ r.fecha }}</span>
+                        <span>{{ r.fecha }} a las {{ r.hora }}</span>
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                     <span class="rv-info-label">Mesa Asignada</span>
                     <div class="rv-info-value">
                         <i class="bi bi-shop"></i>
-                        <span>Mesa {{ r.mesa }}</span>
+                        <span>{% if r.mesa %}Mesa #{{ r.mesa.numero }}{% else %}Sin asignar{% endif %}</span>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,16 @@
                            cancelButtonText: 'Mantener'
                        }).then((result) => {
                            if (result.isConfirmed) {
-                               window.location.href = '{% url 'cancelar' r.id %}';
+                               const form = document.createElement('form');
+                               form.method = 'POST';
+                               form.action = '{% url 'cancelar' r.id %}';
+                               const csrf = document.createElement('input');
+                               csrf.type = 'hidden';
+                               csrf.name = 'csrfmiddlewaretoken';
+                               csrf.value = '{{ csrf_token }}';
+                               form.appendChild(csrf);
+                               document.body.appendChild(form);
+                               form.submit();
                            }
                        });">
                     <i class="bi bi-trash3-fill"></i> Cancelar

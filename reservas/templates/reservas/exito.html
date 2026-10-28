@@ -1,14 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Nueva Reserva | ReservA{% endblock %}
+{% block title %}Reserva Confirmada | ReserVa{% endblock %}
 
 {% block content %}
-<body>
-
-        <h1>¡Reserva Creada!</h1>
-
-
-        <a href="{% url 'inicio' %}" class="boton-volver">Volver al Inicio</a>
+<div class="rv-page text-center py-5">
+    <div class="rv-form-container mx-auto" style="max-width: 500px;">
+        <i class="bi bi-check-circle-fill" style="font-size: 56px; color: #c9a961;"></i>
+        <h1 class="mt-3 text-white" style="font-family: 'Playfair Display', serif;">¡Reserva Creada!</h1>
+        <p class="text-white-50">Hemos registrado tu reserva exitosamente. Te esperamos en el Restaurante Guadalupe.</p>
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <a href="{% url 'mis_reservas' %}" class="btn-gold">Ver Mis Reservas</a>
+            <a href="{% url 'inicio' %}" class="btn-dark">Volver al Inicio</a>
+        </div>
     </div>
-</body>
+</div>
 {% endblock %}

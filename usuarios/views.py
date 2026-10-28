@@ -1,17 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from usuarios.models import Usuario
-
-from reservas.models import Reserva
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from .decorador import solo_anonimos, verificar, solo_admin
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods, require_POST
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authtoken.models import Token
+import json
 
+from usuarios.models import Usuario
+from reservas.models import Reserva
+from .decorador import solo_anonimos, verificar, solo_admin
 from usuarios.serializador import UsuarioSerializer
 from .serializador import *
-from rest_framework import viewsets
-
-from django.contrib.auth.hashers import make_password, check_password
 
 # Importaciones para la recuperación de contraseña personalizada
 from .utils import enviar_correo_recuperacion, generar_token_personalizado
@@ -129,8 +135,14 @@ def perfiles_clientes(request):
 
 
 @solo_admin
+@require_POST
 def cambiar_estado_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
+
+    # Bloquear suspensión de usuarios con rol de Administrador
+    if usuario.rol == 'admin' and "[SUSPENDIDO]" not in usuario.nombre:
+        messages.error(request, "No se puede suspender a un usuario con rol de Administrador.")
+        return redirect('listado_general')
 
     if "[SUSPENDIDO]" not in usuario.nombre:
         usuario.nombre = f"{usuario.nombre} [SUSPENDIDO]"
@@ -146,6 +158,85 @@ def cambiar_estado_usuario(request, usuario_id):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated]
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@permission_classes([AllowAny])
+def api_login(request):
+    try:
+        data = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except Exception:
+        data = request.POST
+
+    email = (data.get('email') or data.get('username') or data.get('correo') or '').strip().lower()
+    password = data.get('password') or data.get('contraseña') or data.get('clave') or ''
+
+    if not email or not password:
+        return JsonResponse({'detail': 'Email y contraseña son obligatorios.'}, status=400)
+
+    try:
+        usuario_app = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'detail': 'Credenciales inválidas.'}, status=401)
+
+    clave_valida = check_password(password, usuario_app.contraseña)
+    if not clave_valida and usuario_app.contraseña == password:
+        clave_valida = True
+        usuario_app.contraseña = make_password(password)
+        usuario_app.save(update_fields=['contraseña'])
+
+    if not clave_valida:
+        return JsonResponse({'detail': 'Credenciales inválidas.'}, status=401)
+
+    if "[SUSPENDIDO]" in (usuario_app.nombre or ''):
+        return JsonResponse({'detail': 'Tu cuenta se encuentra suspendida.'}, status=403)
+
+    auth_user, _ = User.objects.get_or_create(
+        username=email,
+        defaults={'email': email, 'first_name': usuario_app.nombre or ''}
+    )
+    if not auth_user.email:
+        auth_user.email = email
+        auth_user.save(update_fields=['email'])
+
+    token, _ = Token.objects.get_or_create(user=auth_user)
+
+    return JsonResponse({
+        'token': token.key,
+        'user': {
+            'id': usuario_app.id,
+            'nombre': usuario_app.nombre,
+            'email': usuario_app.email,
+            'rol': usuario_app.rol,
+            'estado': usuario_app.estado,
+        }
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_me(request):
+    email = getattr(request.user, 'email', '') or request.user.username
+    usuario_app = Usuario.objects.filter(email=email).first()
+    if not usuario_app:
+        return JsonResponse({
+            'user': {
+                'username': request.user.username,
+                'email': request.user.email,
+            }
+        })
+    return JsonResponse({
+        'user': {
+            'id': usuario_app.id,
+            'nombre': usuario_app.nombre,
+            'email': usuario_app.email,
+            'rol': usuario_app.rol,
+            'estado': usuario_app.estado,
+        }
+    })
+
 
 def editar_perfil(request):
     # Verificamos que el usuario esté logueado en la sesión
