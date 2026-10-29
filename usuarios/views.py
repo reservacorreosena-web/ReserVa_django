@@ -4,19 +4,26 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods, require_POST
-from rest_framework import viewsets
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.db import IntegrityError, transaction
+from django.views.decorators.http import require_POST
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
-import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from usuarios.models import Usuario
 from reservas.models import Reserva
 from .decorador import solo_anonimos, verificar, solo_admin
-from usuarios.serializador import UsuarioSerializer
+from usuarios.serializador import (
+    AuthResponseSerializer,
+    LoginSerializer,
+    MeResponseSerializer,
+    RegistroSerializer,
+    UsuarioSerializer,
+)
 from .serializador import *
 
 # Importaciones para la recuperación de contraseña personalizada
@@ -161,81 +168,211 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-@csrf_exempt
-@require_http_methods(["POST"])
+def _datos_usuario(usuario_app):
+    return {
+        "id": usuario_app.id,
+        "nombre": usuario_app.nombre,
+        "email": usuario_app.email,
+        "rol": usuario_app.rol,
+        "estado": usuario_app.estado,
+    }
+
+
+def _auth_user_compatible(auth_user, usuario_app):
+    """Evita reutilizar una cuenta de Django con privilegios para un cliente.
+
+    El ``auth.User`` solo sirve como titular del token. Un cliente nunca debe
+    recibir el token de un ``auth.User`` que sea staff/superusuario o que tenga
+    una contraseña propia (por ejemplo, una cuenta creada con
+    ``createsuperuser``). Los usuarios de la app creados por la API tienen
+    contraseña vacía o inutilizable y sí pueden reutilizarse.
+    """
+    if usuario_app.rol == "admin":
+        return True
+    if auth_user.is_staff or auth_user.is_superuser:
+        return False
+    if auth_user.password and not auth_user.password.startswith("!"):
+        return False
+    return True
+
+
+def _obtener_o_crear_token(usuario_app):
+    """Crea/obtiene el auth.User y el token DRF para un Usuario de la app.
+
+    El auth.User se usa solo como titular del token; la contraseña real vive
+    hasheada en ``usuarios.Usuario``. Si el auth.User se crea aquí se marca con
+    contraseña inutilizable para que no pueda autenticarse por
+    ``/api-token-auth/``.
+    """
+    auth_user, creado = User.objects.get_or_create(
+        username=usuario_app.email,
+        defaults={
+            "email": usuario_app.email,
+            "first_name": usuario_app.nombre or "",
+        },
+    )
+
+    if not _auth_user_compatible(auth_user, usuario_app):
+        raise PermissionDenied(
+            "Este correo no está disponible para el acceso de clientes."
+        )
+
+    campos = []
+    if not auth_user.email:
+        auth_user.email = usuario_app.email
+        campos.append("email")
+    if creado:
+        auth_user.set_unusable_password()
+        campos.append("password")
+    if campos:
+        auth_user.save(update_fields=campos)
+
+    token, _ = Token.objects.get_or_create(user=auth_user)
+    return token
+
+
+@extend_schema(
+    request=LoginSerializer,
+    responses={200: AuthResponseSerializer},
+    description="Autentica un cliente y devuelve su token DRF.",
+)
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def api_login(request):
-    try:
-        data = json.loads(request.body.decode('utf-8')) if request.body else {}
-    except Exception:
-        data = request.POST
+    data = request.data
 
-    email = (data.get('email') or data.get('username') or data.get('correo') or '').strip().lower()
-    password = data.get('password') or data.get('contraseña') or data.get('clave') or ''
+    if not hasattr(data, "get"):
+        return Response(
+            {"detail": "El cuerpo de la petición debe ser un objeto JSON."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    email = (
+        (data.get("email") or data.get("username") or data.get("correo") or "")
+        .strip()
+        .lower()
+    )
+    password = data.get("password") or data.get("contraseña") or data.get("clave") or ""
 
     if not email or not password:
-        return JsonResponse({'detail': 'Email y contraseña son obligatorios.'}, status=400)
+        return Response(
+            {"detail": "Email y contraseña son obligatorios."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     try:
         usuario_app = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
-        return JsonResponse({'detail': 'Credenciales inválidas.'}, status=401)
+        return Response(
+            {"detail": "Credenciales inválidas."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
     clave_valida = check_password(password, usuario_app.contraseña)
     if not clave_valida and usuario_app.contraseña == password:
+        # Migración transparente de contraseñas legadas en texto plano.
         clave_valida = True
         usuario_app.contraseña = make_password(password)
-        usuario_app.save(update_fields=['contraseña'])
+        usuario_app.save(update_fields=["contraseña"])
 
     if not clave_valida:
-        return JsonResponse({'detail': 'Credenciales inválidas.'}, status=401)
+        return Response(
+            {"detail": "Credenciales inválidas."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
-    if "[SUSPENDIDO]" in (usuario_app.nombre or ''):
-        return JsonResponse({'detail': 'Tu cuenta se encuentra suspendida.'}, status=403)
+    if "[SUSPENDIDO]" in (usuario_app.nombre or ""):
+        return Response(
+            {"detail": "Tu cuenta se encuentra suspendida."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
-    auth_user, _ = User.objects.get_or_create(
-        username=email,
-        defaults={'email': email, 'first_name': usuario_app.nombre or ''}
-    )
-    if not auth_user.email:
-        auth_user.email = email
-        auth_user.save(update_fields=['email'])
+    if not usuario_app.estado:
+        return Response(
+            {"detail": "Tu cuenta se encuentra deshabilitada."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
-    token, _ = Token.objects.get_or_create(user=auth_user)
+    token = _obtener_o_crear_token(usuario_app)
 
-    return JsonResponse({
-        'token': token.key,
-        'user': {
-            'id': usuario_app.id,
-            'nombre': usuario_app.nombre,
-            'email': usuario_app.email,
-            'rol': usuario_app.rol,
-            'estado': usuario_app.estado,
+    return Response(
+        {
+            "token": token.key,
+            "user": _datos_usuario(usuario_app),
         }
-    })
+    )
 
 
-@api_view(['GET'])
+@extend_schema(
+    request=RegistroSerializer,
+    responses={201: AuthResponseSerializer},
+    description=(
+        "Registra un cliente nuevo y devuelve un token para iniciar sesión."
+    ),
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def api_register(request):
+    """Registro de clientes desde Flutter.
+
+    Crea el ``usuarios.Usuario`` con contraseña hasheada, el ``auth.User``
+    titular del token y devuelve el token para iniciar sesión inmediatamente.
+    """
+    serializer = RegistroSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        with transaction.atomic():
+            usuario_app = serializer.save()
+            token = _obtener_o_crear_token(usuario_app)
+    except IntegrityError:
+        return Response(
+            {"email": ["Este correo ya se encuentra registrado."]},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "token": token.key,
+            "user": _datos_usuario(usuario_app),
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+
+@extend_schema(
+    request=None,
+    responses={204: None},
+    description="Revoca el token del usuario autenticado.",
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def api_logout(request):
+    """Revoca el token del usuario autenticado."""
+    Token.objects.filter(user=request.user).delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    responses={200: MeResponseSerializer},
+    description="Devuelve el perfil del usuario autenticado.",
+)
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def api_me(request):
-    email = getattr(request.user, 'email', '') or request.user.username
+    email = getattr(request.user, "email", "") or request.user.username
     usuario_app = Usuario.objects.filter(email=email).first()
     if not usuario_app:
-        return JsonResponse({
-            'user': {
-                'username': request.user.username,
-                'email': request.user.email,
+        return Response(
+            {
+                "user": {
+                    "username": request.user.username,
+                    "email": request.user.email,
+                }
             }
-        })
-    return JsonResponse({
-        'user': {
-            'id': usuario_app.id,
-            'nombre': usuario_app.nombre,
-            'email': usuario_app.email,
-            'rol': usuario_app.rol,
-            'estado': usuario_app.estado,
-        }
-    })
+        )
+    return Response({"user": _datos_usuario(usuario_app)})
+
 
 
 def editar_perfil(request):
