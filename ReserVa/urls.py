@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
-from usuarios.views import api_login, api_me
+from usuarios.views import api_login, api_logout, api_me, api_register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +35,8 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('api/auth/token/', obtain_auth_token, name='api_auth_token'),
     path('api/auth/login/', api_login, name='api_auth_login'),
+    path('api/auth/register/', api_register, name='api_auth_register'),
+    path('api/auth/logout/', api_logout, name='api_auth_logout'),
     path('api/auth/me/', api_me, name='api_auth_me'),
 
     # 📚 Endpoints para la documentación de la API con drf-spectacular

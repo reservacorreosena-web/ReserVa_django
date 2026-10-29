@@ -6,44 +6,143 @@ from django.views.decorators.http import require_POST
 from usuarios.decorador import solo_admin
 
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from usuarios.permissions import IsUsuarioAdminOrReadOnly
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
+from usuarios.permissions import IsUsuarioAdminOrReadOnly, get_usuario_app
+from reservas.disponibilidad import (
+    obtener_ocupacion,
+    parse_fecha_hora,
+    parse_personas,
+)
 from .serializador import PlatoSerializer, ZonaSerializer, MesaSerializer
+
+
+def _es_admin(user):
+    if not user or not user.is_authenticated:
+        return False
+    if user.is_staff or user.is_superuser:
+        return True
+    usuario = get_usuario_app(user)
+    return bool(usuario and usuario.rol == "admin")
 
 
 class PlatoViewSet(viewsets.ModelViewSet):
     serializer_class = PlatoSerializer
+    queryset = Plato.objects.all()
     permission_classes = [IsAuthenticated, IsUsuarioAdminOrReadOnly]
 
     def get_queryset(self):
-        queryset = Plato.objects.all().order_by('categoria', 'nombre')
-        categoria = self.request.query_params.get('categoria')
-        destacado = self.request.query_params.get('destacado')
-        if categoria and categoria != 'todos':
+        queryset = Plato.objects.all().order_by("categoria", "nombre")
+        categoria = self.request.query_params.get("categoria")
+        destacado = self.request.query_params.get("destacado")
+        buscar = self.request.query_params.get("buscar")
+
+        if categoria and categoria != "todos":
             queryset = queryset.filter(categoria=categoria)
-        if destacado in ('1', 'true', 'True'):
+        if destacado in ("1", "true", "True"):
             queryset = queryset.filter(destacado=True)
-        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-            queryset = queryset.filter(disponible=True)
+        if buscar:
+            queryset = queryset.filter(nombre__icontains=buscar)
+
+        if self.request.method in SAFE_METHODS:
+            # La carta pública solo muestra platos disponibles y con stock.
+            # Los administradores conservan acceso a todo el catálogo.
+            if not _es_admin(self.request.user):
+                queryset = queryset.filter(disponible=True, stock__gt=0)
+
         return queryset
 
 
 class ZonaViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Zona.objects.all().order_by('nombre')
+    queryset = Zona.objects.all().order_by("nombre")
     serializer_class = ZonaSerializer
     permission_classes = [IsAuthenticated]
 
 
 class MesaViewSet(viewsets.ReadOnlyModelViewSet):
+    """Mesas con coordenadas del plano y disponibilidad opcional.
+
+    Sin parámetros devuelve el catálogo de mesas (igual que antes), ahora con
+    ``posicion_x``/``posicion_y``. Si se envían ``fecha`` y ``hora`` (y
+    opcionalmente ``personas``), añade ``disponible`` y
+    ``motivo_no_disponible`` calculados con las mismas reglas del mapa web.
+    """
+
     serializer_class = MesaSerializer
+    queryset = Mesa.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Mesa.objects.all().order_by('numero')
-        zona = self.request.query_params.get('zona')
+        queryset = Mesa.objects.all().order_by("numero")
+        zona = self.request.query_params.get("zona")
         if zona:
-            queryset = queryset.filter(zona_id=zona)
+            try:
+                zona_id = int(zona)
+            except (TypeError, ValueError):
+                raise ValidationError({"zona": "Debe ser un número entero."})
+            queryset = queryset.filter(zona_id=zona_id)
         return queryset
+
+    def _get_disponibilidad(self, requerida=False):
+        if hasattr(self, "_disponibilidad_cache"):
+            return self._disponibilidad_cache
+
+        if getattr(self, "request", None) is None:
+            return None
+
+        fecha = self.request.query_params.get("fecha")
+        hora = self.request.query_params.get("hora")
+        personas_raw = self.request.query_params.get("personas")
+
+        if not any((fecha, hora, personas_raw)):
+            if requerida:
+                raise ValidationError(
+                    {
+                        "detail": (
+                            "Debes indicar fecha y hora para consultar "
+                            "la disponibilidad."
+                        )
+                    }
+                )
+            self._disponibilidad_cache = None
+            return None
+
+        if not fecha or not hora:
+            raise ValidationError(
+                {"detail": "Debes indicar fecha y hora juntas."}
+            )
+
+        fecha_obj, hora_obj = parse_fecha_hora(fecha, hora)
+        personas = parse_personas(personas_raw)
+        reservadas, consumos = obtener_ocupacion(fecha_obj, hora_obj)
+
+        self._disponibilidad_cache = {
+            "fecha": fecha_obj,
+            "hora": hora_obj,
+            "personas": personas,
+            "reservadas": reservadas,
+            "consumos": consumos,
+        }
+        return self._disponibilidad_cache
+
+    def get_serializer_context(self):
+        contexto = super().get_serializer_context()
+        disponibilidad = self._get_disponibilidad(requerida=False)
+        if disponibilidad:
+            contexto["disponibilidad"] = disponibilidad
+        return contexto
+
+    @action(detail=False, methods=["get"], url_path="disponibles")
+    def disponibles(self, request):
+        """Devuelve solo las mesas libres para una fecha, hora y personas."""
+        self._get_disponibilidad(requerida=True)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        mesas = [mesa for mesa in serializer.data if mesa["disponible"]]
+        return Response(mesas)
+
 
 
 @solo_admin

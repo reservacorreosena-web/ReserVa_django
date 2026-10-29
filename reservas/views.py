@@ -1,7 +1,8 @@
 from datetime import datetime
 import json
 from django.contrib import messages
-from django.db.models import Count, Q, Sum
+from django.db import transaction
+from django.db.models import Count, F, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -15,7 +16,10 @@ from .utils import enviar_correo_reserva
 # 🚀 VISTAS DE API (Django REST Framework)
 # ==========================================
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from usuarios.permissions import IsOwnerOrUsuarioAdmin, get_usuario_app
 from .serializador import ReservaSerializer
 
@@ -24,20 +28,105 @@ class ReservaViewSet(viewsets.ModelViewSet):
     """
     API endpoint para gestionar las reservas (CRUD completo).
     Requiere autenticación por Token.
+
+    Reglas de seguridad aplicadas en la API:
+    - El propietario se toma del token; el campo ``usuario`` es de solo lectura.
+    - El estado inicial siempre es ``pendiente``; ``estado`` es de solo lectura.
+    - Se validan cantidad de personas, fecha futura, capacidad y conflictos.
     """
+
     serializer_class = ReservaSerializer
+    queryset = Reserva.objects.all()
     permission_classes = [IsAuthenticated, IsOwnerOrUsuarioAdmin]
 
     def get_queryset(self):
         user = self.request.user
         usuario = get_usuario_app(user)
-        if usuario and usuario.rol == 'admin':
-            return Reserva.objects.all().order_by('-id')
-        if user and user.is_staff:
-            return Reserva.objects.all().order_by('-id')
-        if usuario:
-            return Reserva.objects.filter(usuario=usuario).order_by('-id')
-        return Reserva.objects.filter(usuario__email=user.email).order_by('-id') if user and user.email else Reserva.objects.none()
+
+        if usuario and usuario.rol == "admin":
+            queryset = Reserva.objects.all()
+        elif user and user.is_staff:
+            queryset = Reserva.objects.all()
+        elif usuario:
+            queryset = Reserva.objects.filter(usuario=usuario)
+        elif user and user.email:
+            queryset = Reserva.objects.filter(usuario__email=user.email)
+        else:
+            queryset = Reserva.objects.none()
+
+        estado = self.request.query_params.get("estado")
+        if estado:
+            queryset = queryset.filter(estado=estado)
+
+        fecha = self.request.query_params.get("fecha")
+        if fecha:
+            queryset = queryset.filter(fecha=fecha)
+
+        return queryset.order_by("-id")
+
+    def perform_create(self, serializer):
+        usuario = get_usuario_app(self.request.user)
+        if not usuario:
+            raise ValidationError(
+                {
+                    "detail": (
+                        "Tu cuenta no tiene un perfil de cliente asociado. "
+                        "Contacta al administrador."
+                    )
+                }
+            )
+        if not usuario.estado:
+            raise PermissionDenied("Tu cuenta se encuentra deshabilitada.")
+
+        # El usuario y el estado nunca se toman del cuerpo de la petición.
+        serializer.save(usuario=usuario, estado="pendiente")
+
+    @action(detail=False, methods=["get"], url_path="mis-reservas")
+    def mis_reservas(self, request):
+        """Lista únicamente las reservas del usuario autenticado."""
+        usuario = get_usuario_app(request.user)
+        if not usuario:
+            return Response([])
+
+        queryset = Reserva.objects.filter(usuario=usuario)
+
+        estado = request.query_params.get("estado")
+        if estado:
+            queryset = queryset.filter(estado=estado)
+
+        fecha = request.query_params.get("fecha")
+        if fecha:
+            queryset = queryset.filter(fecha=fecha)
+
+        serializer = self.get_serializer(
+            queryset.order_by("-id"), many=True
+        )
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"], url_path="cancelar")
+    def cancelar(self, request, pk=None):
+        """Cancela una reserva propia y restaura el stock de sus consumos."""
+        reserva = self.get_object()
+
+        if reserva.estado == "cancelada":
+            return Response(self.get_serializer(reserva).data)
+
+        with transaction.atomic():
+            consumos = ConsumoMesa.objects.select_related("plato").filter(
+                reserva=reserva, pagado=False
+            )
+            for consumo in consumos:
+                if consumo.plato_id:
+                    Plato.objects.filter(pk=consumo.plato_id).update(
+                        stock=F("stock") + consumo.cantidad
+                    )
+            consumos.delete()
+
+            reserva.estado = "cancelada"
+            reserva.save(update_fields=["estado"])
+
+        return Response(self.get_serializer(reserva).data)
+
 
 
 # ==========================================
